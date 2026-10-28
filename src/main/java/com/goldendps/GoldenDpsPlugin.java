@@ -9,6 +9,7 @@ import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -30,6 +31,8 @@ import net.runelite.api.HitsplatID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.WorldView;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -117,6 +120,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final HealthWatcher health = new HealthWatcher();
 	private final Bosses bosses = new Bosses();
 	private final HitAttributor attributor = new HitAttributor();
+	private final TargetMatcher matcher = new TargetMatcher();
 	/** Party members who send GoldenDPS data: name to time of their last message. */
 	private final Map<String, Long> reporters = new HashMap<>();
 
@@ -226,6 +230,11 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			String key = targetKey(client.getWorld(), npc.getIndex());
 			String name = npc.getName();
 			boolean boss = bosses.isBoss(npc.getId(), name);
+			WorldPoint pos = npc.getWorldLocation();
+			if (pos != null)
+			{
+				matcher.seen(key, pos.getX(), pos.getY(), pos.getPlane());
+			}
 
 			if (hitsplat.isMine())
 			{
@@ -237,10 +246,11 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				{
 					health.myHit(client.getTickCount());
 				}
-				outgoing.h.add(new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss));
+				outgoing.h.add(new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos));
 			}
-			else if (hitsplat.isOthers())
+			else if (hitsplat.isOthers() && isGroupMode())
 			{
+				// other people only count in a party or an instance (raid, boss room)
 				tracker.seenHit(now, key, npc.getId(), name, boss, amount);
 				if (config.estimateOthers())
 				{
@@ -260,6 +270,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		else if (actor instanceof Player && actor != client.getLocalPlayer())
 		{
+			if (!isGroupMode())
+			{
+				return;
+			}
 			String who = cleanName(actor.getName());
 			if (config.nearbyDamageTaken() && who != null && amount > 0 && isDamageOnPlayer(hitsplat)
 				&& !isReporter(who, now))
@@ -285,7 +299,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	public void onAnimationChanged(AnimationChanged e)
 	{
 		Actor actor = e.getActor();
-		if (!(actor instanceof Player) || actor == client.getLocalPlayer() || !config.estimateOthers())
+		if (!(actor instanceof Player) || actor == client.getLocalPlayer() || !config.estimateOthers()
+			|| !isGroupMode())
 		{
 			return;
 		}
@@ -408,6 +423,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			health.reset();
 			attributor.clear();
+			matcher.clear();
 			outgoing = new GoldenDpsUpdate();
 			tracker.endNow(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
 			saveAsync();
@@ -469,8 +485,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			for (GoldenDpsUpdate.Hit hit : u.h)
 			{
 				boolean boss = hit.boss || bosses.isBoss(hit.id, hit.nm);
-				tracker.playerHit(now, name, PlayerKind.PARTY, targetKey(u.w, hit.i), hit.id, hit.nm, boss,
-					hit.a, hit.miss);
+				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.w, hit, name), hit.id, hit.nm,
+					boss, hit.a, hit.miss);
 			}
 		}
 		tracker.damageTaken(now, name, PlayerKind.PARTY, u.taken);
@@ -715,6 +731,37 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	// ---------------------------------------------------------------- helpers
 
+	/**
+	 * Count other people only in a RuneLite party or in an instance (raids, boss rooms).
+	 * Everywhere else GoldenDPS only counts you.
+	 */
+	private boolean isGroupMode()
+	{
+		if (partyService.isInParty())
+		{
+			return true;
+		}
+		WorldView wv = client.getTopLevelWorldView();
+		return wv != null && wv.isInstance();
+	}
+
+	/** Your target key if the party member hit the same NPC as you see, else a separate key. */
+	private String partyTargetKey(int world, GoldenDpsUpdate.Hit hit, String sender)
+	{
+		if (world == client.getWorld())
+		{
+			// the NPC may be near you but not hit by you yet: remember where it is
+			WorldView wv = client.getTopLevelWorldView();
+			NPC npc = wv == null ? null : wv.npcs().byIndex(hit.i);
+			WorldPoint pos = npc == null ? null : npc.getWorldLocation();
+			if (pos != null && npc.getId() == hit.id)
+			{
+				matcher.seen(targetKey(world, hit.i), pos.getX(), pos.getY(), pos.getPlane());
+			}
+		}
+		return matcher.partyKey(client.getWorld(), world, hit.i, hit.x, hit.y, hit.p, sender);
+	}
+
 	private boolean isReporter(String name, long now)
 	{
 		Long last = reporters.get(name);
@@ -723,7 +770,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	static String targetKey(int world, int npcIndex)
 	{
-		return world + ":" + npcIndex;
+		return TargetMatcher.key(world, npcIndex);
 	}
 
 	private String localName()

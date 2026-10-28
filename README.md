@@ -20,6 +20,12 @@ Extra rows:
 
 Per target: damage split by NPC name, and a **Boss only** mode.
 
+### When other people count
+
+- **In a RuneLite party, or in an instance** (raids, boss rooms, Inferno...): you, your party,
+  "Others (unknown)", guessed players and their damage taken.
+- **Everywhere else** (open world): only **your** numbers. Other players' hits are ignored.
+
 ### Players without GoldenDPS
 
 - **Damage (guess, marked `~`)**: when a player near you starts an attack animation on an NPC,
@@ -76,7 +82,8 @@ when a fight ends, every 30 s during a fight, on logout / world hop and when the
 - Players without the plugin: damage is a guess and only for targets near you; no healing.
 - Healing sources are a guess from timing.
 - Each client has its own fight timer, so DPS can differ a little between members.
-- Party members must be on the same world for "Others (unknown)" to match targets.
+- A party member's hit only counts on your target when it is the same NPC (same world, NPC number
+  and place). Party members in their own instance (for example their own Vorkath) get separate targets.
 
 ## Build and run
 

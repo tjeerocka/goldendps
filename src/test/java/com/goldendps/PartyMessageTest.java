@@ -15,8 +15,8 @@ public class PartyMessageTest
 		assertTrue(u.isEmpty());
 		u.w = 302;
 		u.n = "Zezima";
-		u.h.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 47, false, true));
-		u.h.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 0, true, true));
+		u.h.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 47, false, true, new net.runelite.api.coords.WorldPoint(2272, 4065, 0)));
+		u.h.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 0, true, true, null));
 		u.food = 20;
 		u.setMemberId(99);
 		assertFalse(u.isEmpty());
@@ -33,6 +33,8 @@ public class PartyMessageTest
 		assertTrue(back.h.get(1).miss);
 		assertTrue(back.h.get(0).boss);
 		assertEquals(20, back.food);
+		assertEquals(2272, back.h.get(0).x);
+		assertEquals(4065, back.h.get(0).y);
 	}
 
 	@Test

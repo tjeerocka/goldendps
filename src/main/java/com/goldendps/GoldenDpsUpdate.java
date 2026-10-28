@@ -2,6 +2,7 @@ package com.goldendps;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.party.messages.PartyMemberMessage;
 
 /**
@@ -24,13 +25,23 @@ public class GoldenDpsUpdate extends PartyMemberMessage
 		public int a;
 		public boolean miss;
 		public boolean boss;
+		/** Where the NPC is. Instances have their own map coordinates, so this tells instances apart. */
+		public int x;
+		public int y;
+		public int p;
 
 		public Hit()
 		{
 		}
 
-		Hit(int index, int npcId, String name, int amount, boolean miss, boolean boss)
+		Hit(int index, int npcId, String name, int amount, boolean miss, boolean boss, WorldPoint pos)
 		{
+			if (pos != null)
+			{
+				this.x = pos.getX();
+				this.y = pos.getY();
+				this.p = pos.getPlane();
+			}
 			this.i = index;
 			this.id = npcId;
 			this.nm = name;
@@ -41,7 +52,7 @@ public class GoldenDpsUpdate extends PartyMemberMessage
 	}
 
 	/** Version of this message, so later versions can stay compatible. */
-	public int v = 1;
+	public int v = 2;
 	/** Sender's world. Hits only match your targets when you are on the same world. */
 	public int w;
 	/** Sender's in-game name. */
