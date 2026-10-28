@@ -296,9 +296,11 @@ public class FightTrackerTest
 		assertEquals(26, r.row("Me").overheal);
 		assertEquals(11, r.row("Me").overFood);
 		assertEquals(15, r.row("Me").overLifesteal);
-		List<FightReport.PlayerRow> over = r.sorted(MeterMode.OVERHEALING);
-		assertEquals("Me", over.get(0).name);
-		assertEquals(28.0, r.total(MeterMode.OVERHEALING), D);
+		// Me: 9 healed + 26 wasted = 35 -> 74%; group: 29 healed + 28 wasted -> 49%
+		assertEquals(100.0 * 26 / 35, r.row("Me").overhealPercent(), D);
+		assertEquals(100.0 * 2 / 22, r.row("Friend").overhealPercent(), D);
+		assertEquals(100.0 * 28 / 57, r.groupOverhealPercent(), D);
+		assertEquals(0.0, FightReport.overhealPercent(0, 0), D);
 
 		Fight copy = tracker.getCurrent().copy();
 		assertEquals(26, copy.players.get("Me").overheal());

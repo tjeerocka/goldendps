@@ -37,6 +37,12 @@ public class FightReport
 		public long overLifesteal;
 		public long damageTaken;
 
+		/** Share of this player's healing that was wasted, 0..100 (0 when nothing was healed). */
+		public double overhealPercent()
+		{
+			return FightReport.overhealPercent(healing, overheal);
+		}
+
 		/** Hits / (hits + misses), 0..100. -1 when there were no attacks (or unknown). */
 		public double accuracy()
 		{
@@ -253,8 +259,6 @@ public class FightReport
 				return row.dps;
 			case HEALING:
 				return row.healing;
-			case OVERHEALING:
-				return row.overheal;
 			case DAMAGE_TAKEN:
 				return row.damageTaken;
 			case DAMAGE:
@@ -282,6 +286,26 @@ public class FightReport
 		out.sort(Comparator.comparingDouble((PlayerRow r) -> value(r, mode)).reversed()
 			.thenComparing(r -> r.name));
 		return out;
+	}
+
+	/** Overhealing as % of all healing (effective + overhealing). */
+	public static double overhealPercent(long healing, long overheal)
+	{
+		long full = healing + overheal;
+		return full <= 0 ? 0 : 100.0 * overheal / full;
+	}
+
+	/** Overhealing of the whole group as % of all healing. */
+	public double groupOverhealPercent()
+	{
+		long heal = 0;
+		long over = 0;
+		for (PlayerRow r : rows)
+		{
+			heal += r.healing;
+			over += r.overheal;
+		}
+		return overhealPercent(heal, over);
 	}
 
 	/** Sum of the values in this mode (for the header). */

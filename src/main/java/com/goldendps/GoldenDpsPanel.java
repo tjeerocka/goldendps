@@ -319,8 +319,7 @@ class GoldenDpsPanel extends PluginPanel
 		}
 		if (row.overheal > 0)
 		{
-			long full = row.healing + row.overheal;
-			card.add(line("Overhealing", Format.amount(row.overheal) + "  (" + Format.percent(100.0 * row.overheal / full) + ")"));
+			card.add(line("Overhealing", Format.percent(row.overhealPercent()) + "  (" + Format.amount(row.overheal) + ")"));
 			if (row.overFood > 0)
 			{
 				card.add(line("  Food/potions", Format.amount(row.overFood)));

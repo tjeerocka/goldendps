@@ -74,11 +74,14 @@ blood spells go 10% above.
 Overhealing is only counted when your HP ended at the cap, so a wrong table value can't invent waste.
 Example: shark at 95/99 = 4 healing + 16 overhealing. Shark at 99/99 = 0 + 20.
 
+Shown as a % of all healing (healing + overhealing): on the Healing bars ("1,240  OH 22%"),
+in the overlay header for the whole group, and in the panel per player.
+
 Party members send their overhealing too (they need this version).
 
 ## Overlay and panel
 
-- Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Overhealing / Damage taken**,
+- Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Damage taken**,
   **Toggle Boss only**, **Toggle Fight / Session**, **Reset Session**.
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.

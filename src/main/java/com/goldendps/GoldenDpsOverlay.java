@@ -96,6 +96,10 @@ class GoldenDpsOverlay extends Overlay
 		{
 			title += " (boss)";
 		}
+		if (mode == MeterMode.HEALING && report != null && report.groupOverhealPercent() > 0)
+		{
+			title += "  OH " + Format.percent(report.groupOverhealPercent());
+		}
 		int textY = rowH - (rowH - fm.getAscent()) / 2 - 1;
 		String headerRight = report == null ? "" : Format.duration(report.getDurationMs());
 		int rightW = fm.stringWidth(headerRight);
@@ -158,6 +162,9 @@ class GoldenDpsOverlay extends Overlay
 				return Format.dps(v) + " (" + Format.percent(row.percent) + ")";
 			case DAMAGE:
 				return Format.amount(v) + " (" + Format.percent(row.percent) + ")";
+			case HEALING:
+				// healing, and how much of this player's healing was wasted
+				return Format.amount(v) + (row.overheal > 0 ? "  OH " + Format.percent(row.overhealPercent()) : "");
 			default:
 				return Format.amount(v) + " (" + Format.percent(pct) + ")";
 		}
