@@ -1,0 +1,8 @@
+.gradle/
+build/
+out/
+.idea/
+*.iml
+
+# Never commit RuneLite login data
+credentials.properties

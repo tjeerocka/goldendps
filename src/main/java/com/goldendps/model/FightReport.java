@@ -1,0 +1,311 @@
+package com.goldendps.model;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Numbers for the overlay and the panel, worked out from one {@link Fight}.
+ * Pure Java, so it is easy to unit test.
+ */
+public class FightReport
+{
+	public static final String UNKNOWN_NAME = "Others (unknown)";
+	public static final String EFFECTS_NAME = "Poison / venom / burn";
+
+	public static class PlayerRow
+	{
+		public String name;
+		public PlayerKind kind;
+		public long damage;
+		public int hits;
+		public int misses;
+		public int biggestHit;
+		public double dps;
+		/** Share of the group damage, 0..100. */
+		public double percent;
+		public long healing;
+		public long healFood;
+		public long healLifesteal;
+		public long healRegen;
+		public long healOther;
+		public long damageTaken;
+
+		/** Hits / (hits + misses), 0..100. -1 when there were no attacks (or unknown). */
+		public double accuracy()
+		{
+			int attacks = hits + misses;
+			return attacks == 0 ? -1 : 100.0 * hits / attacks;
+		}
+
+		public boolean isPlayer()
+		{
+			return kind == PlayerKind.LOCAL || kind == PlayerKind.PARTY;
+		}
+	}
+
+	public static class TargetRow
+	{
+		public String name;
+		public boolean boss;
+		public boolean died;
+		public long total;
+		/** Player name (or UNKNOWN_NAME / EFFECTS_NAME) to damage, biggest first. */
+		public Map<String, Long> byPlayer = new LinkedHashMap<>();
+	}
+
+	private final List<PlayerRow> rows = new ArrayList<>();
+	private final List<TargetRow> targets = new ArrayList<>();
+	private long totalDamage;
+	private long durationMs;
+	private String title;
+
+	public static FightReport of(Fight fight, boolean bossOnly, boolean includeRegen, long nowMs)
+	{
+		FightReport r = new FightReport();
+		r.durationMs = fight.durationMs(nowMs);
+		r.title = fight.title();
+		double seconds = r.durationMs / 1000.0;
+
+		Map<String, Long> knownByTarget = new LinkedHashMap<>();
+		for (PlayerStats p : fight.players.values())
+		{
+			PlayerRow row = new PlayerRow();
+			row.name = p.name;
+			row.kind = p.kind;
+			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
+			{
+				if (!counts(fight, e.getKey(), bossOnly))
+				{
+					continue;
+				}
+				TargetDamage d = e.getValue();
+				row.damage += d.damage;
+				row.hits += d.hits;
+				row.misses += d.misses;
+				row.biggestHit = Math.max(row.biggestHit, d.biggestHit);
+				knownByTarget.merge(e.getKey(), d.damage, Long::sum);
+			}
+			row.healFood = p.healFood;
+			row.healLifesteal = p.healLifesteal;
+			row.healRegen = p.healRegen;
+			row.healOther = p.healOther;
+			row.healing = p.healing(includeRegen);
+			row.damageTaken = p.damageTaken;
+			r.rows.add(row);
+		}
+
+		long unknown = 0;
+		long effects = 0;
+		for (TargetStats t : fight.targets.values())
+		{
+			if (!t.engaged || !counts(fight, t.key, bossOnly))
+			{
+				continue;
+			}
+			long known = knownByTarget.getOrDefault(t.key, 0L);
+			unknown += Math.max(0, t.seenDamage - known);
+			effects += t.effectDamage;
+		}
+		if (unknown > 0)
+		{
+			r.rows.add(pseudoRow(UNKNOWN_NAME, PlayerKind.UNKNOWN, unknown));
+		}
+		if (effects > 0)
+		{
+			r.rows.add(pseudoRow(EFFECTS_NAME, PlayerKind.EFFECTS, effects));
+		}
+
+		for (PlayerRow row : r.rows)
+		{
+			r.totalDamage += row.damage;
+		}
+		for (PlayerRow row : r.rows)
+		{
+			row.dps = row.damage / seconds;
+			row.percent = r.totalDamage == 0 ? 0 : 100.0 * row.damage / r.totalDamage;
+		}
+
+		r.buildTargets(fight, bossOnly);
+		return r;
+	}
+
+	private static PlayerRow pseudoRow(String name, PlayerKind kind, long damage)
+	{
+		PlayerRow row = new PlayerRow();
+		row.name = name;
+		row.kind = kind;
+		row.damage = damage;
+		return row;
+	}
+
+	private static boolean counts(Fight fight, String targetKey, boolean bossOnly)
+	{
+		if (!bossOnly)
+		{
+			return true;
+		}
+		TargetStats t = fight.targets.get(targetKey);
+		return t != null && t.boss;
+	}
+
+	private void buildTargets(Fight fight, boolean bossOnly)
+	{
+		Map<String, TargetRow> byName = new LinkedHashMap<>();
+		Map<String, Long> knownByTarget = new LinkedHashMap<>();
+		for (PlayerStats p : fight.players.values())
+		{
+			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
+			{
+				TargetStats t = fight.targets.get(e.getKey());
+				if (t == null || !counts(fight, t.key, bossOnly) || e.getValue().damage == 0)
+				{
+					continue;
+				}
+				TargetRow row = targetRow(byName, t);
+				row.byPlayer.merge(p.name, e.getValue().damage, Long::sum);
+				row.total += e.getValue().damage;
+				knownByTarget.merge(t.key, e.getValue().damage, Long::sum);
+			}
+		}
+		for (TargetStats t : fight.targets.values())
+		{
+			if (!t.engaged || !counts(fight, t.key, bossOnly))
+			{
+				continue;
+			}
+			long unknown = Math.max(0, t.seenDamage - knownByTarget.getOrDefault(t.key, 0L));
+			if (unknown > 0 || t.effectDamage > 0)
+			{
+				TargetRow row = targetRow(byName, t);
+				if (unknown > 0)
+				{
+					row.byPlayer.merge(UNKNOWN_NAME, unknown, Long::sum);
+					row.total += unknown;
+				}
+				if (t.effectDamage > 0)
+				{
+					row.byPlayer.merge(EFFECTS_NAME, t.effectDamage, Long::sum);
+					row.total += t.effectDamage;
+				}
+			}
+		}
+		for (TargetRow row : byName.values())
+		{
+			Map<String, Long> sorted = new LinkedHashMap<>();
+			row.byPlayer.entrySet().stream()
+				.sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+				.forEach(e -> sorted.put(e.getKey(), e.getValue()));
+			row.byPlayer = sorted;
+			targets.add(row);
+		}
+		targets.sort(Comparator.comparingLong((TargetRow t) -> t.total).reversed());
+	}
+
+	private static TargetRow targetRow(Map<String, TargetRow> byName, TargetStats t)
+	{
+		String name = t.name == null ? "Unknown" : t.name;
+		TargetRow row = byName.computeIfAbsent(name, n ->
+		{
+			TargetRow tr = new TargetRow();
+			tr.name = n;
+			return tr;
+		});
+		row.boss |= t.boss;
+		row.died |= t.died;
+		return row;
+	}
+
+	/** The value a bar shows in this mode. */
+	public static double value(PlayerRow row, MeterMode mode)
+	{
+		switch (mode)
+		{
+			case DPS:
+				return row.dps;
+			case HEALING:
+				return row.healing;
+			case DAMAGE_TAKEN:
+				return row.damageTaken;
+			case DAMAGE:
+			default:
+				return row.damage;
+		}
+	}
+
+	/** Rows for a bar view, biggest first. Rows with 0 are left out. */
+	public List<PlayerRow> sorted(MeterMode mode)
+	{
+		List<PlayerRow> out = new ArrayList<>();
+		for (PlayerRow row : rows)
+		{
+			boolean damageMode = mode == MeterMode.DAMAGE || mode == MeterMode.DPS;
+			if (!damageMode && !row.isPlayer())
+			{
+				continue;
+			}
+			if (value(row, mode) > 0)
+			{
+				out.add(row);
+			}
+		}
+		out.sort(Comparator.comparingDouble((PlayerRow r) -> value(r, mode)).reversed()
+			.thenComparing(r -> r.name));
+		return out;
+	}
+
+	/** Sum of the values in this mode (for the header). */
+	public double total(MeterMode mode)
+	{
+		double sum = 0;
+		for (PlayerRow row : sorted(mode))
+		{
+			sum += value(row, mode);
+		}
+		return sum;
+	}
+
+	public List<PlayerRow> getRows()
+	{
+		return rows;
+	}
+
+	public PlayerRow row(String name)
+	{
+		for (PlayerRow r : rows)
+		{
+			if (r.name.equals(name))
+			{
+				return r;
+			}
+		}
+		return null;
+	}
+
+	public List<TargetRow> getTargets()
+	{
+		return targets;
+	}
+
+	public long getTotalDamage()
+	{
+		return totalDamage;
+	}
+
+	public double getGroupDps()
+	{
+		return totalDamage / (durationMs / 1000.0);
+	}
+
+	public long getDurationMs()
+	{
+		return durationMs;
+	}
+
+	public String getTitle()
+	{
+		return title;
+	}
+}

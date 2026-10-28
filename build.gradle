@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'https://repo.runelite.net'
+        content {
+            includeGroupByRegex("net\\.runelite.*")
+        }
+    }
+    mavenCentral()
+}
+
+def runeLiteVersion = 'latest.release'
+
+dependencies {
+    compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
+    testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
+}
+
+group = 'com.goldendps'
+version = '1.0-SNAPSHOT'
+
+// RuneLite needs -ea (assertions) when testing plugins.
+// This also covers the green run arrow in IntelliJ when it runs through Gradle.
+tasks.withType(JavaExec).configureEach {
+    enableAssertions = true
+}
+
+// "gradlew run" starts RuneLite with the plugin
+tasks.register('run', JavaExec) {
+    group = 'application'
+    description = 'Start RuneLite with the GoldenDPS plugin'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.goldendps.GoldenDpsPluginTest'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(11)
+}
