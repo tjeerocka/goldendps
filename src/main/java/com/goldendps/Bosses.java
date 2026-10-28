@@ -1,0 +1,133 @@
+package com.goldendps;
+
+import com.google.common.collect.ImmutableSet;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import net.runelite.api.gameval.NpcID;
+
+/**
+ * Which NPCs are bosses. The id list is the same as RuneLite's own DPS Counter plugin
+ * (BSD-2-Clause, Copyright (c) 2020 Adam / RuneLite). Newer bosses are matched by name,
+ * and you can add more names in the plugin settings.
+ */
+final class Bosses
+{
+	private static final Set<Integer> BOSS_IDS = ImmutableSet.of(
+		NpcID.ABYSSALSIRE_SIRE_STASIS_SLEEPING, NpcID.ABYSSALSIRE_SIRE_STASIS_AWAKE, NpcID.ABYSSALSIRE_SIRE_STASIS_STUNNED, NpcID.ABYSSALSIRE_SIRE_PUPPET, NpcID.ABYSSALSIRE_SIRE_WANDERING, NpcID.ABYSSALSIRE_SIRE_PANICKING, NpcID.ABYSSALSIRE_SIRE_APOCALYPSE,
+		NpcID.HYDRABOSS, NpcID.HYDRABOSS_P1_TRANSITION, NpcID.HYDRABOSS_P2_TRANSITION, NpcID.HYDRABOSS_P3_TRANSITION, NpcID.HYDRABOSS_4, NpcID.HYDRABOSS_3, NpcID.HYDRABOSS_2, NpcID.HYDRABOSS_FINALDEATH,
+		NpcID.BARROWS_AHRIM, NpcID.BARROWS_DHAROK, NpcID.BARROWS_GUTHAN, NpcID.BARROWS_KARIL, NpcID.BARROWS_TORAG, NpcID.BARROWS_VERAC,
+		NpcID.ARAXXOR, NpcID.ARAXXOR_DEAD,
+		NpcID.GB_MOSSGIANT,
+		NpcID.CLANCUP_CALLISTO, NpcID.CALLISTO,
+		NpcID.CERBERUS_ATTACKING, NpcID.CERBERUS_SITTING, NpcID.CERBERUS_RESETTING,
+		NpcID.CHAOSELEMENTAL, NpcID.CLANCUP_CHAOSELEMENTAL,
+		NpcID.CHAOS_FANATIC,
+		NpcID.GODWARS_SARADOMIN_AVATAR, NpcID.CLANCUP_GODWARS_SARADOMIN_AVATAR,
+		NpcID.CORP_BEAST,
+		NpcID.CRAZY_ARCHAEOLOGIST,
+		NpcID.CRYSTAL_HUNLLEF_MELEE, NpcID.CRYSTAL_HUNLLEF_RANGED, NpcID.CRYSTAL_HUNLLEF_MAGIC, NpcID.CRYSTAL_HUNLLEF_DEATH,
+		NpcID.CRYSTAL_HUNLLEF_MELEE_HM, NpcID.CRYSTAL_HUNLLEF_RANGED_HM, NpcID.CRYSTAL_HUNLLEF_MAGIC_HM, NpcID.CRYSTAL_HUNLLEF_DEATH_HM,
+		NpcID.DAGCAVE_RANGED_BOSS, NpcID.DAGCAVE_MAGIC_BOSS, NpcID.DAGCAVE_MELEE_BOSS, NpcID.CLANCUP_DAGCAVE_RANGED_BOSS, NpcID.CLANCUP_DAGCAVE_MAGIC_BOSS, NpcID.CLANCUP_DAGCAVE_MELEE_BOSS,
+		NpcID.GARGBOSS_DUSK_SPAWN, NpcID.GARGBOSS_DAWN_SPAWN, NpcID.GARGBOSS_DUSK_PHASE1_DEFENSIVE, NpcID.GARGBOSS_DAWN_PHASE1, NpcID.GARGBOSS_DAWN_PHASE1_TRANSITION, NpcID.GARGBOSS_DUSK_PHASE1_TRANSITION, NpcID.GARGBOSS_DUSK_PHASE1_FLYTRANSITION,
+		NpcID.GODWARS_BANDOS_AVATAR, NpcID.CLANCUP_GODWARS_BANDOS_AVATAR,
+		NpcID.MOLE_GIANT, NpcID.CLANCUP_MOLE_GIANT,
+		NpcID.HESPORI,
+		NpcID.POH_MOUNTED_KQ, NpcID.KALPHITE_QUEEN, NpcID.KALPHITE_FLYINGQUEEN, NpcID.SWAN_KALPHITE_1, NpcID.SWAN_KALPHITE_2, NpcID.CLANCUP_KALPHITE_QUEEN, NpcID.CLANCUP_KALPHITE_FLYINGQUEEN,
+		NpcID.KING_DRAGON, NpcID.TWOCATS_KBD_CUTSCENE, NpcID.CLANCUP_KING_DRAGON,
+		NpcID.SLAYER_KRAKEN_BOSS, NpcID.KRAKEN_PET, NpcID.POH_KRAKEN_PET,
+		NpcID.GODWARS_ARMADYL_AVATAR, NpcID.CLANCUP_GODWARS_ARMADYL_AVATAR,
+		NpcID.GODWARS_ZAMORAK_AVATAR, NpcID.CLANCUP_GODWARS_ZAMORAK_AVATAR,
+		NpcID.TRAIL_MIMIC_NONCOMBAT, NpcID.TRAIL_MIMIC_COMBAT,
+		NpcID.NEX, NpcID.NEX_SPAWNING, NpcID.NEX_SOULSPLIT, NpcID.NEX_DEFLECT, NpcID.NEX_DYING,
+		NpcID.NIGHTMARE_DEAD, NpcID.NIGHTMARE_PHASE_02, NpcID.NIGHTMARE_PHASE_03, NpcID.NIGHTMARE_WEAK_PHASE_01, NpcID.NIGHTMARE_WEAK_PHASE_02, NpcID.NIGHTMARE_WEAK_PHASE_03, NpcID.NIGHTMARE_BLAST, NpcID.NIGHTMARE_INITIAL, NpcID.NIGHTMARE_DYING,
+		NpcID.HILLGIANT_BOSS,
+		NpcID.SARACHNIS,
+		NpcID.SCORPIA,
+		NpcID.RAT_BOSS_NORMAL, NpcID.RAT_BOSS_INSTANCE,
+		NpcID.CATA_BOSS,
+		NpcID.SMOKE_DEVIL_BOSS,
+		NpcID.INFERNO_TZKALZUK_PLACEHOLDER,
+		NpcID.TZHAAR_FIGHTCAVE_SWARM_BOSS, NpcID.CLANCUP_TZHAAR_FIGHTCAVE_SWARM_BOSS,
+		NpcID.CLANCUP_VENENATIS, NpcID.VENENATIS,
+		NpcID.VETION, NpcID.VETION_2,
+		NpcID.POH_MOUNTED_VORKATH, NpcID.VORKATH_SLEEPING_NOOP, NpcID.VORKATH_SLEEPING, NpcID.VORKATH_QUEST, NpcID.VORKATH,
+		NpcID.ZALCANO, NpcID.ZALCANO_WEAK,
+		NpcID.SNAKEBOSS_BOSS_RANGED, NpcID.SNAKEBOSS_BOSS_MELEE, NpcID.SNAKEBOSS_BOSS_MAGIC,
+		NpcID.YAMA,
+
+		// ToB
+		NpcID.TOB_MAIDEN_100, NpcID.TOB_MAIDEN_70, NpcID.TOB_MAIDEN_50, NpcID.TOB_MAIDEN_30, NpcID.TOB_MAIDEN_DYING_A, NpcID.TOB_MAIDEN_DYING_B,
+		NpcID.TOB_BLOAT,
+		NpcID.NYLOCAS_BOSS_SPAWNING, NpcID.NYLOCAS_BOSS_MELEE, NpcID.NYLOCAS_BOSS_MAGIC, NpcID.NYLOCAS_BOSS_RANGED,
+		NpcID.TOB_SOTETSEG_NONCOMBAT, NpcID.TOB_SOTETSEG_COMBAT,
+		NpcID.TOB_XARPUS_COMBAT, NpcID.XARPUS_DEATH,
+		NpcID.VERZIK_PHASE1,
+		NpcID.VERZIK_PHASE2,
+		NpcID.VERZIK_PHASE3,
+
+		// CoX
+		NpcID.RAIDS_TEKTON_WAITING, NpcID.RAIDS_TEKTON_WALKING_STANDARD, NpcID.RAIDS_TEKTON_FIGHTING_STANDARD, NpcID.RAIDS_TEKTON_WALKING_ENRAGED, NpcID.RAIDS_TEKTON_FIGHTING_ENRAGED, NpcID.RAIDS_TEKTON_HAMMERING,
+		NpcID.RAIDS_VESPULA_FLYING, NpcID.RAIDS_VESPULA_ENRAGED, NpcID.RAIDS_VESPULA_WALKING, NpcID.RAIDS_VESPULA_PORTAL,
+		NpcID.RAIDS_VANGUARD_DORMANT, NpcID.RAIDS_VANGUARD_WALKING, NpcID.RAIDS_VANGUARD_MELEE, NpcID.RAIDS_VANGUARD_RANGED, NpcID.RAIDS_VANGUARD_MAGIC,
+		NpcID.OLM_HEAD_SPAWNING, NpcID.OLM_HAND_LEFT_SPAWNING, NpcID.OLM_HAND_RIGHT, NpcID.OLM_HEAD, NpcID.OLM_HAND_LEFT,
+		NpcID.RAIDS_TIGHTROPE_RANGER, NpcID.RAIDS_TIGHTROPE_MAGE,
+		NpcID.RAIDS_DOGODILE_SUBMERGED, NpcID.RAIDS_DOGODILE_JUNIOR, NpcID.RAIDS_DOGODILE,
+		NpcID.RAIDS_VASANISTIRIO_WALKING, NpcID.RAIDS_VASANISTIRIO_HEALING,
+		NpcID.RAIDS_STONEGUARDIANS_LEFT, NpcID.RAIDS_STONEGUARDIANS_RIGHT, NpcID.RAIDS_STONEGUARDIANS_LEFT_DEAD, NpcID.RAIDS_STONEGUARDIANS_RIGHT_DEAD,
+		NpcID.RAIDS_LIZARDSHAMAN_A, NpcID.RAIDS_LIZARDSHAMAN_B,
+		NpcID.RAIDS_ICEDEMON_NONCOMBAT, NpcID.RAIDS_ICEDEMON_COMBAT,
+		NpcID.RAIDS_SKELETONMYSTIC_A, NpcID.RAIDS_SKELETONMYSTIC_B, NpcID.RAIDS_SKELETONMYSTIC_C
+	);
+
+	/** Bosses matched by name (newer bosses, or bosses with many ids). Lower case. */
+	private static final Set<String> BOSS_NAMES = ImmutableSet.of(
+		"duke sucellus", "the leviathan", "the whisperer", "vardorvis", "phantom muspah",
+		"scurrius", "sol heredit", "the hueycoatl", "amoxliatl", "branda the fire queen",
+		"eldric the ice king", "doom of mokhaiotl", "zebak", "kephri", "ba-ba", "akkha",
+		"tumeken's warden", "elidinis' warden", "artio", "spindel", "calvar'ion",
+		"tzkal-zuk", "tztok-jad", "skotizo", "obor", "bryophyta", "kree'arra",
+		"general graardor", "commander zilyana", "k'ril tsutsaroth", "zulrah",
+		"the nightmare", "phosani's nightmare", "corrupted hunllef", "crystalline hunllef",
+		"great olm", "verzik vitur", "the maiden of sugadinti", "pestilent bloat",
+		"nylocas vasilias", "sotetseg", "xarpus", "araxxor", "yama", "shellbane gryphon",
+		"abyssal sire", "alchemical hydra", "cerberus", "kraken",
+		"thermonuclear smoke devil", "grotesque guardians", "dusk", "dawn", "vorkath",
+		"sarachnis", "corporeal beast", "nex", "kalphite queen", "king black dragon",
+		"giant mole", "chaos elemental", "chaos fanatic", "crazy archaeologist",
+		"scorpia", "venenatis", "vet'ion", "callisto", "zalcano"
+	);
+
+	private final Set<String> extraNames = new HashSet<>();
+
+	void setExtraNames(String csv)
+	{
+		extraNames.clear();
+		if (csv == null)
+		{
+			return;
+		}
+		for (String s : csv.split(","))
+		{
+			String n = s.trim().toLowerCase(Locale.ROOT);
+			if (!n.isEmpty())
+			{
+				extraNames.add(n);
+			}
+		}
+	}
+
+	boolean isBoss(int npcId, String name)
+	{
+		if (BOSS_IDS.contains(npcId))
+		{
+			return true;
+		}
+		if (name == null)
+		{
+			return false;
+		}
+		String n = name.toLowerCase(Locale.ROOT);
+		return BOSS_NAMES.contains(n) || extraNames.contains(n);
+	}
+}

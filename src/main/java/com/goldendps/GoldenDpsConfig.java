@@ -1,0 +1,206 @@
+package com.goldendps;
+
+import com.goldendps.model.MeterMode;
+import java.awt.Color;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
+import net.runelite.client.config.Units;
+
+@ConfigGroup(GoldenDpsConfig.GROUP)
+public interface GoldenDpsConfig extends Config
+{
+	String GROUP = "goldendps";
+	String MODE_KEY = "overlayMode";
+	String BOSS_ONLY_KEY = "bossOnly";
+	String SCOPE_KEY = "overlayScope";
+
+	enum Scope
+	{
+		FIGHT("Current / last fight"),
+		SESSION("Session total");
+
+		private final String label;
+
+		Scope(String label)
+		{
+			this.label = label;
+		}
+
+		@Override
+		public String toString()
+		{
+			return label;
+		}
+	}
+
+	@ConfigSection(name = "Fights", description = "When a fight starts and ends", position = 0)
+	String fightSection = "fights";
+
+	@ConfigSection(name = "Overlay", description = "The bars on the game screen", position = 1)
+	String overlaySection = "overlay";
+
+	@ConfigItem(
+		keyName = "idleSeconds",
+		name = "End fight after",
+		description = "The fight ends when nobody hit anything for this long (or when the boss dies)",
+		position = 0,
+		section = fightSection
+	)
+	@Range(min = 3, max = 120)
+	@Units(Units.SECONDS)
+	default int idleSeconds()
+	{
+		return 10;
+	}
+
+	@ConfigItem(
+		keyName = BOSS_ONLY_KEY,
+		name = "Boss only",
+		description = "Only count damage on bosses (non-boss targets are hidden)",
+		position = 1,
+		section = fightSection
+	)
+	default boolean bossOnly()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "extraBosses",
+		name = "Extra bosses",
+		description = "More NPC names to treat as a boss, comma separated (for example: Scurrius, Duke Sucellus)",
+		position = 2,
+		section = fightSection
+	)
+	default String extraBosses()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "countRegen",
+		name = "Count natural regen",
+		description = "Count small +1/+2 HP regen as healing",
+		position = 3,
+		section = fightSection
+	)
+	default boolean countRegen()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "maxHistory",
+		name = "Fights to keep",
+		description = "How many past fights are saved",
+		position = 4,
+		section = fightSection
+	)
+	@Range(min = 5, max = 500)
+	default int maxHistory()
+	{
+		return 50;
+	}
+
+	@ConfigItem(
+		keyName = "shareWithParty",
+		name = "Share with party",
+		description = "Send your numbers to your RuneLite party (they need GoldenDPS too)",
+		position = 5,
+		section = fightSection
+	)
+	default boolean shareWithParty()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showOverlay",
+		name = "Show overlay",
+		description = "Show the damage bars on the game screen",
+		position = 0,
+		section = overlaySection
+	)
+	default boolean showOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = MODE_KEY,
+		name = "Show",
+		description = "What the bars show. You can also right-click the overlay.",
+		position = 1,
+		section = overlaySection
+	)
+	default MeterMode overlayMode()
+	{
+		return MeterMode.DAMAGE;
+	}
+
+	@ConfigItem(
+		keyName = SCOPE_KEY,
+		name = "Data",
+		description = "Current (or last) fight, or the total of this session",
+		position = 2,
+		section = overlaySection
+	)
+	default Scope overlayScope()
+	{
+		return Scope.FIGHT;
+	}
+
+	@ConfigItem(
+		keyName = "maxRows",
+		name = "Max bars",
+		description = "How many bars to show",
+		position = 3,
+		section = overlaySection
+	)
+	@Range(min = 1, max = 20)
+	default int maxRows()
+	{
+		return 8;
+	}
+
+	@ConfigItem(
+		keyName = "overlayWidth",
+		name = "Width",
+		description = "Overlay width in pixels",
+		position = 4,
+		section = overlaySection
+	)
+	@Range(min = 140, max = 400)
+	@Units(Units.PIXELS)
+	default int overlayWidth()
+	{
+		return 220;
+	}
+
+	@ConfigItem(
+		keyName = "hideWhenEmpty",
+		name = "Hide when empty",
+		description = "Hide the overlay when there is nothing to show",
+		position = 5,
+		section = overlaySection
+	)
+	default boolean hideWhenEmpty()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "myColor",
+		name = "My bar color",
+		description = "Color of your own bar",
+		position = 6,
+		section = overlaySection
+	)
+	default Color myColor()
+	{
+		return new Color(255, 196, 0);
+	}
+}
