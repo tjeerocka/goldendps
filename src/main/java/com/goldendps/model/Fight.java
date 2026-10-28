@@ -66,6 +66,11 @@ public class Fight
 		{
 			p.kind = PlayerKind.LOCAL;
 		}
+		else if (kind == PlayerKind.PARTY && p.kind == PlayerKind.ESTIMATE)
+		{
+			// they run GoldenDPS after all: their own reports win
+			p.kind = PlayerKind.PARTY;
+		}
 		return p;
 	}
 
@@ -115,7 +120,7 @@ public class Fight
 		Map<String, Boolean> bossByName = new HashMap<>();
 		for (PlayerStats p : players.values())
 		{
-			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
+			for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
 			{
 				TargetStats t = targets.get(e.getKey());
 				String n = t == null || t.name == null ? "Unknown" : t.name;
@@ -183,6 +188,7 @@ public class Fight
 			}
 			PlayerStats remapped = new PlayerStats(p.name, p.kind);
 			remapped.damageTaken = p.damageTaken;
+			remapped.seenTaken = p.seenTaken;
 			remapped.healFood = p.healFood;
 			remapped.healLifesteal = p.healLifesteal;
 			remapped.healRegen = p.healRegen;
@@ -191,6 +197,11 @@ public class Fight
 			{
 				String k = keyMap.getOrDefault(e.getKey(), e.getKey());
 				remapped.byTarget.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
+			}
+			for (Map.Entry<String, TargetDamage> e : p.estByTarget.entrySet())
+			{
+				String k = keyMap.getOrDefault(e.getKey(), e.getKey());
+				remapped.estByTarget.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
 			}
 			mine.merge(remapped);
 		}

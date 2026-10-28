@@ -11,6 +11,10 @@ public class PlayerStats
 	/** Damage per target key. */
 	public Map<String, TargetDamage> byTarget = new LinkedHashMap<>();
 	public long damageTaken;
+	/** Guessed damage per target (only used for ESTIMATE players). */
+	public Map<String, TargetDamage> estByTarget = new LinkedHashMap<>();
+	/** Hitsplats you saw on this player (only used for ESTIMATE players). */
+	public long seenTaken;
 	public long healFood;
 	public long healLifesteal;
 	public long healRegen;
@@ -29,6 +33,23 @@ public class PlayerStats
 	public void addHit(String targetKey, int amount, boolean miss)
 	{
 		byTarget.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
+	}
+
+	public void addEstimate(String targetKey, int amount, boolean miss)
+	{
+		estByTarget.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
+	}
+
+	/** Damage per target that counts for this player: own reports, or the guess. */
+	public Map<String, TargetDamage> damageByTarget()
+	{
+		return kind == PlayerKind.ESTIMATE ? estByTarget : byTarget;
+	}
+
+	/** Damage taken that counts: own reports, or what we saw. */
+	public long takenTotal()
+	{
+		return kind == PlayerKind.ESTIMATE ? seenTaken : damageTaken;
 	}
 
 	public void addHeal(HealType type, int amount)
@@ -65,15 +86,20 @@ public class PlayerStats
 
 	public void merge(PlayerStats o)
 	{
-		if (kind == PlayerKind.PARTY && o.kind == PlayerKind.LOCAL)
+		if (o.kind == PlayerKind.LOCAL || (o.kind == PlayerKind.PARTY && kind == PlayerKind.ESTIMATE))
 		{
-			kind = PlayerKind.LOCAL;
+			kind = o.kind;
 		}
 		for (Map.Entry<String, TargetDamage> e : o.byTarget.entrySet())
 		{
 			byTarget.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
 		}
+		for (Map.Entry<String, TargetDamage> e : o.estByTarget.entrySet())
+		{
+			estByTarget.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
+		}
 		damageTaken += o.damageTaken;
+		seenTaken += o.seenTaken;
 		healFood += o.healFood;
 		healLifesteal += o.healLifesteal;
 		healRegen += o.healRegen;

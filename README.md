@@ -20,6 +20,16 @@ Extra rows:
 
 Per target: damage split by NPC name, and a **Boss only** mode.
 
+### Players without GoldenDPS
+
+- **Damage (guess, marked `~`)**: when a player near you starts an attack animation on an NPC,
+  the next "other" hitsplat on that NPC (within 6 ticks) is given to them. Oldest attack first.
+  Good with 2–3 players; can be wrong when many hit at the same time. Hits that match nobody
+  stay in "Others (unknown)". Setting: **Guess other players**.
+- **Damage taken**: the hitsplats you see on them. Setting: **Damage taken of others**.
+- **Healing**: not possible (you can't see their HP numbers).
+- When a player turns out to run GoldenDPS (their party data arrives), their own numbers replace the guess.
+
 ## How it works
 
 The game only tells your client which hitsplats are **yours** (`Hitsplat.isMine()`).
@@ -63,7 +73,7 @@ when a fight ends, every 30 s during a fight, on logout / world hop and when the
 
 ## Limits
 
-- Players without the plugin are one row ("Others (unknown)"), and only for targets near you.
+- Players without the plugin: damage is a guess and only for targets near you; no healing.
 - Healing sources are a guess from timing.
 - Each client has its own fight timer, so DPS can differ a little between members.
 - Party members must be on the same world for "Others (unknown)" to match targets.

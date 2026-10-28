@@ -118,6 +118,30 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "estimateOthers",
+		name = "Guess other players",
+		description = "Guess who did the hits of players without GoldenDPS (from their attack animation and timing). Marked with ~",
+		position = 6,
+		section = fightSection
+	)
+	default boolean estimateOthers()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "nearbyDamageTaken",
+		name = "Damage taken of others",
+		description = "Count the hitsplats you see on players without GoldenDPS as their damage taken",
+		position = 7,
+		section = fightSection
+	)
+	default boolean nearbyDamageTaken()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showOverlay",
 		name = "Show overlay",
 		description = "Show the damage bars on the game screen",

@@ -341,6 +341,90 @@ public class FightTrackerTest
 	}
 
 	@Test
+	public void guessedPlayerTakesDamageOutOfUnknown()
+	{
+		myHit(0, BOSS, true, 30);
+		tracker.seenHit(600, BOSS, 1, "Vorkath", true, 40);
+		tracker.estimateHit(600, "Bob", BOSS, 40, false);
+		tracker.seenHit(1200, BOSS, 1, "Vorkath", true, 0);
+		tracker.estimateHit(1200, "Bob", BOSS, 0, true);
+		tracker.seenHit(1800, BOSS, 1, "Vorkath", true, 25); // nobody fits
+
+		FightReport r = report(tracker.getCurrent(), 6000);
+		FightReport.PlayerRow bob = r.row("Bob");
+		assertEquals(PlayerKind.ESTIMATE, bob.kind);
+		assertTrue(bob.isEstimate());
+		assertEquals(40, bob.damage);
+		assertEquals(1, bob.hits);
+		assertEquals(1, bob.misses);
+		assertEquals(25, r.row(FightReport.UNKNOWN_NAME).damage);
+		assertEquals(95, r.getTotalDamage());
+		assertEquals(Long.valueOf(40), r.getTargets().get(0).byPlayer.get("Bob"));
+	}
+
+	@Test
+	public void seenDamageTakenOnOtherPlayers()
+	{
+		tracker.seenDamageTaken(0, "Bob", 10); // no fight yet
+		myHit(0, RAT, false, 5);
+		tracker.seenDamageTaken(600, "Bob", 12);
+		tracker.seenDamageTaken(600, "Bob", 8);
+
+		FightReport r = report(tracker.getCurrent(), 6000);
+		assertEquals(20, r.row("Bob").damageTaken);
+		assertEquals("Bob", r.sorted(MeterMode.DAMAGE_TAKEN).get(0).name);
+		assertTrue("no healing data for guessed players", r.sorted(MeterMode.HEALING).isEmpty());
+	}
+
+	@Test
+	public void partyReportsWinOverGuesses()
+	{
+		myHit(0, BOSS, true, 30);
+		tracker.seenHit(600, BOSS, 1, "Vorkath", true, 40);
+		tracker.estimateHit(600, "Friend", BOSS, 40, false);
+		tracker.seenDamageTaken(600, "Friend", 9);
+		// then Friend's own report arrives: they run GoldenDPS
+		partyHit(900, "Friend", BOSS, true, 40, false);
+		tracker.damageTaken(900, "Friend", PlayerKind.PARTY, 9);
+		// later guesses for Friend are ignored
+		tracker.estimateHit(1200, "Friend", BOSS, 99, false);
+
+		FightReport r = report(tracker.getCurrent(), 6000);
+		FightReport.PlayerRow f = r.row("Friend");
+		assertEquals(PlayerKind.PARTY, f.kind);
+		assertEquals(40, f.damage);
+		assertEquals(9, f.damageTaken);
+		assertEquals(70, r.getTotalDamage());
+		assertNull(r.row(FightReport.UNKNOWN_NAME));
+	}
+
+	@Test
+	public void guessesOnTargetsWeDidNotFightDoNotCount()
+	{
+		myHit(0, RAT, false, 5);
+		tracker.seenHit(600, BOSS, 1, "Vorkath", true, 40);
+		tracker.estimateHit(600, "Bob", BOSS, 40, false);
+
+		FightReport r = report(tracker.getCurrent(), 6000);
+		assertEquals(0, r.row("Bob").damage);
+		assertEquals(5, r.getTotalDamage());
+	}
+
+	@Test
+	public void guessesSurviveSessionMerge()
+	{
+		myHit(0, BOSS, true, 30);
+		tracker.seenHit(600, BOSS, 1, "Vorkath", true, 40);
+		tracker.estimateHit(600, "Bob", BOSS, 40, false);
+		tracker.seenDamageTaken(600, "Bob", 7);
+		tracker.npcDied(1200, BOSS, true);
+
+		FightReport r = report(tracker.getSessionTotal(5000), 5000);
+		assertEquals(40, r.row("Bob").damage);
+		assertEquals(7, r.row("Bob").damageTaken);
+	}
+
+	@Test
 	public void copyIsDeep()
 	{
 		myHit(0, RAT, false, 5);

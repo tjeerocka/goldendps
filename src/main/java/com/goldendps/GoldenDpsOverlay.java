@@ -125,7 +125,7 @@ class GoldenDpsOverlay extends Overlay
 			String value = valueText(row, mode, v, total);
 			int valueW = fm.stringWidth(value);
 			int ty = y + textY - 1;
-			String left = (i + 1) + ". " + row.name;
+			String left = (i + 1) + ". " + (row.isEstimate() ? "~" : "") + row.name;
 			drawText(g, fit(fm, left, width - valueW - 4 * PAD), PAD + 2, ty, Color.WHITE);
 			drawText(g, value, width - PAD - 2 - valueW, ty, Color.WHITE);
 		}

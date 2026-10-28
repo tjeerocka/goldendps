@@ -275,14 +275,15 @@ class GoldenDpsPanel extends PluginPanel
 		JPanel card = section();
 		Color nameColor = row.kind == PlayerKind.LOCAL ? GOLD
 			: row.kind == PlayerKind.PARTY ? Color.WHITE : ColorScheme.LIGHT_GRAY_COLOR;
-		String name = row.name + (row.kind == PlayerKind.LOCAL ? " (you)" : "");
+		String name = (row.isEstimate() ? "~" : "") + row.name
+			+ (row.kind == PlayerKind.LOCAL ? " (you)" : row.isEstimate() ? " (guess)" : "");
 		card.add(bold(name, nameColor));
 		card.add(line("Damage", Format.amount(row.damage) + "  (" + Format.percent(row.percent) + ")"));
 		card.add(line("DPS", Format.dps(row.dps)));
 		if (!row.isPlayer())
 		{
 			String why = row.kind == PlayerKind.UNKNOWN
-				? "Players without GoldenDPS"
+				? "Hits nobody could be matched to"
 				: "Owner not known";
 			card.add(line("", why));
 			return card;
@@ -290,6 +291,12 @@ class GoldenDpsPanel extends PluginPanel
 		card.add(line("Biggest hit", String.valueOf(row.biggestHit)));
 		double acc = row.accuracy();
 		card.add(line("Accuracy", acc < 0 ? "-" : String.format("%.0f%% (%d/%d)", acc, row.hits, row.hits + row.misses)));
+		if (row.isEstimate())
+		{
+			card.add(line("", "No GoldenDPS: damage is a guess"));
+			card.add(line("Damage taken", Format.amount(row.damageTaken)));
+			return card;
+		}
 		card.add(line("Healing", Format.amount(row.healing)));
 		if (row.healing > 0 || row.healRegen > 0)
 		{

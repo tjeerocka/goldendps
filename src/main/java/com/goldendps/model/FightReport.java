@@ -40,9 +40,16 @@ public class FightReport
 			return attacks == 0 ? -1 : 100.0 * hits / attacks;
 		}
 
+		/** A real player row (you, party, or a guessed player). */
 		public boolean isPlayer()
 		{
-			return kind == PlayerKind.LOCAL || kind == PlayerKind.PARTY;
+			return kind == PlayerKind.LOCAL || kind == PlayerKind.PARTY || kind == PlayerKind.ESTIMATE;
+		}
+
+		/** Numbers are a guess (player without GoldenDPS). */
+		public boolean isEstimate()
+		{
+			return kind == PlayerKind.ESTIMATE;
 		}
 	}
 
@@ -75,9 +82,9 @@ public class FightReport
 			PlayerRow row = new PlayerRow();
 			row.name = p.name;
 			row.kind = p.kind;
-			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
+			for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
 			{
-				if (!counts(fight, e.getKey(), bossOnly))
+				if (!counts(fight, e.getKey(), bossOnly) || !countsFor(fight, p, e.getKey()))
 				{
 					continue;
 				}
@@ -93,7 +100,7 @@ public class FightReport
 			row.healRegen = p.healRegen;
 			row.healOther = p.healOther;
 			row.healing = p.healing(includeRegen);
-			row.damageTaken = p.damageTaken;
+			row.damageTaken = p.takenTotal();
 			r.rows.add(row);
 		}
 
@@ -151,16 +158,28 @@ public class FightReport
 		return t != null && t.boss;
 	}
 
+	/** Guesses only count on targets you or your party fought (same rule as "Others (unknown)"). */
+	private static boolean countsFor(Fight fight, PlayerStats p, String targetKey)
+	{
+		if (p.kind != PlayerKind.ESTIMATE)
+		{
+			return true;
+		}
+		TargetStats t = fight.targets.get(targetKey);
+		return t != null && t.engaged;
+	}
+
 	private void buildTargets(Fight fight, boolean bossOnly)
 	{
 		Map<String, TargetRow> byName = new LinkedHashMap<>();
 		Map<String, Long> knownByTarget = new LinkedHashMap<>();
 		for (PlayerStats p : fight.players.values())
 		{
-			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
+			for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
 			{
 				TargetStats t = fight.targets.get(e.getKey());
-				if (t == null || !counts(fight, t.key, bossOnly) || e.getValue().damage == 0)
+				if (t == null || !counts(fight, t.key, bossOnly) || !countsFor(fight, p, t.key)
+					|| e.getValue().damage == 0)
 				{
 					continue;
 				}

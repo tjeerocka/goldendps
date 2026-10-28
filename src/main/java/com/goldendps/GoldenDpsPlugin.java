@@ -6,6 +6,7 @@ import com.goldendps.model.FightTracker;
 import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
+import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
 import com.google.gson.Gson;
@@ -14,7 +15,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
@@ -27,6 +30,7 @@ import net.runelite.api.HitsplatID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -71,6 +75,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	private static final long SAVE_EVERY_MS = 30_000;
 	private static final int PANEL_EVERY_TICKS = 2;
+	/** A name counts as "runs GoldenDPS" for this long after their last party message. */
+	private static final long REPORTER_MS = 120_000;
+	/** Eat / drink animation: not an attack. */
+	private static final int EAT_ANIMATION = 829;
 
 	@Inject
 	private Client client;
@@ -108,6 +116,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final FightTracker tracker = new FightTracker();
 	private final HealthWatcher health = new HealthWatcher();
 	private final Bosses bosses = new Bosses();
+	private final HitAttributor attributor = new HitAttributor();
+	/** Party members who send GoldenDPS data: name to time of their last message. */
+	private final Map<String, Long> reporters = new HashMap<>();
 
 	private HistoryStore store;
 	private GoldenDpsPanel panel;
@@ -231,13 +242,32 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			else if (hitsplat.isOthers())
 			{
 				tracker.seenHit(now, key, npc.getId(), name, boss, amount);
+				if (config.estimateOthers())
+				{
+					// a guess: who started an attack on this NPC a few ticks ago?
+					String who = attributor.assign(client.getTickCount(), key);
+					if (who != null && !isReporter(who, now) && !who.equals(localName()))
+					{
+						boolean miss = type == HitsplatID.BLOCK_OTHER || amount <= 0;
+						tracker.estimateHit(now, who, key, amount, miss);
+					}
+				}
 			}
 			else if (isEffect(type))
 			{
 				tracker.effectHit(now, key, npc.getId(), name, boss, amount);
 			}
 		}
-		else if (actor instanceof Player && actor == client.getLocalPlayer())
+		else if (actor instanceof Player && actor != client.getLocalPlayer())
+		{
+			String who = cleanName(actor.getName());
+			if (config.nearbyDamageTaken() && who != null && amount > 0 && isDamageOnPlayer(hitsplat)
+				&& !isReporter(who, now))
+			{
+				tracker.seenDamageTaken(now, who, amount);
+			}
+		}
+		else if (actor instanceof Player)
 		{
 			if (amount > 0 && isDamageOnPlayer(hitsplat))
 			{
@@ -248,6 +278,27 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 					outgoing.taken += amount;
 				}
 			}
+		}
+	}
+
+	@Subscribe
+	public void onAnimationChanged(AnimationChanged e)
+	{
+		Actor actor = e.getActor();
+		if (!(actor instanceof Player) || actor == client.getLocalPlayer() || !config.estimateOthers())
+		{
+			return;
+		}
+		int anim = actor.getAnimation();
+		Actor target = actor.getInteracting();
+		if (anim == -1 || anim == EAT_ANIMATION || !(target instanceof NPC))
+		{
+			return;
+		}
+		String who = cleanName(actor.getName());
+		if (who != null)
+		{
+			attributor.attack(client.getTickCount(), who, targetKey(client.getWorld(), ((NPC) target).getIndex()));
 		}
 	}
 
@@ -356,6 +407,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
 			health.reset();
+			attributor.clear();
 			outgoing = new GoldenDpsUpdate();
 			tracker.endNow(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
 			saveAsync();
@@ -411,6 +463,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		long now = System.currentTimeMillis();
+		reporters.put(name, now);
 		if (u.h != null)
 		{
 			for (GoldenDpsUpdate.Hit hit : u.h)
@@ -661,6 +714,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	}
 
 	// ---------------------------------------------------------------- helpers
+
+	private boolean isReporter(String name, long now)
+	{
+		Long last = reporters.get(name);
+		return last != null && now - last <= REPORTER_MS;
+	}
 
 	static String targetKey(int world, int npcIndex)
 	{

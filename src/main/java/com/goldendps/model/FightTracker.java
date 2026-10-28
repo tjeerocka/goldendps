@@ -107,6 +107,33 @@ public class FightTracker
 		current.target(targetKey, npcId, npcName, boss).effectDamage += amount;
 	}
 
+	/**
+	 * A guess: this player (without GoldenDPS) probably did this hit.
+	 * Call after {@link #seenHit}. Only counts while a fight runs.
+	 */
+	public void estimateHit(long now, String player, String targetKey, int amount, boolean miss)
+	{
+		if (current == null || player == null)
+		{
+			return;
+		}
+		PlayerStats p = current.player(player, PlayerKind.ESTIMATE);
+		if (p.kind == PlayerKind.ESTIMATE)
+		{
+			p.addEstimate(targetKey, amount, miss);
+		}
+	}
+
+	/** A damage hitsplat you saw on another player. Only counts while a fight runs. */
+	public void seenDamageTaken(long now, String player, int amount)
+	{
+		if (current == null || player == null || amount <= 0)
+		{
+			return;
+		}
+		current.player(player, PlayerKind.ESTIMATE).seenTaken += amount;
+	}
+
 	// ---- damage taken and healing ----
 
 	public void damageTaken(long now, String player, PlayerKind kind, int amount)
