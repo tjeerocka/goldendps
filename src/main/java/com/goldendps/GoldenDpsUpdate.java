@@ -52,7 +52,7 @@ public class GoldenDpsUpdate extends PartyMemberMessage
 	}
 
 	/** Version of this message, so later versions can stay compatible. */
-	public int v = 2;
+	public int v = 3;
 	/** Sender's world. Hits only match your targets when you are on the same world. */
 	public int w;
 	/** Sender's in-game name. */
@@ -63,9 +63,13 @@ public class GoldenDpsUpdate extends PartyMemberMessage
 	public int life;
 	public int regen;
 	public int other;
+	/** Overhealing (wasted) from food and from lifesteal. */
+	public int of;
+	public int ol;
 
 	boolean isEmpty()
 	{
-		return h.isEmpty() && taken == 0 && food == 0 && life == 0 && regen == 0 && other == 0;
+		return h.isEmpty() && taken == 0 && food == 0 && life == 0 && regen == 0 && other == 0
+			&& of == 0 && ol == 0;
 	}
 }

@@ -19,6 +19,9 @@ public class PlayerStats
 	public long healLifesteal;
 	public long healRegen;
 	public long healOther;
+	/** Wasted healing (full heal minus what really healed). */
+	public long overFood;
+	public long overLifesteal;
 
 	public PlayerStats()
 	{
@@ -54,6 +57,22 @@ public class PlayerStats
 
 	public void addHeal(HealType type, int amount)
 	{
+		addHeal(type, amount, 0);
+	}
+
+	public void addHeal(HealType type, int amount, int overheal)
+	{
+		if (overheal > 0)
+		{
+			if (type == HealType.FOOD)
+			{
+				overFood += overheal;
+			}
+			else if (type == HealType.LIFESTEAL)
+			{
+				overLifesteal += overheal;
+			}
+		}
 		if (amount <= 0)
 		{
 			return;
@@ -76,6 +95,11 @@ public class PlayerStats
 				// RECEIVED: not this player's healing
 				break;
 		}
+	}
+
+	public long overheal()
+	{
+		return overFood + overLifesteal;
 	}
 
 	/** Healing this player did: on themselves (food, lifesteal, optional regen) and on others. */
@@ -104,6 +128,8 @@ public class PlayerStats
 		healLifesteal += o.healLifesteal;
 		healRegen += o.healRegen;
 		healOther += o.healOther;
+		overFood += o.overFood;
+		overLifesteal += o.overLifesteal;
 	}
 
 	public PlayerStats copy()

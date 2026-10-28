@@ -52,21 +52,33 @@ Solo: works without a party, only your numbers.
 - Party hits that arrive up to 5 s after a boss died still go into that fight (network delay).
 - The panel keeps the last fights (setting, default 50) and a **session total**.
 
-## Healing (best guess, from your HP)
+## Healing and overhealing
 
-| HP went up and... | Counted as |
-|---|---|
-| you ate / drank in the last 2 ticks | Food/potions |
-| you hit an NPC this or last tick (Sanguinesti staff, blood spells, Soulreaper axe) | Lifesteal |
-| +1 / +2 with no reason | Regen (only counted if turned on) |
-| other reason (for example someone's Heal Other on you) | not counted for you |
+Effective healing = how much your HP really went up. Overhealing = what was wasted.
 
-**Heal Other / Heal Group**: the HP you lose (without a hitsplat) in the 5 ticks after you
-cast it is counted as "healing on others".
+| Source | How it is found | Overhealing |
+|---|---|---|
+| Food / potions | you click Eat/Drink **and** the item leaves your inventory | full heal from a table − effective |
+| Sanguinesti staff | heal graphic on the NPC you hit (or on you) | half your damage − effective |
+| Blood spells | blood impact graphic on the NPC you hit, with a magic weapon | 25% of damage (+2%/bloodbark piece, x1.1 ancient sceptre, x1.5 Zuriel's staff) − effective |
+| Soulreaper axe, others | HP went up the tick you hit | not known (only effective) |
+| +1 / +2 with no reason | regen | only counted if turned on |
+| Heal Other / Heal Group | HP you lose (no hitsplat) in the 5 ticks after you cast it | — |
+
+Food table (full heal): lobster 12, swordfish 14, monkfish 16, karambwan 18, curry 19, shark 20,
+sea turtle 21, manta ray 22, dark crab 22, tuna potato 22,
+anglerfish ⌊hp/10⌋ + 2⌊hp/25⌋ + 5⌊hp/93⌋ + 2, Saradomin brew ⌊hp×15/100⌋ + 2 per dose.
+Brews and anglerfish can go above your max HP (by their heal amount); the Blood ancient sceptre lets
+blood spells go 10% above.
+
+Overhealing is only counted when your HP ended at the cap, so a wrong table value can't invent waste.
+Example: shark at 95/99 = 4 healing + 16 overhealing. Shark at 99/99 = 0 + 20.
+
+Party members send their overhealing too (they need this version).
 
 ## Overlay and panel
 
-- Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Damage taken**,
+- Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Overhealing / Damage taken**,
   **Toggle Boss only**, **Toggle Fight / Session**, **Reset Session**.
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.

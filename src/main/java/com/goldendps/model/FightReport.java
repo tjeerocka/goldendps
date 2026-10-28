@@ -31,6 +31,10 @@ public class FightReport
 		public long healLifesteal;
 		public long healRegen;
 		public long healOther;
+		/** Wasted healing (food + lifesteal). */
+		public long overheal;
+		public long overFood;
+		public long overLifesteal;
 		public long damageTaken;
 
 		/** Hits / (hits + misses), 0..100. -1 when there were no attacks (or unknown). */
@@ -100,6 +104,9 @@ public class FightReport
 			row.healRegen = p.healRegen;
 			row.healOther = p.healOther;
 			row.healing = p.healing(includeRegen);
+			row.overFood = p.overFood;
+			row.overLifesteal = p.overLifesteal;
+			row.overheal = p.overheal();
 			row.damageTaken = p.takenTotal();
 			r.rows.add(row);
 		}
@@ -246,6 +253,8 @@ public class FightReport
 				return row.dps;
 			case HEALING:
 				return row.healing;
+			case OVERHEALING:
+				return row.overheal;
 			case DAMAGE_TAKEN:
 				return row.damageTaken;
 			case DAMAGE:

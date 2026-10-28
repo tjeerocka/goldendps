@@ -3,6 +3,7 @@ package com.goldendps;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
+import com.goldendps.model.HealTable;
 import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,16 +29,22 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Hitsplat;
+import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.HitsplatID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
+import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
@@ -82,6 +90,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private static final long REPORTER_MS = 120_000;
 	/** Eat / drink animation: not an attack. */
 	private static final int EAT_ANIMATION = 829;
+	/** A click on Eat / Drink must be followed by the item leaving the inventory within this many ticks. */
+	private static final int EAT_CONFIRM_TICKS = 3;
+	private static final int WEAPON_SLOT = 3;
+	private static final int[] SANGUINESTI_HEAL = {SpotanimID.SANGUINESTI_STAFF_HEAL, SpotanimID.SANGUINESTI_STAFF_HEAL_JUSTICIAR};
+	private static final int[] BLOOD_SPELL_IMPACT = {SpotanimID.BLOOD_RUSH_IMPACT, SpotanimID.BLOOD_BLITZ_IMPACT,
+		SpotanimID.SPELL_BLOOD_BURST_IMPACT, SpotanimID.SPELL_BLOOD_BARRAGE_IMPACT};
 
 	@Inject
 	private Client client;
@@ -123,6 +137,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final TargetMatcher matcher = new TargetMatcher();
 	/** Party members who send GoldenDPS data: name to time of their last message. */
 	private final Map<String, Long> reporters = new HashMap<>();
+	/** Your damage per NPC this tick (for Sanguinesti / blood spell heals). */
+	private final Map<NPC, Integer> myDamageThisTick = new HashMap<>();
+	/** Eat / Drink clicks: item id to tick, waiting for the item to leave the inventory. */
+	private final Map<Integer, Integer> eatClicks = new HashMap<>();
+	/** Inventory item counts before the last change. */
+	private Map<Integer, Integer> lastInventory;
 
 	private HistoryStore store;
 	private GoldenDpsPanel panel;
@@ -245,6 +265,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				if (!miss)
 				{
 					health.myHit(client.getTickCount());
+					myDamageThisTick.merge(npc, amount, Integer::sum);
 				}
 				outgoing.h.add(new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos));
 			}
@@ -322,6 +343,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	{
 		if (e.getSkill() == Skill.HITPOINTS)
 		{
+			health.setMaxHp(e.getLevel());
 			health.hpChanged(e.getBoostedLevel());
 		}
 	}
@@ -338,6 +360,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (option.equals("Eat") || option.equals("Drink") || option.equals("Quaff"))
 		{
 			health.consumed(tick);
+			if (e.getItemId() > 0)
+			{
+				eatClicks.put(e.getItemId(), tick);
+			}
 		}
 		else if (option.equals("Cast"))
 		{
@@ -345,6 +371,49 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			if (target != null && (target.startsWith("Heal Other") || target.startsWith("Heal Group")))
 			{
 				health.healOtherCast(tick);
+			}
+		}
+	}
+
+	/** Food / potion really eaten: the clicked item left the inventory. */
+	@Subscribe
+	public void onItemContainerChanged(ItemContainerChanged e)
+	{
+		if (e.getContainerId() != InventoryID.INV)
+		{
+			return;
+		}
+		Map<Integer, Integer> now = new HashMap<>();
+		for (Item item : e.getItemContainer().getItems())
+		{
+			if (item.getId() > 0)
+			{
+				now.merge(item.getId(), Math.max(1, item.getQuantity()), Integer::sum);
+			}
+		}
+		Map<Integer, Integer> before = lastInventory;
+		lastInventory = now;
+		if (before == null || eatClicks.isEmpty())
+		{
+			return;
+		}
+		int tick = client.getTickCount();
+		int hpLevel = client.getRealSkillLevel(Skill.HITPOINTS);
+		Iterator<Map.Entry<Integer, Integer>> it = eatClicks.entrySet().iterator();
+		while (it.hasNext())
+		{
+			Map.Entry<Integer, Integer> click = it.next();
+			if (tick - click.getValue() > EAT_CONFIRM_TICKS)
+			{
+				it.remove();
+				continue;
+			}
+			int id = click.getKey();
+			if (now.getOrDefault(id, 0) < before.getOrDefault(id, 0))
+			{
+				String name = itemName(id);
+				health.foodEaten(tick, HealTable.foodHeal(name, hpLevel), HealTable.foodBoost(name, hpLevel));
+				it.remove();
 			}
 		}
 	}
@@ -366,20 +435,23 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		long now = System.currentTimeMillis();
 		int tick = client.getTickCount();
 
+		checkLifesteal(tick);
 		for (HealthWatcher.Heal heal : health.endTick(tick))
 		{
 			if (heal.type == HealType.RECEIVED || tracker.getCurrent() == null)
 			{
 				continue;
 			}
-			tracker.heal(now, localName(), PlayerKind.LOCAL, heal.type, heal.amount);
+			tracker.heal(now, localName(), PlayerKind.LOCAL, heal.type, heal.amount, heal.overheal);
 			switch (heal.type)
 			{
 				case FOOD:
 					outgoing.food += heal.amount;
+					outgoing.of += heal.overheal;
 					break;
 				case LIFESTEAL:
 					outgoing.life += heal.amount;
+					outgoing.ol += heal.overheal;
 					break;
 				case REGEN:
 					outgoing.regen += heal.amount;
@@ -411,6 +483,80 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 	}
 
+	/**
+	 * Sanguinesti heal (heal graphic on the NPC you hit, or on you) and blood spells
+	 * (blood impact graphic on an NPC you hit with a magic weapon): tell the health watcher
+	 * how much they would heal, so wasted healing can be counted.
+	 */
+	private void checkLifesteal(int tick)
+	{
+		if (myDamageThisTick.isEmpty())
+		{
+			return;
+		}
+		Player me = client.getLocalPlayer();
+		boolean sangOnMe = me != null && hasAny(me, SANGUINESTI_HEAL);
+		String weapon = null;
+		int bloodbark = 0;
+		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
+		if (worn != null)
+		{
+			Item[] items = worn.getItems();
+			for (int i = 0; i < items.length; i++)
+			{
+				if (items[i].getId() <= 0)
+				{
+					continue;
+				}
+				String name = itemName(items[i].getId());
+				if (i == WEAPON_SLOT)
+				{
+					weapon = name;
+				}
+				if (name != null && name.startsWith("Bloodbark"))
+				{
+					bloodbark++;
+				}
+			}
+		}
+		int hpLevel = client.getRealSkillLevel(Skill.HITPOINTS);
+		int sang = 0;
+		int blood = 0;
+		for (Map.Entry<NPC, Integer> e : myDamageThisTick.entrySet())
+		{
+			NPC npc = e.getKey();
+			if (sangOnMe || hasAny(npc, SANGUINESTI_HEAL))
+			{
+				sang += HealTable.sanguinesti(e.getValue());
+			}
+			else if (HealTable.isMagicWeapon(weapon) && hasAny(npc, BLOOD_SPELL_IMPACT))
+			{
+				blood += HealTable.bloodSpell(e.getValue(), bloodbark, weapon);
+			}
+		}
+		myDamageThisTick.clear();
+		health.lifesteal(tick, sang, 0);
+		health.lifesteal(tick, blood, HealTable.bloodBoost(weapon, hpLevel));
+	}
+
+	private static boolean hasAny(Actor actor, int[] spotAnims)
+	{
+		for (int id : spotAnims)
+		{
+			if (actor.hasSpotAnim(id))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private String itemName(int itemId)
+	{
+		ItemComposition def = client.getItemDefinition(itemId);
+		return def == null ? null : def.getName();
+	}
+
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged e)
 	{
@@ -424,6 +570,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			health.reset();
 			attributor.clear();
 			matcher.clear();
+			myDamageThisTick.clear();
+			eatClicks.clear();
+			lastInventory = null;
 			outgoing = new GoldenDpsUpdate();
 			tracker.endNow(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
 			saveAsync();
@@ -490,8 +639,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 		}
 		tracker.damageTaken(now, name, PlayerKind.PARTY, u.taken);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, u.food);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.LIFESTEAL, u.life);
+		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, u.food, u.of);
+		tracker.heal(now, name, PlayerKind.PARTY, HealType.LIFESTEAL, u.life, u.ol);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.REGEN, u.regen);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.HEAL_OTHER, u.other);
 	}

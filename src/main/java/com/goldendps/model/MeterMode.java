@@ -5,6 +5,7 @@ public enum MeterMode
 	DAMAGE("Damage"),
 	DPS("DPS"),
 	HEALING("Healing"),
+	OVERHEALING("Overhealing"),
 	DAMAGE_TAKEN("Damage taken");
 
 	private final String label;

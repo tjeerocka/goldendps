@@ -147,10 +147,16 @@ public class FightTracker
 
 	public void heal(long now, String player, PlayerKind kind, HealType type, int amount)
 	{
+		heal(now, player, kind, type, amount, 0);
+	}
+
+	/** A heal with its overhealing (the part that was wasted). */
+	public void heal(long now, String player, PlayerKind kind, HealType type, int amount, int overheal)
+	{
 		Fight f = fightForReport(now, kind);
-		if (f != null && amount > 0)
+		if (f != null && (amount > 0 || overheal > 0))
 		{
-			f.player(player, kind).addHeal(type, amount);
+			f.player(player, kind).addHeal(type, amount, overheal);
 		}
 	}
 

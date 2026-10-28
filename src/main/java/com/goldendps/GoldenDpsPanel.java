@@ -317,6 +317,19 @@ class GoldenDpsPanel extends PluginPanel
 				card.add(line("  Regen", Format.amount(row.healRegen)));
 			}
 		}
+		if (row.overheal > 0)
+		{
+			long full = row.healing + row.overheal;
+			card.add(line("Overhealing", Format.amount(row.overheal) + "  (" + Format.percent(100.0 * row.overheal / full) + ")"));
+			if (row.overFood > 0)
+			{
+				card.add(line("  Food/potions", Format.amount(row.overFood)));
+			}
+			if (row.overLifesteal > 0)
+			{
+				card.add(line("  Lifesteal", Format.amount(row.overLifesteal)));
+			}
+		}
 		card.add(line("Damage taken", Format.amount(row.damageTaken)));
 		return card;
 	}

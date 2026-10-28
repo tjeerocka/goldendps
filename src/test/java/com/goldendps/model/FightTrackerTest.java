@@ -284,6 +284,27 @@ public class FightTrackerTest
 	}
 
 	@Test
+	public void overhealingIsCountedAndShown()
+	{
+		myHit(0, RAT, false, 5);
+		tracker.heal(600, "Me", PlayerKind.LOCAL, HealType.FOOD, 9, 11);
+		tracker.heal(1200, "Me", PlayerKind.LOCAL, HealType.LIFESTEAL, 0, 15);
+		tracker.heal(1200, "Friend", PlayerKind.PARTY, HealType.FOOD, 20, 2);
+
+		FightReport r = report(tracker.getCurrent(), 6000);
+		assertEquals(9, r.row("Me").healing);
+		assertEquals(26, r.row("Me").overheal);
+		assertEquals(11, r.row("Me").overFood);
+		assertEquals(15, r.row("Me").overLifesteal);
+		List<FightReport.PlayerRow> over = r.sorted(MeterMode.OVERHEALING);
+		assertEquals("Me", over.get(0).name);
+		assertEquals(28.0, r.total(MeterMode.OVERHEALING), D);
+
+		Fight copy = tracker.getCurrent().copy();
+		assertEquals(26, copy.players.get("Me").overheal());
+	}
+
+	@Test
 	public void sessionTotalAddsFightsTogether()
 	{
 		myHit(0, BOSS, true, 50);

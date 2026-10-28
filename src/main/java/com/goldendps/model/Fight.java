@@ -193,6 +193,8 @@ public class Fight
 			remapped.healLifesteal = p.healLifesteal;
 			remapped.healRegen = p.healRegen;
 			remapped.healOther = p.healOther;
+			remapped.overFood = p.overFood;
+			remapped.overLifesteal = p.overLifesteal;
 			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
 			{
 				String k = keyMap.getOrDefault(e.getKey(), e.getKey());
