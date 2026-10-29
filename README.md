@@ -121,7 +121,7 @@ top healer (a new top healer starts growing after the old one has shrunk).
 - **117 HD / GPU and capes:** renderers draw real players with their faces sorted in layers and without
   depth test (that is how a cape logo stays on the cape). A copy is drawn like a normal object, so the
   cape logo could disappear and the body could show through the cape. Fix: each point of the copy is
-  moved a tiny bit outward per layer (1.5 units per layer, at most 6), so the cape logo is really in
+  moved a bit outward per layer (3 units per layer, at most 12), so the cape logo is really in
   front of the cape and the cape really behind the body.
 - **Status:** under the test button, `Fat: drawn +35%/+6%, real hidden` (or what is wrong).
 - **Test:** side panel → **Test fat healer (me)** makes your own character fat anywhere

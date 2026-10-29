@@ -337,8 +337,8 @@ public class FatHealerRendererTest
 
 		new FatHealerRenderer(fakeClient()).pushLayers(m);
 		assertEquals("body stays", -20f, vz[0], 0.0001);
-		assertEquals("cape 1 layer out", -21.5f, vz[1], 0.0001);
-		assertEquals("logo 2 layers out", -23f, vz[2], 0.0001);
+		assertEquals("cape 1 layer out", -20f - FatHealerRenderer.LAYER_STEP, vz[1], 0.0001);
+		assertEquals("logo 2 layers out", -20f - 2 * FatHealerRenderer.LAYER_STEP, vz[2], 0.0001);
 		assertTrue("logo in front of cape, cape behind body (seen from behind)", vz[2] < vz[1] && vz[1] < vz[0]);
 	}
 

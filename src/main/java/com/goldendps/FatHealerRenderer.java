@@ -318,9 +318,9 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	}
 
 	/** Space between two layers, in model units (1/128 tile). */
-	static final float LAYER_STEP = 1.5f;
+	static final float LAYER_STEP = 3f;
 	/** The top layer is never pushed out further than this. */
-	static final float MAX_PUSH = 6f;
+	static final float MAX_PUSH = 12f;
 
 	/**
 	 * Real players are drawn layer by layer (body, then cape, then the cape logo) without a depth test;
