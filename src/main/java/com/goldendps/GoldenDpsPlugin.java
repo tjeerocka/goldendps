@@ -391,7 +391,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			who = findPlayer(fatName);
 		}
-		fatHealer.setRealModel(config.fatRealModel());
 		fatHealer.update(who, config.fatWidth(), config.fatHeight());
 	}
 

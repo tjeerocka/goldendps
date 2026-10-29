@@ -290,26 +290,87 @@ public class FatHealerRendererTest
 		assertEquals(-1.0625f, m.getVerticesY()[0], 0f);
 	}
 
-	@Test
-	public void realModelStyleScalesTheRealCharacterAndHidesNothing()
+	/** A model from plain arrays: vertices + triangles + layer per triangle. */
+	private static Model layeredModel(float[] vx, float[] vy, float[] vz, int[] f1, int[] f2, int[] f3, byte[] pri)
 	{
-		float[] vx = {0f, 10f, -20f};
-		float[] vy = {0f, -100f, -200f};
-		Model cached = fakeModel(vx, vy, new ArrayList<>());
-		Player p = fakePlayer(() -> cached);
-		FatHealerRenderer r = new FatHealerRenderer(fakeClient());
-		r.setRealModel(true);
-		grown(r, p, 35, 6);
+		return (Model) Proxy.newProxyInstance(Model.class.getClassLoader(), new Class<?>[]{Model.class}, (p, m, a) ->
+		{
+			switch (m.getName())
+			{
+				case "getVerticesX":
+					return vx;
+				case "getVerticesY":
+					return vy;
+				case "getVerticesZ":
+					return vz;
+				case "getVerticesCount":
+					return vx.length;
+				case "getFaceCount":
+					return f1.length;
+				case "getFaceIndices1":
+					return f1;
+				case "getFaceIndices2":
+					return f2;
+				case "getFaceIndices3":
+					return f3;
+				case "getFaceRenderPriorities":
+					return pri;
+				default:
+					return null;
+			}
+		});
+	}
 
-		assertTrue("real character is drawn, not hidden", r.addEntity(p, false));
-		assertEquals(-20f * 173 / 128f, vx[2], 0.001);
-		r.addEntity(p, false);
-		assertEquals("not scaled twice", -20f * 173 / 128f, vx[2], 0.001);
-		assertNull("no slow walk in this style", r.getFatPlayer());
+	@Test
+	public void higherLayersArePushedOutward()
+	{
+		// body point (layer 0), cape point behind it (layer 5), logo point on the cape (layer 9),
+		// all at z = -20 (the back), plus one shared point
+		float[] vx = {0f, 0f, 0f, 1f};
+		float[] vy = {-100f, -100f, -100f, -100f};
+		float[] vz = {-20f, -20f, -20f, -20f};
+		int[] f1 = {0, 1, 2};
+		int[] f2 = {3, 3, 3};
+		int[] f3 = {0, 1, 2};
+		byte[] pri = {0, 5, 9};
+		Model m = layeredModel(vx, vy, vz, f1, f2, f3, pri);
 
-		// back to the copy style: the real model is made normal again
-		r.setRealModel(false);
-		assertEquals(-20f, vx[2], 0.2);
+		new FatHealerRenderer(fakeClient()).pushLayers(m);
+		assertEquals("body stays", -20f, vz[0], 0.0001);
+		assertEquals("cape 1 layer out", -21.5f, vz[1], 0.0001);
+		assertEquals("logo 2 layers out", -23f, vz[2], 0.0001);
+		assertTrue("logo in front of cape, cape behind body (seen from behind)", vz[2] < vz[1] && vz[1] < vz[0]);
+	}
+
+	@Test
+	public void manyLayersAreNeverPushedFurtherThanTheMax()
+	{
+		int n = 12;
+		float[] vx = new float[n];
+		float[] vy = new float[n];
+		float[] vz = new float[n];
+		int[] f = new int[n];
+		byte[] pri = new byte[n];
+		for (int i = 0; i < n; i++)
+		{
+			vz[i] = -30f;
+			f[i] = i;
+			pri[i] = (byte) i;
+		}
+		Model m = layeredModel(vx, vy, vz, f, f, f, pri);
+		new FatHealerRenderer(fakeClient()).pushLayers(m);
+		assertEquals(-30f - FatHealerRenderer.MAX_PUSH, vz[n - 1], 0.0001);
+	}
+
+	@Test
+	public void oneLayerOrNoLayersChangesNothing()
+	{
+		float[] vz = {-20f};
+		Model one = layeredModel(new float[]{0f}, new float[]{0f}, vz, new int[]{0}, new int[]{0}, new int[]{0}, new byte[]{4});
+		new FatHealerRenderer(fakeClient()).pushLayers(one);
+		assertEquals(-20f, vz[0], 0f);
+		// fake models without layer data (null) are left alone
+		new FatHealerRenderer(fakeClient()).pushLayers(fakeModel(new float[]{1f}, new float[]{1f}, new ArrayList<>()));
 	}
 
 	@Test

@@ -45,14 +45,8 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	private int lastSy = FatHealer.UNIT;
 	/** Slow walk: the frame to draw the copy with, or -1 for the real frame. */
 	private int slowFrame = -1;
-	/**
-	 * Test: make the real character's model bigger right before the game draws it (no copy).
-	 * Then renderers like 117 HD draw it as a real player (cape logo, no body through the cape),
-	 * but it only works if the game reuses the model it built for that frame.
-	 */
-	private boolean realModel;
-	private int realScaled;
-	private int lastRealScaled = -1;
+	/** Per vertex: highest layer of its faces (reused array). */
+	private int[] vertexLayer = new int[0];
 	/** For the status line: how often the copy was drawn / the real one hidden. */
 	private int frames;
 	private int draws;
@@ -104,7 +98,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		width = eased * widthPercent;
 		height = eased * heightPercent;
 
-		boolean show = target != null && progress > 0 && !realModel;
+		boolean show = target != null && progress > 0;
 		if (show)
 		{
 			LocalPoint lp = target.getLocalLocation();
@@ -125,11 +119,9 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			lastDraws = draws;
 			lastHides = hides;
-			lastRealScaled = realScaled;
 			frames = 0;
 			draws = 0;
 			hides = 0;
-			realScaled = 0;
 			String st = status();
 			if (!st.equals(lastStatus))
 			{
@@ -173,7 +165,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	/** The player that looks fat right now, or null. */
 	Player getFatPlayer()
 	{
-		return target != null && !realModel && client.isRuneLiteObjectRegistered(this) ? target : null;
+		return target != null && client.isRuneLiteObjectRegistered(this) ? target : null;
 	}
 
 	/** True while a fat copy is drawn for this player (so the real one is hidden). */
@@ -187,20 +179,6 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	@Override
 	public boolean addEntity(Renderable renderable, boolean ui)
 	{
-		if (realModel)
-		{
-			// test style: make the real model bigger just before the game draws it
-			if (!ui && renderable == target && target != null && progress > 0)
-			{
-				Model m = target.getModel();
-				if (m != null)
-				{
-					scaleModel(m);
-					realScaled++;
-				}
-			}
-			return true;
-		}
 		// ui = overhead text, HP bars, hitsplats: keep those
 		boolean hide = !ui && renderable instanceof Player && isFat((Player) renderable);
 		if (hide)
@@ -216,10 +194,6 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		if (target == null)
 		{
 			return "nobody is fat";
-		}
-		if (realModel)
-		{
-			return "real model +" + Math.round(width) + "%/+" + Math.round(height) + "% (" + Math.max(0, lastRealScaled) + "/s)";
 		}
 		if (!client.isRuneLiteObjectRegistered(this))
 		{
@@ -238,17 +212,6 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	}
 
 	// ---- RuneLiteObjectController: the fat copy ----
-
-	/** Test style: scale the real model instead of drawing a copy. */
-	void setRealModel(boolean on)
-	{
-		if (on != realModel)
-		{
-			undoIfStillScaled();
-			realModel = on;
-			slowFrame = -1;
-		}
-	}
 
 	/** Slow walk frame for the copy (-1 = the real frame). */
 	void setSlowFrame(int frame)
@@ -319,6 +282,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		else
 		{
 			scaleVertices(m, sx / (float) FatHealer.UNIT, sy / (float) FatHealer.UNIT);
+			pushLayers(m);
 		}
 		// The game sorts the faces of a model by depth using its size (bounds). The bounds were
 		// worked out for the normal size, so faces of the bigger model were sorted wrong: the cape
@@ -350,6 +314,94 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			vx[i] *= wide;
 			vy[i] *= tall;
 			vz[i] *= wide;
+		}
+	}
+
+	/** Space between two layers, in model units (1/128 tile). */
+	static final float LAYER_STEP = 1.5f;
+	/** The top layer is never pushed out further than this. */
+	static final float MAX_PUSH = 6f;
+
+	/**
+	 * Real players are drawn layer by layer (body, then cape, then the cape logo) without a depth test;
+	 * the game's player models need that, because the logo lies exactly on the cape and the cape dips
+	 * into the body a little. 117 HD and the GPU plugin draw our copy WITH a depth test, so the logo got
+	 * lost and the body showed through the cape. Fix: move every point a tiny bit outward (away from
+	 * the middle of the body) for each layer above the lowest, so higher layers are really in front.
+	 */
+	void pushLayers(Model m)
+	{
+		byte[] pri = m.getFaceRenderPriorities();
+		int[] f1 = m.getFaceIndices1();
+		int[] f2 = m.getFaceIndices2();
+		int[] f3 = m.getFaceIndices3();
+		float[] vx = m.getVerticesX();
+		float[] vz = m.getVerticesZ();
+		if (pri == null || f1 == null || f2 == null || f3 == null || vx == null || vz == null)
+		{
+			return;
+		}
+		int faces = Math.min(m.getFaceCount(), Math.min(pri.length, Math.min(f1.length, Math.min(f2.length, f3.length))));
+		int verts = Math.min(m.getVerticesCount(), Math.min(vx.length, vz.length));
+
+		// layers that are used, numbered 0, 1, 2, ... from the lowest
+		int[] rank = new int[256];
+		boolean[] used = new boolean[256];
+		for (int f = 0; f < faces; f++)
+		{
+			used[pri[f] & 0xff] = true;
+		}
+		int layers = 0;
+		for (int p = 0; p < 256; p++)
+		{
+			if (used[p])
+			{
+				rank[p] = layers++;
+			}
+		}
+		if (layers <= 1)
+		{
+			return;
+		}
+		float step = Math.min(LAYER_STEP, MAX_PUSH / (layers - 1));
+
+		if (vertexLayer.length < verts)
+		{
+			vertexLayer = new int[verts];
+		}
+		java.util.Arrays.fill(vertexLayer, 0, verts, 0);
+		for (int f = 0; f < faces; f++)
+		{
+			int r = rank[pri[f] & 0xff];
+			setLayer(f1[f], r, verts);
+			setLayer(f2[f], r, verts);
+			setLayer(f3[f], r, verts);
+		}
+		for (int v = 0; v < verts; v++)
+		{
+			int r = vertexLayer[v];
+			if (r == 0)
+			{
+				continue;
+			}
+			float x = vx[v];
+			float z = vz[v];
+			float d = (float) Math.sqrt(x * x + z * z);
+			if (d < 1f)
+			{
+				continue;
+			}
+			float push = r * step / d;
+			vx[v] = x + x * push;
+			vz[v] = z + z * push;
+		}
+	}
+
+	private void setLayer(int v, int r, int verts)
+	{
+		if (v >= 0 && v < verts && r > vertexLayer[v])
+		{
+			vertexLayer[v] = r;
 		}
 	}
 
