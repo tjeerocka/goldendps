@@ -1,6 +1,5 @@
 package com.goldendps;
 
-import com.goldendps.model.FatHealer;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
@@ -11,7 +10,6 @@ import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
-import com.goldendps.model.SlowAnimation;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
@@ -43,8 +41,6 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.BeforeRender;
-import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -54,7 +50,6 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ClientShutdown;
@@ -135,16 +130,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Inject
 	private ScheduledExecutorService executor;
 
-	@Inject
-	private RenderCallbackManager renderCallbackManager;
-
-	private FatHealerRenderer fatHealer;
-	/** Name of the current fat healer (set every tick), or null. */
-	private String fatName;
-	/** Test button in the panel: make yourself the fat healer. */
-	private volatile boolean fatTest;
-	private final SlowAnimation fatWalk = new SlowAnimation();
-
 	private final FightTracker tracker = new FightTracker();
 	private final HealthWatcher health = new HealthWatcher();
 	private final Bosses bosses = new Bosses();
@@ -202,8 +187,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		applyConfig();
 
 		overlayManager.add(overlay);
-		fatHealer = new FatHealerRenderer(client);
-		renderCallbackManager.register(fatHealer);
 		wsClient.registerMessage(GoldenDpsUpdate.class);
 
 		panel = new GoldenDpsPanel(this);
@@ -228,12 +211,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Override
 	protected void shutDown()
 	{
-		renderCallbackManager.unregister(fatHealer);
-		final FatHealerRenderer fat = fatHealer;
 		clientThread.invoke(() ->
 		{
-			fat.clear();
-			fatName = null;
 			tracker.endNow(System.currentTimeMillis(), "Plugin turned off");
 			saveAsync();
 			tracker.clearHistory();
@@ -378,84 +357,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 	}
 
-	/** Every frame: keep the fat healer copy on the real character. */
-	@Subscribe
-	public void onBeforeRender(BeforeRender e)
-	{
-		if (fatHealer == null)
-		{
-			return;
-		}
-		Player who = null;
-		if (fatName != null && client.getGameState() == GameState.LOGGED_IN)
-		{
-			who = findPlayer(fatName);
-		}
-		fatHealer.update(who, FatHealer.WIDTH_PERCENT, FatHealer.HEIGHT_PERCENT);
-	}
-
-	/** Every client tick (20 ms): play the fat healer's walk / run animation slower. */
-	@Subscribe
-	public void onClientTick(ClientTick e)
-	{
-		Player p = fatHealer == null ? null : fatHealer.getFatPlayer();
-		if (p == null)
-		{
-			fatWalk.reset();
-			if (fatHealer != null)
-			{
-				fatHealer.setSlowFrame(-1);
-			}
-			return;
-		}
-		int pose = p.getPoseAnimation();
-		boolean moving = pose != -1 && pose != p.getIdlePoseAnimation()
-			&& (pose == p.getWalkAnimation() || pose == p.getRunAnimation() || pose == p.getWalkRotate180()
-			|| pose == p.getWalkRotateLeft() || pose == p.getWalkRotateRight());
-		// only the fat copy uses the slow frame; the real player is never changed
-		fatHealer.setSlowFrame(fatWalk.update(pose, p.getPoseAnimationFrame(), moving, FatHealer.WALK_SPEED));
-	}
-
-	/** The player with the most healing in the current / last fight (group mode only). */
-	private void pickFatHealer(long now)
-	{
-		if (fatTest)
-		{
-			// test button: you, anywhere, no healing needed
-			fatName = localName();
-			return;
-		}
-		Fight f = tracker.getDisplayFight();
-		if (!isGroupMode() || f == null)
-		{
-			fatName = null;
-			return;
-		}
-		fatName = FatHealer.pick(FightReport.of(f, false, config.countRegen(), now));
-	}
-
-	private Player findPlayer(String name)
-	{
-		Player me = client.getLocalPlayer();
-		if (me != null && name.equals(cleanName(me.getName())))
-		{
-			return me;
-		}
-		WorldView wv = client.getTopLevelWorldView();
-		if (wv == null)
-		{
-			return null;
-		}
-		for (Player p : wv.players())
-		{
-			if (p != null && name.equals(cleanName(p.getName())))
-			{
-				return p;
-			}
-		}
-		return null;
-	}
-
 	@Subscribe
 	public void onStatChanged(StatChanged e)
 	{
@@ -595,7 +496,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		refreshOverlay();
-		pickFatHealer(now);
 		if (++ticks % PANEL_EVERY_TICKS == 0)
 		{
 			updatePanel();
@@ -686,11 +586,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
-			fatName = null;
-			if (fatHealer != null)
-			{
-				fatHealer.clear();
-			}
 			health.reset();
 			attributor.clear();
 			matcher.clear();
@@ -984,10 +879,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 		}
 		data.localName = localName();
-		data.fatStatus = fatTest || fatName != null
-			? (fatName != null && fatHealer.getFatPlayer() == null && findPlayer(fatName) == null
-				? "player \"" + fatName + "\" not found" : fatHealer.status())
-			: null;
 		SwingUtilities.invokeLater(() -> p.update(data));
 	}
 
@@ -1004,13 +895,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	void setScope(GoldenDpsConfig.Scope scope)
 	{
 		configManager.setConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.SCOPE_KEY, scope);
-	}
-
-	/** Panel test button (Swing thread). */
-	void setFatTest(boolean on)
-	{
-		fatTest = on;
-		clientThread.invoke(() -> pickFatHealer(System.currentTimeMillis()));
 	}
 
 	void resetSession()

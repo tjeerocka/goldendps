@@ -99,36 +99,6 @@ Party members send their overhealing too (they need this version).
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.
 
-## Fun: Fat healer
-
-The player with the most healing in the current / last fight (you, or a party member with GoldenDPS)
-looks **wider and a bit taller**: 35% wider and 6% taller. It is always on (no settings).
-They grow into it over 0.8 s, and shrink back the same way in reverse when they stop being the
-top healer (a new top healer starts growing after the old one has shrunk).
-
-- Only on your screen. Nothing changes in the game or for other players.
-- Only in a RuneLite party, raid or boss instance.
-- How: the real character is hidden for you and a scaled copy of its model is drawn in the same place
-  every frame, so all animations stay. When the game gives the same animated model for a few frames,
-  it is not made bigger twice; when the effect ends, a model that is still bigger is made normal again.
-  Scaling uses exact decimal numbers (the game's own scale cuts off fractions, which made capes sink
-  into the body and cape logos disappear).
-- Right-click / clicking the fat healer may not work while the effect is on.
-- Safety: the real character is only hidden while the fat copy was really drawn in the last frame.
-  Where the game does not draw the copy, you just see the normal character (never invisible).
-- **Slow walk:** the fat healer's walk and run animation plays slower (70% speed). They still move at normal speed, only the legs move slower. Only the fat copy is drawn
-  with the slower frame; the real character's animation is never changed. RuneLite's Animation
-  Smoothing is switched off for that one draw (it blends with the real timing and made the walk stutter).
-- **117 HD / GPU and capes:** renderers draw real players with their faces sorted in layers and without
-  depth test (that is how a cape logo stays on the cape). A copy is drawn like a normal object, so the
-  cape logo could disappear and the body could show through the cape. Fix: each point of the copy is
-  moved a bit outward per layer (3 units per layer, at most 12), so the cape logo is really in
-  front of the cape and the cape really behind the body. Logos and symbols (points that only belong to small triangles)
-  are lifted 3 units more, because they often lie flat on the cape in the same layer.
-- **Status:** under the test button, `Fat: drawn +35%/+6%, real hidden` (or what is wrong).
-- **Test:** side panel → **Test fat healer (me)** makes your own character fat anywhere
-  (no party or healing needed). Click again to stop.
-
 ## Saving
 
 Fight history is saved per account in

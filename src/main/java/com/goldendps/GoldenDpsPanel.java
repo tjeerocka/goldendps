@@ -24,7 +24,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
@@ -64,8 +63,6 @@ class GoldenDpsPanel extends PluginPanel
 		int fights;
 		long startMs;
 		String localName;
-		/** Fat healer status for the test line, or null when it is off. */
-		String fatStatus;
 		/** Only boss damage over the boss time. Null when no boss was fought (or boss only is on). */
 		FightReport bossReport;
 	}
@@ -76,8 +73,6 @@ class GoldenDpsPanel extends PluginPanel
 	private final JComboBox<Choice> fightBox = new JComboBox<>();
 	private final JCheckBox bossOnlyBox = new JCheckBox("Boss only");
 	private final JPanel content = new JPanel();
-	private final JToggleButton fatTestButton = new JToggleButton("Test fat healer (me)");
-	private final JLabel fatStatusLabel = new JLabel();
 	private volatile String selectedId = GoldenDpsPlugin.LIVE;
 	private volatile boolean active;
 	private boolean updating;
@@ -136,21 +131,6 @@ class GoldenDpsPanel extends PluginPanel
 		}));
 		top.add(buttons);
 
-		// test the fat healer look on yourself (anywhere, no healing needed)
-		fatTestButton.setFocusable(false);
-		fatTestButton.setFont(FontManager.getRunescapeSmallFont());
-		fatTestButton.setToolTipText("Make your own character look like the fat healer (only on your screen)");
-		fatTestButton.addActionListener(e ->
-		{
-			boolean on = fatTestButton.isSelected();
-			fatTestButton.setText(on ? "Stop fat test" : "Test fat healer (me)");
-			plugin.setFatTest(on);
-		});
-		top.add(fatTestButton);
-		fatStatusLabel.setFont(FontManager.getRunescapeSmallFont());
-		fatStatusLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-		fatStatusLabel.setVisible(false);
-		top.add(fatStatusLabel);
 		add(top, BorderLayout.NORTH);
 
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -208,12 +188,6 @@ class GoldenDpsPanel extends PluginPanel
 		{
 			updateChoices(d.choices);
 			bossOnlyBox.setSelected(d.bossOnly);
-			fatStatusLabel.setVisible(d.fatStatus != null);
-			if (d.fatStatus != null)
-			{
-				// html so long text wraps in the narrow panel
-				fatStatusLabel.setText("<html>Fat: " + d.fatStatus + "</html>");
-			}
 		}
 		finally
 		{
