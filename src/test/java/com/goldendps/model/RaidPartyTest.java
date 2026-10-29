@@ -137,4 +137,13 @@ public class RaidPartyTest
 		assertNull("no party", RaidParty.coxPartyName(302, -1, 0));
 		assertNull("alone", RaidParty.coxPartyName(302, 12345, 1));
 	}
+
+	@Test
+	public void testSettingAlsoWorksAlone()
+	{
+		assertNull(RaidParty.coxPartyName(302, 12345, 1, false));
+		assertTrue(RaidParty.coxPartyName(302, 12345, 1, true).startsWith(RaidParty.PREFIX + "cox "));
+		assertNull(RaidParty.partyName(TOB, 302, Collections.singletonList("Kurt")));
+		assertTrue(RaidParty.partyName(TOB, 302, Collections.singletonList("Kurt"), 1).startsWith(RaidParty.PREFIX));
+	}
 }

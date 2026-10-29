@@ -48,6 +48,12 @@ public class RaidParty
 	 */
 	public static String partyName(String raid, int world, List<String> names)
 	{
+		return partyName(raid, world, names, 2);
+	}
+
+	/** Same, with the smallest group that counts (1 = also alone, for testing). */
+	public static String partyName(String raid, int world, List<String> names, int minPeople)
+	{
 		List<String> clean = new ArrayList<>();
 		for (String n : names)
 		{
@@ -61,7 +67,7 @@ public class RaidParty
 				clean.add(c);
 			}
 		}
-		if (clean.size() < 2)
+		if (clean.size() < Math.max(1, minPeople))
 		{
 			return null;
 		}
@@ -79,7 +85,13 @@ public class RaidParty
 	 */
 	public static String coxPartyName(int world, int partyId, int partySize)
 	{
-		if (partyId <= 0 || partySize == 1)
+		return coxPartyName(world, partyId, partySize, false);
+	}
+
+	/** Same; alone = true also gives a name when you are alone (for testing). */
+	public static String coxPartyName(int world, int partyId, int partySize, boolean alone)
+	{
+		if (partyId <= 0 || (partySize == 1 && !alone))
 		{
 			return null;
 		}

@@ -111,6 +111,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private static final int COX_PARTY_VARP = 1427;
 	/** VarbitID.RAIDS_CLIENT_PARTYSIZE. */
 	private static final int COX_PARTY_SIZE_VARBIT = 5424;
+	private String lastCoxDebug;
 	private static final int[] SANGUINESTI_HEAL = {SpotanimID.SANGUINESTI_STAFF_HEAL, SpotanimID.SANGUINESTI_STAFF_HEAL_JUSTICIAR};
 	private static final int[] BLOOD_SPELL_IMPACT = {SpotanimID.BLOOD_RUSH_IMPACT, SpotanimID.BLOOD_BLITZ_IMPACT,
 		SpotanimID.SPELL_BLOOD_BURST_IMPACT, SpotanimID.SPELL_BLOOD_BARRAGE_IMPACT};
@@ -1292,15 +1293,23 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 					names.add(client.getVarcStrValue(v));
 				}
 				raid = (String) r[0];
-				name = RaidParty.partyName(raid, client.getWorld(), names);
+				name = RaidParty.partyName(raid, client.getWorld(), names, config.testRaidPartyAlone() ? 1 : 2);
 				break;
 			}
 		}
 		if (raid == null)
 		{
 			// CoX has no name list, but every member gets the same raid party id
-			String cox = RaidParty.coxPartyName(client.getWorld(), client.getVarpValue(COX_PARTY_VARP),
-				client.getVarbitValue(COX_PARTY_SIZE_VARBIT));
+			int coxId = client.getVarpValue(COX_PARTY_VARP);
+			int coxSize = client.getVarbitValue(COX_PARTY_SIZE_VARBIT);
+			String debug = coxId + "/" + coxSize;
+			if (config.testRaidPartyAlone() && !debug.equals(lastCoxDebug))
+			{
+				// test info: shows what the game tells us about your CoX party
+				localMessage("GoldenDPS test: CoX party id " + coxId + ", party size " + coxSize + ".");
+			}
+			lastCoxDebug = debug;
+			String cox = RaidParty.coxPartyName(client.getWorld(), coxId, coxSize, config.testRaidPartyAlone());
 			if (cox != null)
 			{
 				raid = "CoX";
