@@ -9,6 +9,7 @@ import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
+import com.goldendps.model.PartyLeader;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.ReportFormatter;
 import com.goldendps.model.TargetMatcher;
@@ -61,6 +62,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.party.WSClient;
+import net.runelite.client.party.events.UserPart;
 import net.runelite.client.party.messages.PartyChatMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -143,6 +145,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final Bosses bosses = new Bosses();
 	private final HitAttributor attributor = new HitAttributor();
 	private final TargetMatcher matcher = new TargetMatcher();
+	private final PartyLeader partyLeader = new PartyLeader();
+	/** Your member id in the current party (a new one per party), 0 = not in one. */
+	private long lastPartyMemberId;
 	/** Party members who send GoldenDPS data: name to time of their last message. */
 	private final Map<String, Long> reporters = new HashMap<>();
 	/** Your damage per NPC this tick (for Sanguinesti / blood spell heals). */
@@ -196,6 +201,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 		overlayManager.add(overlay);
 		wsClient.registerMessage(GoldenDpsUpdate.class);
+		wsClient.registerMessage(GoldenDpsPartyMessage.class);
 
 		panel = new GoldenDpsPanel(this);
 		BufferedImage icon = ImageUtil.loadImageResource(GoldenDpsPlugin.class, "icon.png");
@@ -231,6 +237,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			outgoing = new GoldenDpsUpdate();
 		});
 		wsClient.unregisterMessage(GoldenDpsUpdate.class);
+		wsClient.unregisterMessage(GoldenDpsPartyMessage.class);
 		overlayManager.remove(overlay);
 		clientToolbar.removeNavigation(navButton);
 		panel = null;
@@ -504,6 +511,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		refreshOverlay();
+		partyTick(now);
 		if (++ticks % PANEL_EVERY_TICKS == 0)
 		{
 			updatePanel();
@@ -643,6 +651,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			return;
 		}
+		partyLeader.sawPlugin(u.getMemberId());
 		String name = cleanName(u.n);
 		if (name == null)
 		{
@@ -875,8 +884,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 		}
 		data.localName = localName();
-		data.partyCode = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
-		data.partyMembers = partyService.isInParty() ? partyService.getMembers().size() : 0;
+		data.party = partyView();
 		SwingUtilities.invokeLater(() -> p.update(data));
 	}
 
@@ -894,28 +902,35 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		return tracker.findFight(selected);
 	}
 
-	// ---- party (the same RuneLite party as the Party plugin) ----
+	// ---- party (the same RuneLite party as the Party plugin, plus a GoldenDPS leader and kick) ----
 
-	/** Join the party with this code (Swing thread). */
-	void joinParty(String code)
+	/** Join (or start) the party with this name (Swing thread). Spaces are fine. */
+	void joinParty(String name)
 	{
 		clientThread.invoke(() ->
 		{
-			partyService.changeParty(code);
-			localMessage("GoldenDPS: joined party " + code + ".");
+			if (partyService.isInParty() && name.equals(partyService.getPartyPassphrase()))
+			{
+				return;
+			}
+			partyService.changeParty(name);
+			partyLeader.left();
+			localMessage("GoldenDPS: joined party \"" + name + "\".");
 			updatePanel();
 		});
 	}
 
-	/** Make a new party with a random code. */
-	void createParty()
+	/** Fill the party name box with random words (the user then presses Join). */
+	void randomPartyName()
 	{
 		clientThread.invoke(() ->
 		{
-			String code = partyService.generatePassphrase();
-			partyService.changeParty(code);
-			localMessage("GoldenDPS: new party " + code + " - share this code with your group.");
-			updatePanel();
+			String name = partyService.generatePassphrase().replace('-', ' ');
+			GoldenDpsPanel p = panel;
+			if (p != null)
+			{
+				SwingUtilities.invokeLater(() -> p.setPartyName(name));
+			}
 		});
 	}
 
@@ -926,10 +941,151 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			if (partyService.isInParty())
 			{
 				partyService.changeParty(null);
+				partyLeader.left();
 				localMessage("GoldenDPS: left the party.");
 			}
 			updatePanel();
 		});
+	}
+
+	/** Leader only: ask this member's GoldenDPS to leave the party. */
+	void kickFromParty(long memberId, String name)
+	{
+		clientThread.invoke(() ->
+		{
+			if (!partyLeader.isLeader() || !partyService.isInParty())
+			{
+				localMessage("GoldenDPS: only the party leader can kick.");
+				return;
+			}
+			partyService.send(new GoldenDpsPartyMessage(GoldenDpsPartyMessage.KICK, partyLeader.getLeader(), memberId));
+			localMessage("GoldenDPS: removed " + name + " from the party.");
+		});
+	}
+
+	@Subscribe
+	public void onGoldenDpsPartyMessage(GoldenDpsPartyMessage m)
+	{
+		// websocket thread: move to the client thread
+		clientThread.invokeLater(() -> handlePartyMessage(m));
+	}
+
+	private void handlePartyMessage(GoldenDpsPartyMessage m)
+	{
+		PartyMember local = partyService.getLocalMember();
+		if (m.type == null || local == null || m.getMemberId() == local.getMemberId())
+		{
+			return;
+		}
+		switch (m.type)
+		{
+			case GoldenDpsPartyMessage.HI:
+				partyLeader.announce(m.getMemberId(), m.leader);
+				if (partyLeader.isLeader())
+				{
+					// tell the new GoldenDPS member who leads
+					sendPartyControl(GoldenDpsPartyMessage.LEADER, 0);
+				}
+				break;
+			case GoldenDpsPartyMessage.LEADER:
+				partyLeader.announce(m.getMemberId(), m.leader);
+				break;
+			case GoldenDpsPartyMessage.KICK:
+				partyLeader.sawPlugin(m.getMemberId());
+				if (partyLeader.acceptKick(m.getMemberId(), m.target))
+				{
+					PartyMember by = partyService.getMemberById(m.getMemberId());
+					partyService.changeParty(null);
+					partyLeader.left();
+					localMessage("GoldenDPS: you were removed from the party"
+						+ (by != null ? " by " + cleanName(by.getDisplayName()) : "") + ".");
+					updatePanel();
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
+	@Subscribe
+	public void onUserPart(UserPart e)
+	{
+		clientThread.invokeLater(() -> partyLeader.memberLeft(e.getMemberId(), partyMemberIds()));
+	}
+
+	private void sendPartyControl(String type, long target)
+	{
+		if (partyService.isInParty() && partyService.getLocalMember() != null)
+		{
+			partyService.send(new GoldenDpsPartyMessage(type, partyLeader.getLeader(), target));
+		}
+	}
+
+	private List<Long> partyMemberIds()
+	{
+		List<Long> ids = new ArrayList<>();
+		for (PartyMember m : partyService.getMembers())
+		{
+			ids.add(m.getMemberId());
+		}
+		return ids;
+	}
+
+	/** Every game tick: notice joining / leaving, and work out the leader. */
+	private void partyTick(long now)
+	{
+		PartyMember local = partyService.isInParty() ? partyService.getLocalMember() : null;
+		if (local == null)
+		{
+			if (partyLeader.isJoined())
+			{
+				partyLeader.left();
+			}
+			lastPartyMemberId = 0;
+			return;
+		}
+		if (local.getMemberId() != lastPartyMemberId)
+		{
+			// a new party (RuneLite gives you a new member id per party)
+			lastPartyMemberId = local.getMemberId();
+			partyLeader.joined(local.getMemberId(), now);
+			sendPartyControl(GoldenDpsPartyMessage.HI, 0);
+		}
+		if (partyLeader.tick(now, partyMemberIds()) && partyLeader.isLeader())
+		{
+			sendPartyControl(GoldenDpsPartyMessage.LEADER, 0);
+		}
+	}
+
+	/** The party card for the panel. Client thread. */
+	private GoldenDpsPartyPanel.View partyView()
+	{
+		GoldenDpsPartyPanel.View v = new GoldenDpsPartyPanel.View();
+		v.inParty = partyService.isInParty();
+		if (!v.inParty)
+		{
+			return v;
+		}
+		v.code = partyService.getPartyPassphrase();
+		v.youLead = partyLeader.isLeader();
+		PartyMember local = partyService.getLocalMember();
+		for (PartyMember m : partyService.getMembers())
+		{
+			GoldenDpsPartyPanel.Member row = new GoldenDpsPartyPanel.Member();
+			row.id = m.getMemberId();
+			row.you = local != null && m.getMemberId() == local.getMemberId();
+			String name = cleanName(m.getDisplayName());
+			row.name = name != null ? name : row.you ? localName() : "(joining...)";
+			row.online = m.isLoggedIn();
+			row.leader = m.getMemberId() == partyLeader.getLeader();
+			row.hasPlugin = row.you || partyLeader.hasPlugin(m.getMemberId())
+				|| (name != null && isReporter(name, System.currentTimeMillis()));
+			v.members.add(row);
+		}
+		// leader first, then you, then by name
+		v.members.sort((a, b) -> a.leader != b.leader ? (a.leader ? -1 : 1)
+			: a.you != b.you ? (a.you ? -1 : 1) : a.name.compareToIgnoreCase(b.name));
+		return v;
 	}
 
 	/** Overlay right-click "Report to party": what the overlay shows. */

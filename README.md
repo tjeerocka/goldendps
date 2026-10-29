@@ -99,14 +99,20 @@ Party members send their overhealing too (they need this version).
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.
 
-## Party (in the side panel)
+## Party (own tab in the side panel)
 
-GoldenDPS uses RuneLite's own party (the same one as the Party plugin), so you can join it from here:
+The side panel has two tabs: **Meter** (fights) and **Party**. GoldenDPS uses RuneLite's own party
+(the same one as the Party plugin), so friends with only the Party plugin can join too.
 
-- Type a code and click **Join** (or press Enter). Everyone with the same code is in the same party.
-- **Create**: a new party with a random code. **Copy code**: copy it to send to your friends.
+- **Party name**: type any name (spaces are fine) and press **Join** (or Enter). Everyone with the
+  same name is in the same party. **Random** fills in random words. **Copy** copies the name.
+- **Members**: green dot = online, ★ = leader, `(you)`, `no GoldenDPS` = only the Party plugin.
+- **Leader**: whoever starts the party (alone in it). New GoldenDPS members are told who leads.
+  If the leader leaves, the GoldenDPS member who joined the party system first takes over.
+- **Kick** (leader only): the kicked player's GoldenDPS leaves the party. RuneLite parties have no
+  real kick, so this only works on players with GoldenDPS, and they could join again with the same
+  name: start a new party name if needed.
 - **Leave**: leave the party.
-- The status shows how many members are in the party; the box shows the party code.
 
 ## Report to party (like Details! "Report")
 
