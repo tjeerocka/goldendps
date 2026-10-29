@@ -198,6 +198,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private static final long GHOST_MS = 15_000;
 	/** Chat notices when someone joins or leaves the party. */
 	private final PartyNotices partyNotices = new PartyNotices();
+	/** Party members you saw in your instance (until you leave the instance). Client thread. */
+	private final java.util.Set<String> instanceMates = new java.util.HashSet<>();
 	/** Chat colours: joined green, left orange, kicked red. */
 	static final String COL_JOIN = "1aa31a";
 	static final String COL_LEFT = "c27c00";
@@ -580,6 +582,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 		refreshOverlay();
 		rememberParty();
+		instanceMatesTick();
 		raidFightTick(now);
 		raidPartyTick();
 		partyTick(now);
@@ -756,14 +759,26 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 		long now = System.currentTimeMillis();
 		reporters.put(name, now);
+		boolean mate = !config.othersOnlyTogether() || isInstanceMate(name);
+		boolean any = mate;
 		if (u.h != null)
 		{
 			for (GoldenDpsUpdate.Hit hit : u.h)
 			{
 				boolean boss = hit.boss || bosses.isBoss(hit.id, hit.nm);
+				if (!mate && !(boss && sameBossAsYou(u.w, hit)))
+				{
+					// not together: party members elsewhere don't count
+					continue;
+				}
+				any = true;
 				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.w, hit, name), hit.id, hit.nm,
 					boss, hit.a, hit.miss, hit.s == null || hit.s.length() > 64 ? null : hit.s);
 			}
+		}
+		if (!any && !inCurrentFight(name))
+		{
+			return;
 		}
 		tracker.damageTaken(now, name, PlayerKind.PARTY, u.taken);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, u.food, u.of);
@@ -1545,14 +1560,81 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	 * Count other people only in a RuneLite party or in an instance (raids, boss rooms).
 	 * Everywhere else GoldenDPS only counts you.
 	 */
+	/** Other players count: in an instance, or (in a party) while you fight a boss. */
 	private boolean isGroupMode()
 	{
-		if (partyService.isInParty())
+		if (inInstance())
 		{
 			return true;
 		}
+		if (!partyService.isInParty())
+		{
+			return false;
+		}
+		if (!config.othersOnlyTogether())
+		{
+			return true;
+		}
+		Fight f = tracker.getCurrent();
+		return f != null && f.hasBossTarget();
+	}
+
+	private boolean inInstance()
+	{
 		WorldView wv = client.getTopLevelWorldView();
 		return wv != null && wv.isInstance();
+	}
+
+	/** This party member was in your instance (seen in your scene) since you entered it. */
+	private boolean isInstanceMate(String name)
+	{
+		return inInstance() && instanceMates.contains(name);
+	}
+
+	/** The party member hit a boss that is also in your scene (same world, same NPC). */
+	private boolean sameBossAsYou(int world, GoldenDpsUpdate.Hit hit)
+	{
+		if (world != client.getWorld())
+		{
+			return false;
+		}
+		WorldView wv = client.getTopLevelWorldView();
+		NPC npc = wv == null ? null : wv.npcs().byIndex(hit.i);
+		return npc != null && npc.getId() == hit.id;
+	}
+
+	private boolean inCurrentFight(String name)
+	{
+		Fight f = tracker.getCurrent();
+		return f != null && f.players.containsKey(name);
+	}
+
+	/** Every tick: who of your party is in your instance with you. */
+	private void instanceMatesTick()
+	{
+		WorldView wv = client.getTopLevelWorldView();
+		if (wv == null || !wv.isInstance() || !partyService.isInParty())
+		{
+			instanceMates.clear();
+			return;
+		}
+		java.util.Set<String> party = new java.util.HashSet<>();
+		for (PartyMember m : partyService.getMembers())
+		{
+			String n = cleanName(m.getDisplayName());
+			if (n != null)
+			{
+				party.add(n);
+			}
+		}
+		for (Player p : wv.players())
+		{
+			String n = p == null ? null : cleanName(p.getName());
+			if (n != null && party.contains(n))
+			{
+				instanceMates.add(n);
+			}
+		}
 	}
 
 	/** Your target key if the party member hit the same NPC as you see, else a separate key. */

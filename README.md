@@ -22,9 +22,12 @@ Per target: damage split by NPC name, and a **Boss only** mode.
 
 ### When other people count
 
-- **In a RuneLite party, or in an instance** (raids, boss rooms, Inferno...): you, your party,
+- **In an instance together** (raids, boss rooms...): you, the party members who are in your instance,
   "Others (unknown)", guessed players and their damage taken.
-- **Everywhere else** (open world): only **your** numbers. Other players' hits are ignored.
+- **Fighting the same boss** (also outside instances, in a party): party members who hit that same boss.
+- **Everywhere else**: only **your** numbers, even in a party. A party member killing rats on the other
+  side of the map does not show on your meter.
+- Setting **Others only when together** (on by default). Off: party members always count.
 
 ### Players without GoldenDPS
 

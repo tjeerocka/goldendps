@@ -134,6 +134,19 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "othersOnlyTogether",
+		name = "Others only when together",
+		description = "Party members (and guesses for other players) only count when you are in the same instance "
+			+ "(raid, boss room) or fight the same boss. Off: party members always count.",
+		position = 5,
+		section = fightSection
+	)
+	default boolean othersOnlyTogether()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "estimateOthers",
 		name = "Guess other players",
 		description = "Guess who did the hits of players without GoldenDPS (from their attack animation and timing). Marked with ~",
