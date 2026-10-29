@@ -166,7 +166,7 @@ Like the Details! spell breakdown. Each player card in the panel shows damage pe
 - Hover a line for hits, misses, biggest hit and average per attack.
 - Exact for you. Party members only show a breakdown when they also have GoldenDPS (this version).
   Players without GoldenDPS have no breakdown.
-- Thrall hits look like your own hits, so they count for the weapon you hold.
+- If the game shows thrall hits as yours, they count for the weapon you hold.
 
 ## Saving
 
