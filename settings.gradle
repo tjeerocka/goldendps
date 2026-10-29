@@ -1,1 +1,9 @@
 rootProject.name = 'goldendps'
+
+// "GoldenDPS + AoRC" launcher: use the AoRC project folder next to this one
+// (for example IdeaProjects\AoRC and IdeaProjects\goldendps).
+// Other place? Set aorcDir=C:/path/to/AoRC in %USERPROFILE%\.gradle\gradle.properties
+def aorcDir = file(providers.gradleProperty('aorcDir').getOrElse('../AoRC'))
+if (new File(aorcDir, 'settings.gradle').exists()) {
+    includeBuild(aorcDir)
+}

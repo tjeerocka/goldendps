@@ -108,4 +108,13 @@ Needs Java 11 or newer (JDK 17 recommended). Never commit `credentials.propertie
   or **GoldenDPS (Gradle)** which runs `gradlew run` (assertions on).
 - Tests: `gradlew test`
 
+### Run together with AoRC (one client)
+
+1. Have both projects next to each other, for example `IdeaProjects\AoRC` and `IdeaProjects\goldendps`.
+   (Other place: add `aorcDir=C:/path/to/AoRC` to `%USERPROFILE%\.gradle\gradle.properties`.)
+2. In IntelliJ: reload Gradle (Gradle panel → Reload). AoRC now shows up in the Gradle panel too.
+3. Run **GoldenDPS + AoRC** (or **GoldenDPS + AoRC (Gradle)** = `gradlew runBoth`).
+
+AoRC is loaded straight from its project folder, so changes in AoRC are used on the next start.
+
 The boss id list comes from RuneLite's DPS Counter plugin (BSD-2-Clause).
