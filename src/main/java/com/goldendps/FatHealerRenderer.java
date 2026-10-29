@@ -96,6 +96,12 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		}
 	}
 
+	/** The player that looks fat right now, or null. */
+	Player getFatPlayer()
+	{
+		return target != null && client.isRuneLiteObjectRegistered(this) ? target : null;
+	}
+
 	/** True while a fat copy is drawn for this player (so the real one is hidden). */
 	private boolean isFat(Player p)
 	{

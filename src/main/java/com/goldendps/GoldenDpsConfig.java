@@ -311,4 +311,18 @@ public interface GoldenDpsConfig extends Config
 	{
 		return 6;
 	}
+
+	@ConfigItem(
+		keyName = "fatWalkSpeed",
+		name = "Walk animation speed",
+		description = "The fat healer's walk and run animation plays slower (100% = normal). They still move at normal speed.",
+		position = 3,
+		section = funSection
+	)
+	@Range(min = 30, max = 100)
+	@Units(Units.PERCENT)
+	default int fatWalkSpeed()
+	{
+		return 70;
+	}
 }

@@ -111,6 +111,8 @@ They "grow" into it over about a second.
   every frame, so all animations stay. If the client ever hands back its real cached model instead
   of a per-frame copy, the plugin undoes the change and turns the effect off (safety check).
 - Right-click / clicking the fat healer may not work while the effect is on.
+- **Slow walk:** the fat healer's walk and run animation plays slower (setting **Walk animation speed**,
+  default 70%). They still move at normal speed, only the legs move slower.
 - **Test:** side panel → **Test fat healer (me)** makes your own character fat anywhere
   (no party or healing needed). Click again to stop.
 

@@ -11,6 +11,7 @@ import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.SlowAnimation;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
@@ -43,6 +44,7 @@ import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.BeforeRender;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -141,6 +143,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private String fatName;
 	/** Test button in the panel: make yourself the fat healer. */
 	private volatile boolean fatTest;
+	private final SlowAnimation fatWalk = new SlowAnimation();
 
 	private final FightTracker tracker = new FightTracker();
 	private final HealthWatcher health = new HealthWatcher();
@@ -389,6 +392,27 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			who = findPlayer(fatName);
 		}
 		fatHealer.update(who, config.fatWidth(), config.fatHeight());
+	}
+
+	/** Every client tick (20 ms): play the fat healer's walk / run animation slower. */
+	@Subscribe
+	public void onClientTick(ClientTick e)
+	{
+		Player p = fatHealer == null ? null : fatHealer.getFatPlayer();
+		if (p == null)
+		{
+			fatWalk.reset();
+			return;
+		}
+		int pose = p.getPoseAnimation();
+		boolean moving = pose != -1 && pose != p.getIdlePoseAnimation()
+			&& (pose == p.getWalkAnimation() || pose == p.getRunAnimation() || pose == p.getWalkRotate180()
+			|| pose == p.getWalkRotateLeft() || pose == p.getWalkRotateRight());
+		int back = fatWalk.step(pose, p.getPoseAnimationFrame(), moving, config.fatWalkSpeed() / 100.0);
+		if (back >= 0)
+		{
+			p.setPoseAnimationFrame(back);
+		}
 	}
 
 	/** The player with the most healing in the current / last fight (group mode only). */
