@@ -183,6 +183,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final RaidZone raidZone = new RaidZone();
 	/** After login: join the party you were in before (once). */
 	private boolean rejoinPending = true;
+	/** Ticks to wait after login before reading the saved party (the account's settings load first). */
+	private int rejoinWait = REJOIN_WAIT_TICKS;
+	private static final int REJOIN_WAIT_TICKS = 3;
 	/** Personal bests of the account. Client thread. */
 	private BossRecords records = new BossRecords();
 	private boolean recordsLoaded;
@@ -221,6 +224,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	{
 		store = new HistoryStore(gson, new File(RuneLite.RUNELITE_DIR, "goldendps").toPath());
 		tracker.setListener(this);
+		// the first test version saved the party for all accounts: forget that one
+		configManager.unsetConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
 		applyConfig();
 
 		overlayManager.add(overlay);
@@ -661,6 +666,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			checkAccount();
 			rejoinPending = true;
+			rejoinWait = REJOIN_WAIT_TICKS;
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
@@ -1046,8 +1052,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	{
 		clientThread.invoke(() ->
 		{
-			if (partyService.isInParty() && name.equals(partyService.getPartyPassphrase()))
+			if (partyService.isInParty())
 			{
+				// leave first, so you never switch party by mistake
 				return;
 			}
 			partyService.changeParty(name);
@@ -1062,6 +1069,11 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	{
 		clientThread.invoke(() ->
 		{
+			if (partyService.isInParty())
+			{
+				// only to make a new party: leave this one first
+				return;
+			}
 			String name = partyService.generatePassphrase().replace('-', ' ');
 			GoldenDpsPanel p = panel;
 			if (p != null)
@@ -1246,7 +1258,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	 */
 	private void rememberParty()
 	{
-		String saved = configManager.getConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
+		// saved per account (RuneLite profile), so your other accounts don't join it
+		if (rejoinPending && (rejoinWait-- > 0 || client.getAccountHash() == -1))
+		{
+			return;
+		}
+		String saved = configManager.getRSProfileConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
 		if (rejoinPending)
 		{
@@ -1261,12 +1278,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		if (current != null && !current.equals(saved))
 		{
-			configManager.setConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY, current);
+			configManager.setRSProfileConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY, current);
 		}
 		else if (current == null && saved != null)
 		{
 			// you left while logged in (our Leave button, the Party plugin or a kick)
-			configManager.unsetConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
+			configManager.unsetRSProfileConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
 		}
 	}
 

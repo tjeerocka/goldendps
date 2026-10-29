@@ -57,6 +57,8 @@ class GoldenDpsPartyPanel extends JPanel
 	private final JTextField nameField = new JTextField();
 	private final JPanel memberList = new JPanel();
 	private final JButton leaveButton;
+	private final JButton joinButton;
+	private final JButton randomButton;
 	private final JButton copyButton;
 	private String shownCode;
 
@@ -84,7 +86,8 @@ class GoldenDpsPartyPanel extends JPanel
 		nameLabel.setToolTipText("Everyone who joins with the same name is in the same party");
 		nameField.setToolTipText("Type a party name (spaces are fine), or press Random");
 		nameField.addActionListener(e -> join());
-		JButton join = button("Join", "Join (or start) the party with this name", ColorScheme.BRAND_ORANGE, this::join);
+		joinButton = button("Join", "Join (or start) the party with this name", ColorScheme.BRAND_ORANGE, this::join);
+		JButton join = joinButton;
 		JPanel nameRow = new JPanel(new BorderLayout(4, 0));
 		nameRow.setOpaque(false);
 		nameRow.add(nameField, BorderLayout.CENTER);
@@ -92,7 +95,8 @@ class GoldenDpsPartyPanel extends JPanel
 
 		JPanel actions = new JPanel(new GridLayout(1, 3, 4, 0));
 		actions.setOpaque(false);
-		actions.add(button("Random", "Fill in a random party name", null, plugin::randomPartyName));
+		randomButton = button("Random", "Fill in a random party name", null, plugin::randomPartyName);
+		actions.add(randomButton);
 		copyButton = button("Copy", "Copy the party name to send to your friends", null, this::copy);
 		actions.add(copyButton);
 		leaveButton = button("Leave", "Leave the party", null, plugin::leaveParty);
@@ -131,8 +135,8 @@ class GoldenDpsPartyPanel extends JPanel
 			}
 			status.setText(online + " online");
 			status.setForeground(ONLINE);
-			// show the party name in the box (unless you are typing in it)
-			if (v.code != null && !v.code.equals(shownCode) && !nameField.isFocusOwner())
+			// in a party: the box shows its name and can't be changed (leave first)
+			if (v.code != null && !v.code.equals(nameField.getText()))
 			{
 				nameField.setText(v.code);
 			}
@@ -145,6 +149,16 @@ class GoldenDpsPartyPanel extends JPanel
 		shownCode = v.inParty ? v.code : null;
 		leaveButton.setEnabled(v.inParty);
 		copyButton.setEnabled(v.inParty);
+		// Random and Join only to make or join a party when you are not in one
+		nameField.setEditable(!v.inParty);
+		randomButton.setEnabled(!v.inParty);
+		joinButton.setEnabled(!v.inParty);
+		joinButton.setBackground(v.inParty ? ColorScheme.DARKER_GRAY_COLOR : ColorScheme.BRAND_ORANGE);
+		String why = v.inParty ? "Leave this party first" : null;
+		randomButton.setToolTipText(why != null ? why : "Fill in a random party name");
+		joinButton.setToolTipText(why != null ? why : "Join (or start) the party with this name");
+		nameField.setToolTipText(why != null ? "Your party name. Leave this party first to pick another one"
+			: "Type a party name (spaces are fine), or press Random");
 
 		memberList.removeAll();
 		if (v.inParty)
@@ -211,6 +225,10 @@ class GoldenDpsPartyPanel extends JPanel
 
 	private void join()
 	{
+		if (!joinButton.isEnabled())
+		{
+			return;
+		}
 		String name = nameField.getText() == null ? "" : nameField.getText().trim().replaceAll("\\s+", " ");
 		if (!name.isEmpty())
 		{

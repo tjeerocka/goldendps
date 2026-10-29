@@ -68,7 +68,8 @@ In **CoX, ToB, ToA and The Fractured Archive** (setting **One fight per raid**, 
 
 ### Stay in your party
 
-GoldenDPS remembers your party. After a relog or a client restart you join it again by yourself.
+GoldenDPS remembers your party **per account**. After a relog or a client restart you join it again by yourself
+(your other accounts are not affected).
 It only forgets the party when you leave it yourself (Leave button or the Party plugin) or are kicked.
 
 ## Healing and overhealing
@@ -137,6 +138,7 @@ the same party by itself. The game shows every member the names of the raid part
 same party name from the raid, the world and the sorted names, so nobody has to type anything.
 
 - Only when you are not in a party you joined yourself (it never changes your own party).
+- **Random** and **Join** only work when you are not in a party. To change party, press **Leave** first.
 - Waits until the names stay the same for 5 ticks (people join the lobby one by one); when someone
   joins or leaves the raid party, everyone moves to the new party name.
 - After the raid you **stay** in the party, until you leave it yourself or make a raid party with
