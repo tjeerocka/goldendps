@@ -44,6 +44,8 @@ class GoldenDpsPartyPanel extends JPanel
 		String code;
 		boolean youLead;
 		boolean auto;
+		/** The raid ("ToB", "CoX"...) whose party can be joined, or null. */
+		String raidPartyOffer;
 		List<Member> members = new ArrayList<>();
 	}
 
@@ -164,11 +166,15 @@ class GoldenDpsPartyPanel extends JPanel
 			: "Type a party name (spaces are fine), or press Random");
 
 		memberList.removeAll();
+		if (v.raidPartyOffer != null)
+		{
+			memberList.add(raidPartyButton(v.raidPartyOffer));
+		}
 		if (v.inParty)
 		{
 			if (v.auto)
 			{
-				memberList.add(small("Raid party (joined automatically)", GOLD));
+				memberList.add(small("Raid party", GOLD));
 			}
 			memberList.add(small(v.youLead ? "Members - you lead" : "Members", ColorScheme.LIGHT_GRAY_COLOR));
 			for (Member m : v.members)
@@ -178,6 +184,19 @@ class GoldenDpsPartyPanel extends JPanel
 		}
 		memberList.revalidate();
 		memberList.repaint();
+	}
+
+	private JComponent raidPartyButton(String raid)
+	{
+		JButton b = button("Join raid party (" + raid + ")", "Join one party with everyone in your raid who runs GoldenDPS",
+			ColorScheme.BRAND_ORANGE, plugin::joinRaidParty);
+		JPanel wrap = new JPanel(new BorderLayout());
+		wrap.setOpaque(false);
+		wrap.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+		wrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+		wrap.setAlignmentX(LEFT_ALIGNMENT);
+		wrap.add(b);
+		return wrap;
 	}
 
 	private JComponent memberRow(Member m, boolean youLead)

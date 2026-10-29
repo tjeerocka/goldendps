@@ -799,6 +799,15 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		});
 	}
 
+	void joinRaidParty()
+	{
+		clientThread.invoke(() ->
+		{
+			party.joinRaidParty();
+			updatePanel();
+		});
+	}
+
 	void randomPartyName()
 	{
 		clientThread.invoke(() ->

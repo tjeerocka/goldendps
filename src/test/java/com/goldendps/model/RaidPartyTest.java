@@ -22,7 +22,7 @@ public class RaidPartyTest
 		{
 			action = r.tick(name, current);
 		}
-		return action.join;
+		return action.offer;
 	}
 
 	@Test
@@ -51,15 +51,15 @@ public class RaidPartyTest
 	}
 
 	@Test
-	public void joinsAfterTheNamesAreStable()
+	public void offersOnceTheNamesAreStable()
 	{
 		RaidParty r = new RaidParty();
 		for (int i = 1; i < RaidParty.STABLE_TICKS; i++)
 		{
-			assertNull(r.tick(P1, null).join);
+			assertNull(r.tick(P1, null).offer);
 		}
-		assertEquals(P1, r.tick(P1, null).join);
-		assertNull(r.tick(P1, P1).join);
+		assertEquals(P1, r.tick(P1, null).offer);
+		assertNull(r.tick(P1, P1).offer);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class RaidPartyTest
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < 20; i++)
 		{
-			assertNull(r.tick(P1, "my friends").join);
+			assertNull(r.tick(P1, "my friends").offer);
 			assertFalse(r.tick(null, "my friends").leave);
 		}
 	}

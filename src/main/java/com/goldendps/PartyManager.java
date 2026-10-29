@@ -46,6 +46,9 @@ class PartyManager
 	private final Map<Long, Long> firstSeen = new HashMap<>();
 	private final Set<String> instanceMates = new HashSet<>();
 	private long localMemberId;
+	/** The raid party offered in the panel, or null. */
+	private String raidPartyOffer;
+	private String raidPartyOfferRaid;
 
 	@Inject
 	PartyManager(Client client, PartyService partyService, GoldenDpsConfig config, ChatNotifier chat,
@@ -71,6 +74,19 @@ class PartyManager
 		}
 		changeParty(name);
 		chat.info("joined party \"" + name + "\".");
+	}
+
+	/** Joins the offered raid party; an earlier raid party is left for it. */
+	void joinRaidParty()
+	{
+		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		if (raidPartyOffer == null || (current != null && !RaidParty.isAuto(current)))
+		{
+			return;
+		}
+		changeParty(raidPartyOffer);
+		chat.info("joined the " + raidPartyOfferRaid + " party.");
+		raidPartyOffer = null;
 	}
 
 	/** A random name for a new party, or null when you are in a party already. */
@@ -194,7 +210,7 @@ class PartyManager
 	void tick(long now)
 	{
 		updateInstanceMates();
-		autoRaidParty();
+		updateRaidParty();
 		updateMembership(now);
 	}
 
@@ -277,21 +293,23 @@ class PartyManager
 		}
 	}
 
-	private void autoRaidParty()
+	private void updateRaidParty()
 	{
 		if (!config.autoRaidParty())
 		{
+			raidPartyOffer = null;
 			return;
 		}
 		RaidPartyDetector.Detected raid = raidPartyDetector.current();
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
 		RaidParty.Action action = raidParty.tick(raid.partyName, current);
-		if (action.join != null)
+		if (action.offer != null && !action.offer.equals(raidPartyOffer))
 		{
-			changeParty(action.join);
-			chat.info("joined the " + raid.raid + " party automatically (everyone in your raid with GoldenDPS).");
+			chat.joined("your " + raid.raid + " party can share numbers: click Join raid party in the GoldenDPS panel.");
 		}
-		else if (action.leave)
+		raidPartyOffer = action.offer;
+		raidPartyOfferRaid = raid.raid;
+		if (action.leave)
 		{
 			changeParty(null);
 			chat.info("left the raid party.");
@@ -301,6 +319,7 @@ class PartyManager
 	GoldenDpsPartyPanel.View view(String localName)
 	{
 		GoldenDpsPartyPanel.View v = new GoldenDpsPartyPanel.View();
+		v.raidPartyOffer = raidPartyOffer == null ? null : raidPartyOfferRaid;
 		v.inParty = partyService.isInParty();
 		if (!v.inParty)
 		{

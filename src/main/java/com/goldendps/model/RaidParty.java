@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Automatic party for raids. Every member derives the same party name from data the game gives
- * all of them (the member names, or the CoX raid party id), so they meet in one RuneLite party
- * without exchanging anything. The party is left again when the raid party is gone.
- * A party the player joined by hand is never changed.
+ * Party for raids. Every member derives the same party name from data the game gives all of them
+ * (the member names, or the CoX raid party id), so one click puts them in the same RuneLite party
+ * without exchanging anything. The party is left again when the raid party is gone. Joining is
+ * only offered, never done automatically, and a party joined by hand is never changed.
  */
 public class RaidParty
 {
-	/** The raid party must stay the same this long before joining (people join one by one). */
+	/** The raid party must stay the same this long before it is offered (people join one by one). */
 	public static final int STABLE_TICKS = 5;
 	/** No raid party for this long means the raid is over (short gaps happen while loading). */
 	public static final int LEAVE_TICKS = 10;
@@ -27,13 +27,13 @@ public class RaidParty
 		public static final Action NONE = new Action(null, false);
 		public static final Action LEAVE = new Action(null, true);
 
-		/** The party to join, or null. */
-		public final String join;
+		/** The party to offer, or null. */
+		public final String offer;
 		public final boolean leave;
 
-		private Action(String join, boolean leave)
+		private Action(String offer, boolean leave)
 		{
-			this.join = join;
+			this.offer = offer;
 			this.leave = leave;
 		}
 	}
