@@ -267,4 +267,48 @@ public interface GoldenDpsConfig extends Config
 	{
 		return 20;
 	}
+
+	@ConfigSection(name = "Fun", description = "Just for fun, only on your screen", position = 2)
+	String funSection = "fun";
+
+	@ConfigItem(
+		keyName = "fatHealer",
+		name = "Fat healer",
+		description = "The player with the most healing (you or a party member with GoldenDPS) looks wider and a bit taller. "
+			+ "Only on your screen, only in a party, raid or boss instance.",
+		position = 0,
+		section = funSection
+	)
+	default boolean fatHealer()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "fatWidth",
+		name = "Extra width",
+		description = "How much wider the fat healer is",
+		position = 1,
+		section = funSection
+	)
+	@Range(min = 0, max = 100)
+	@Units(Units.PERCENT)
+	default int fatWidth()
+	{
+		return 35;
+	}
+
+	@ConfigItem(
+		keyName = "fatHeight",
+		name = "Extra height",
+		description = "How much taller the fat healer is",
+		position = 2,
+		section = funSection
+	)
+	@Range(min = 0, max = 30)
+	@Units(Units.PERCENT)
+	default int fatHeight()
+	{
+		return 6;
+	}
 }

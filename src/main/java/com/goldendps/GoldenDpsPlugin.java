@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.FatHealer;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
@@ -41,6 +42,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -50,6 +52,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ClientShutdown;
@@ -130,6 +133,13 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Inject
 	private ScheduledExecutorService executor;
 
+	@Inject
+	private RenderCallbackManager renderCallbackManager;
+
+	private FatHealerRenderer fatHealer;
+	/** Name of the current fat healer (set every tick), or null. */
+	private String fatName;
+
 	private final FightTracker tracker = new FightTracker();
 	private final HealthWatcher health = new HealthWatcher();
 	private final Bosses bosses = new Bosses();
@@ -187,6 +197,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		applyConfig();
 
 		overlayManager.add(overlay);
+		fatHealer = new FatHealerRenderer(client);
+		renderCallbackManager.register(fatHealer);
 		wsClient.registerMessage(GoldenDpsUpdate.class);
 
 		panel = new GoldenDpsPanel(this);
@@ -211,8 +223,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Override
 	protected void shutDown()
 	{
+		renderCallbackManager.unregister(fatHealer);
+		final FatHealerRenderer fat = fatHealer;
 		clientThread.invoke(() ->
 		{
+			fat.clear();
+			fatName = null;
 			tracker.endNow(System.currentTimeMillis(), "Plugin turned off");
 			saveAsync();
 			tracker.clearHistory();
@@ -357,6 +373,56 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 	}
 
+	/** Every frame: keep the fat healer copy on the real character. */
+	@Subscribe
+	public void onBeforeRender(BeforeRender e)
+	{
+		if (fatHealer == null)
+		{
+			return;
+		}
+		Player who = null;
+		if (fatName != null && client.getGameState() == GameState.LOGGED_IN)
+		{
+			who = findPlayer(fatName);
+		}
+		fatHealer.update(who, config.fatWidth(), config.fatHeight());
+	}
+
+	/** The player with the most healing in the current / last fight (group mode only). */
+	private void pickFatHealer(long now)
+	{
+		Fight f = tracker.getDisplayFight();
+		if (!config.fatHealer() || !isGroupMode() || f == null)
+		{
+			fatName = null;
+			return;
+		}
+		fatName = FatHealer.pick(FightReport.of(f, false, config.countRegen(), now));
+	}
+
+	private Player findPlayer(String name)
+	{
+		Player me = client.getLocalPlayer();
+		if (me != null && name.equals(cleanName(me.getName())))
+		{
+			return me;
+		}
+		WorldView wv = client.getTopLevelWorldView();
+		if (wv == null)
+		{
+			return null;
+		}
+		for (Player p : wv.players())
+		{
+			if (p != null && name.equals(cleanName(p.getName())))
+			{
+				return p;
+			}
+		}
+		return null;
+	}
+
 	@Subscribe
 	public void onStatChanged(StatChanged e)
 	{
@@ -496,6 +562,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		refreshOverlay();
+		pickFatHealer(now);
 		if (++ticks % PANEL_EVERY_TICKS == 0)
 		{
 			updatePanel();
@@ -586,6 +653,11 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
+			fatName = null;
+			if (fatHealer != null)
+			{
+				fatHealer.clear();
+			}
 			health.reset();
 			attributor.clear();
 			matcher.clear();

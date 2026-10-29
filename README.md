@@ -99,7 +99,20 @@ Party members send their overhealing too (they need this version).
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.
 
-## Saving
+## Fun: Fat healer
+
+The player with the most healing in the current / last fight (you, or a party member with GoldenDPS)
+looks **wider and a bit taller** (default +35% width, +6% height; settings under **Fun**).
+They "grow" into it over about a second.
+
+- Only on your screen. Nothing changes in the game or for other players.
+- Only in a RuneLite party, raid or boss instance.
+- How: the real character is hidden for you and a scaled copy of its model is drawn in the same place
+  every frame, so all animations stay. If the client ever hands back its real cached model instead
+  of a per-frame copy, the plugin undoes the change and turns the effect off (safety check).
+- Right-click / clicking the fat healer may not work while the effect is on.
+
+
 
 Fight history is saved per account in
 `%USERPROFILE%\.runelite\goldendps\<account id>.json`:
