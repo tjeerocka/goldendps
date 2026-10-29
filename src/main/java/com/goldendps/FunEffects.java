@@ -61,20 +61,37 @@ class FunEffects
 		FightReport shownFight = visible(fight, fightEndedMs, now) ? fight : null;
 		FightReport shownBoss = visible(boss, bossEndedMs, now) ? boss : null;
 		mvp = name(shownFight == null ? null : shownFight.topDamage());
-		burger = name(shownFight == null ? null : shownFight.topHealer());
+		FightReport.PlayerRow fightHealer = shownFight == null ? null : shownFight.topHealer();
 		FightReport.PlayerRow bossHealer = shownBoss == null ? null : shownBoss.topHealer();
+		burger = name(fightHealer);
 		fries = name(bossHealer);
 		if (bossHealer != null && bossEndedMs > 0 && !bossId.equals(lastBossFightId))
 		{
 			lastBossFightId = bossId;
-			say(bossHealer.name, healedLine(bossHealer.healing), now, false);
+			announceHealers(bossHealer, fightHealer, now);
 		}
 		speech.values().removeIf(s -> now >= s.until);
 	}
 
-	private static String healedLine(long healed)
+	/** After a boss kill the fries holder says the boss heal and the burger holder the total. */
+	private void announceHealers(FightReport.PlayerRow bossHealer, FightReport.PlayerRow fightHealer, long now)
 	{
-		return "I healed " + Format.amount(healed) + " HP!";
+		boolean samePlayer = fightHealer == null || fightHealer.name.equals(bossHealer.name);
+		if (samePlayer)
+		{
+			long total = fightHealer == null ? bossHealer.healing : fightHealer.healing;
+			say(bossHealer.name, healedLine(bossHealer.healing, total), now, false);
+			return;
+		}
+		say(bossHealer.name, healedLine(bossHealer.healing, bossHealer.healing), now, false);
+		say(fightHealer.name, "Total healed: " + Format.amount(fightHealer.healing) + " HP!", now, false);
+	}
+
+	/** "I healed 1,234 HP!", with the total when the whole fight healed more. */
+	private static String healedLine(long boss, long total)
+	{
+		String line = "I healed " + Format.amount(boss) + " HP!";
+		return total > boss ? line + " (" + Format.amount(total) + " total)" : line;
 	}
 
 	private void say(String player, String text, long now, boolean maxHit)
@@ -168,7 +185,7 @@ class FunEffects
 	{
 		testPlayer = player;
 		testSnackUntil = now + TEST_MS;
-		say(player, healedLine(1234), now, false);
+		say(player, healedLine(1234, 5678), now, false);
 	}
 
 	void testMaxHit(String player, long now)
