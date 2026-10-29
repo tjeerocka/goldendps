@@ -327,9 +327,9 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	 * Logos and symbols are many small triangles lying flat on the big triangles of a cape: points
 	 * that only belong to small triangles are lifted this much more, so they are really in front.
 	 */
-	static final float DETAIL_PUSH = 2f;
+	static final float DETAIL_PUSH = 3f;
 	/** "Small" triangle: twice its area below this (in model units squared). */
-	static final float SMALL_FACE_AREA2 = 80f;
+	static final float SMALL_FACE_AREA2 = 160f;
 
 	/**
 	 * Real players are drawn layer by layer (body, then cape, then the cape logo) without a depth test;

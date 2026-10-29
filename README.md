@@ -123,7 +123,7 @@ top healer (a new top healer starts growing after the old one has shrunk).
   cape logo could disappear and the body could show through the cape. Fix: each point of the copy is
   moved a bit outward per layer (3 units per layer, at most 12), so the cape logo is really in
   front of the cape and the cape really behind the body. Logos and symbols (points that only belong to small triangles)
-  are lifted 2 units more, because they often lie flat on the cape in the same layer.
+  are lifted 3 units more, because they often lie flat on the cape in the same layer.
 - **Status:** under the test button, `Fat: drawn +35%/+6%, real hidden` (or what is wrong).
 - **Test:** side panel → **Test fat healer (me)** makes your own character fat anywhere
   (no party or healing needed). Click again to stop.
