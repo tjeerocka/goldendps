@@ -191,6 +191,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	 */
 	private final Map<Long, Long> kicked = new HashMap<>();
 	private static final long KICK_HIDE_MS = 120_000;
+	/** When we first saw each party member (member id → time). */
+	private final Map<Long, Long> memberSeen = new HashMap<>();
+	/** A member with no name who is not logged in after this long is an old, closed connection. */
+	private static final long GHOST_MS = 15_000;
 	private static final int REJOIN_WAIT_TICKS = 3;
 	/** Personal bests of the account. Client thread. */
 	private BossRecords records = new BossRecords();
@@ -1340,6 +1344,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		PartyMember local = partyService.getLocalMember();
 		long nowMs = System.currentTimeMillis();
 		kicked.values().removeIf(t -> nowMs - t > KICK_HIDE_MS);
+		java.util.Set<Long> ids = new java.util.HashSet<>();
+		for (PartyMember m : partyService.getMembers())
+		{
+			ids.add(m.getMemberId());
+		}
+		memberSeen.keySet().retainAll(ids);
 		for (PartyMember m : partyService.getMembers())
 		{
 			if (kicked.containsKey(m.getMemberId()))
@@ -1351,6 +1361,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			row.id = m.getMemberId();
 			row.you = local != null && m.getMemberId() == local.getMemberId();
 			String name = cleanName(m.getDisplayName());
+			long seen = memberSeen.computeIfAbsent(m.getMemberId(), id -> nowMs);
+			if (!row.you && name == null && !m.isLoggedIn() && nowMs - seen > GHOST_MS)
+			{
+				// an old connection the party server still keeps (for example your client before a restart)
+				continue;
+			}
 			row.name = name != null ? name : row.you ? localName() : "(joining...)";
 			row.online = m.isLoggedIn();
 			row.leader = m.getMemberId() == partyLeader.getLeader();
