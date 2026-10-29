@@ -34,6 +34,8 @@ class GoldenDpsOverlay extends Overlay
 	private static final Color BOSS_HEADER_BG = new Color(90, 10, 10, 210);
 	private static final Color BAR_BG = new Color(255, 255, 255, 18);
 	private static final int PAD = 3;
+	private static final int COL_GAP = 9;
+	private static final Color CATEGORY_COLOR = new Color(190, 190, 190);
 
 	private final GoldenDpsPlugin plugin;
 	private final GoldenDpsConfig config;
@@ -115,7 +117,8 @@ class GoldenDpsOverlay extends Overlay
 	{
 		int rowH = fm.getHeight() + 3;
 		int shown = Math.min(rows.size(), config.maxRows());
-		int height = rowH * (shown + 1) + PAD;
+		// header + category row (only when there are bars) + bars
+		int height = rowH * (shown + 1 + (shown > 0 ? 1 : 0)) + PAD;
 
 		g.setColor(BACKGROUND);
 		g.fillRect(0, top, width, height);
@@ -132,27 +135,61 @@ class GoldenDpsOverlay extends Overlay
 			return top + height;
 		}
 
-		double max = FightReport.value(rows.get(0), mode);
+		// columns: widest of the label and the values, laid out from the right
+		String[] labels = columnLabels(mode);
 		double total = report.total(mode);
+		String[][] cells = new String[shown][];
+		int[] colW = new int[labels.length];
+		for (int c = 0; c < labels.length; c++)
+		{
+			colW[c] = fm.stringWidth(labels[c]);
+		}
+		for (int i = 0; i < shown; i++)
+		{
+			cells[i] = columnValues(rows.get(i), mode, total);
+			for (int c = 0; c < labels.length; c++)
+			{
+				colW[c] = Math.max(colW[c], fm.stringWidth(cells[i][c]));
+			}
+		}
+		int[] colRight = new int[labels.length];
+		int x = width - PAD - 2;
+		for (int c = labels.length - 1; c >= 0; c--)
+		{
+			colRight[c] = x;
+			x -= colW[c] + COL_GAP;
+		}
+		int nameMaxW = x - PAD - 2;
+
+		// category row: "Player   Damage  DPS  %"
+		int cy = top + rowH + textY - 1;
+		drawText(g, "Player", PAD + 2, cy, CATEGORY_COLOR);
+		for (int c = 0; c < labels.length; c++)
+		{
+			drawText(g, labels[c], colRight[c] - fm.stringWidth(labels[c]), cy, CATEGORY_COLOR);
+		}
+
+		double max = FightReport.value(rows.get(0), mode);
 		for (int i = 0; i < shown; i++)
 		{
 			FightReport.PlayerRow row = rows.get(i);
-			int y = top + rowH * (i + 1) + 1;
+			int y = top + rowH * (i + 2) + 1;
 			double v = FightReport.value(row, mode);
 
 			g.setColor(BAR_BG);
 			g.fillRect(PAD, y, width - 2 * PAD, rowH - 2);
 			int barW = max <= 0 ? 0 : (int) Math.round((width - 2 * PAD) * v / max);
-			Color c = colorFor(row);
-			g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 150));
+			Color col = colorFor(row);
+			g.setColor(new Color(col.getRed(), col.getGreen(), col.getBlue(), 150));
 			g.fillRect(PAD, y, barW, rowH - 2);
 
-			String value = valueText(row, mode, v, total);
-			int valueW = fm.stringWidth(value);
 			int ty = y + textY - 1;
 			String left = (i + 1) + ". " + (row.isEstimate() ? "~" : "") + row.name;
-			drawText(g, fit(fm, left, width - valueW - 4 * PAD), PAD + 2, ty, Color.WHITE);
-			drawText(g, value, width - PAD - 2 - valueW, ty, Color.WHITE);
+			drawText(g, fit(fm, left, nameMaxW), PAD + 2, ty, Color.WHITE);
+			for (int c = 0; c < labels.length; c++)
+			{
+				drawText(g, cells[i][c], colRight[c] - fm.stringWidth(cells[i][c]), ty, Color.WHITE);
+			}
 		}
 		return top + height;
 	}
@@ -174,22 +211,39 @@ class GoldenDpsOverlay extends Overlay
 		return PALETTE[Math.floorMod(row.name.hashCode(), PALETTE.length)];
 	}
 
-	private static String valueText(FightReport.PlayerRow row, MeterMode mode, double v, double total)
+	/** Column categories per mode (after the player name). */
+	static String[] columnLabels(MeterMode mode)
 	{
-		double pct = total <= 0 ? 0 : 100.0 * v / total;
 		switch (mode)
 		{
 			case DPS:
-				// DPS first, then damage
-				return Format.dps(row.dps) + "/s  " + Format.amount(row.damage) + "  " + Format.percent(row.percent);
-			case DAMAGE:
-				// damage, damage per second, share
-				return Format.amount(row.damage) + "  " + Format.dps(row.dps) + "/s  " + Format.percent(row.percent);
+				return new String[]{"DPS", "Damage", "%"};
 			case HEALING:
-				// healing, and how much of this player's healing was wasted
-				return Format.amount(v) + (row.overheal > 0 ? "  OH " + Format.percent(row.overhealPercent()) : "");
+				return new String[]{"Healing", "OH", "%"};
+			case DAMAGE_TAKEN:
+				return new String[]{"Taken", "%"};
+			case DAMAGE:
 			default:
-				return Format.amount(v) + " (" + Format.percent(pct) + ")";
+				return new String[]{"Damage", "DPS", "%"};
+		}
+	}
+
+	/** Values for the columns of {@link #columnLabels}. */
+	static String[] columnValues(FightReport.PlayerRow row, MeterMode mode, double total)
+	{
+		double v = FightReport.value(row, mode);
+		String share = Format.percent(total <= 0 ? 0 : 100.0 * v / total);
+		switch (mode)
+		{
+			case DPS:
+				return new String[]{Format.dps(row.dps), Format.amount(row.damage), Format.percent(row.percent)};
+			case HEALING:
+				return new String[]{Format.amount(v), row.overheal > 0 ? Format.percent(row.overhealPercent()) : "-", share};
+			case DAMAGE_TAKEN:
+				return new String[]{Format.amount(v), share};
+			case DAMAGE:
+			default:
+				return new String[]{Format.amount(row.damage), Format.dps(row.dps), Format.percent(row.percent)};
 		}
 	}
 

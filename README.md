@@ -84,7 +84,10 @@ Party members send their overhealing too (they need this version).
 
 ## Overlay and panel
 
-- Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Damage taken**,
+- Overlay: colored bars, sorted, with a category row above the bars:
+  Damage mode `Player · Damage · DPS · %`, DPS mode `Player · DPS · Damage · %`,
+  Healing `Player · Healing · OH · %`, Damage taken `Player · Taken · %`. The boss meter uses the Damage columns.
+- Overlay: Right-click: **Show Damage / DPS / Healing / Damage taken**,
   **Toggle Boss only**, **Toggle Fight / Session**, **Reset Session**.
 - The main meter header says `Damage overall` (all targets), or `Damage - Session`.
 - Damage bars show damage, DPS and share: `820  13.7/s  50%`.
