@@ -353,7 +353,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "showMaxHit",
 		name = "Max hit on the meter",
-		description = "Show the biggest hit of the fight in the meter header",
+		description = "A Max column with every player's biggest hit in the damage and DPS bars",
 		position = 3,
 		section = funSection
 	)

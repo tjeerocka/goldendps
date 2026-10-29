@@ -21,8 +21,11 @@ public class OverlayColumnsTest
 		FightReport r = FightReport.of(t.getCurrent(), false, false, 24_000);
 		for (MeterMode m : MeterMode.values())
 		{
-			String[] labels = GoldenDpsOverlay.columnLabels(m);
-			assertEquals(m.name(), labels.length, GoldenDpsOverlay.columnValues(r.row("Me"), m, r.total(m)).length);
+			for (boolean max : new boolean[]{false, true})
+			{
+				String[] labels = GoldenDpsOverlay.columnLabels(m, max);
+				assertEquals(m.name(), labels.length, GoldenDpsOverlay.columnValues(r.row("Me"), m, r.total(m), max).length);
+			}
 		}
 	}
 
@@ -35,9 +38,12 @@ public class OverlayColumnsTest
 		t.playerHit(9000, "Me", PlayerKind.LOCAL, "301:5", 1, "Rat", false, 0, true);
 		t.playerHit(17000, "Me", PlayerKind.LOCAL, "301:5", 1, "Rat", false, 31, false);
 		FightReport r = FightReport.of(t.getCurrent(), false, false, 24_000);
-		assertArrayEquals(new String[]{"Damage", "DPS", "%"}, GoldenDpsOverlay.columnLabels(MeterMode.DAMAGE));
+		assertArrayEquals(new String[]{"Damage", "DPS", "%"}, GoldenDpsOverlay.columnLabels(MeterMode.DAMAGE, false));
 		// 51 damage in 23 s = 2.2 per second, shown without "/s" because the column says DPS
 		assertArrayEquals(new String[]{"51", "2.2", "100%"},
-			GoldenDpsOverlay.columnValues(r.row("Me"), MeterMode.DAMAGE, r.total(MeterMode.DAMAGE)));
+			GoldenDpsOverlay.columnValues(r.row("Me"), MeterMode.DAMAGE, r.total(MeterMode.DAMAGE), false));
+		assertArrayEquals(new String[]{"Damage", "Max", "DPS", "%"}, GoldenDpsOverlay.columnLabels(MeterMode.DAMAGE, true));
+		assertArrayEquals(new String[]{"51", "31", "2.2", "100%"},
+			GoldenDpsOverlay.columnValues(r.row("Me"), MeterMode.DAMAGE, r.total(MeterMode.DAMAGE), true));
 	}
 }

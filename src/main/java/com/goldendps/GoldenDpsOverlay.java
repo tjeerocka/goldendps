@@ -95,11 +95,6 @@ class GoldenDpsOverlay extends Overlay
 		{
 			title += "  OH " + Format.percent(report.groupOverhealPercent());
 		}
-		FightReport.PlayerRow topHit = report == null || !config.showMaxHit() ? null : report.topHit();
-		if (topHit != null)
-		{
-			title += "  Max " + topHit.biggestHit;
-		}
 		boolean paused = plugin.isFightPaused();
 		String right = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
 		Color rightColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
@@ -145,7 +140,8 @@ class GoldenDpsOverlay extends Overlay
 		}
 
 		// each column is as wide as its widest cell, laid out from the right
-		String[] labels = columnLabels(mode);
+		boolean maxHit = config.showMaxHit();
+		String[] labels = columnLabels(mode, maxHit);
 		double total = report.total(mode);
 		String[][] cells = new String[shown][];
 		int[] colW = new int[labels.length];
@@ -155,7 +151,7 @@ class GoldenDpsOverlay extends Overlay
 		}
 		for (int i = 0; i < shown; i++)
 		{
-			cells[i] = columnValues(rows.get(i), mode, total);
+			cells[i] = columnValues(rows.get(i), mode, total, maxHit);
 			for (int c = 0; c < labels.length; c++)
 			{
 				colW[c] = Math.max(colW[c], fm.stringWidth(cells[i][c]));
@@ -219,38 +215,43 @@ class GoldenDpsOverlay extends Overlay
 		return PALETTE[Math.floorMod(row.name.hashCode(), PALETTE.length)];
 	}
 
-	/** Column labels after the player name. */
-	static String[] columnLabels(MeterMode mode)
+	/** Column labels after the player name; damage modes get a "Max" (biggest hit) column. */
+	static String[] columnLabels(MeterMode mode, boolean maxHit)
 	{
 		switch (mode)
 		{
 			case DPS:
-				return new String[]{"DPS", "Damage", "%"};
+				return maxHit ? new String[]{"DPS", "Damage", "Max", "%"} : new String[]{"DPS", "Damage", "%"};
 			case HEALING:
 				return new String[]{"Healing", "OH", "%"};
 			case DAMAGE_TAKEN:
 				return new String[]{"Taken", "%"};
 			case DAMAGE:
 			default:
-				return new String[]{"Damage", "DPS", "%"};
+				return maxHit ? new String[]{"Damage", "Max", "DPS", "%"} : new String[]{"Damage", "DPS", "%"};
 		}
 	}
 
-	static String[] columnValues(FightReport.PlayerRow row, MeterMode mode, double total)
+	static String[] columnValues(FightReport.PlayerRow row, MeterMode mode, double total, boolean maxHit)
 	{
 		double v = FightReport.value(row, mode);
 		String share = Format.percent(total <= 0 ? 0 : 100.0 * v / total);
+		String max = row.biggestHit > 0 ? String.valueOf(row.biggestHit) : "-";
 		switch (mode)
 		{
 			case DPS:
-				return new String[]{Format.dps(row.dps), Format.amount(row.damage), Format.percent(row.percent)};
+				return maxHit
+					? new String[]{Format.dps(row.dps), Format.amount(row.damage), max, Format.percent(row.percent)}
+					: new String[]{Format.dps(row.dps), Format.amount(row.damage), Format.percent(row.percent)};
 			case HEALING:
 				return new String[]{Format.amount(v), row.overheal > 0 ? Format.percent(row.overhealPercent()) : "-", share};
 			case DAMAGE_TAKEN:
 				return new String[]{Format.amount(v), share};
 			case DAMAGE:
 			default:
-				return new String[]{Format.amount(row.damage), Format.dps(row.dps), Format.percent(row.percent)};
+				return maxHit
+					? new String[]{Format.amount(row.damage), max, Format.dps(row.dps), Format.percent(row.percent)}
+					: new String[]{Format.amount(row.damage), Format.dps(row.dps), Format.percent(row.percent)};
 		}
 	}
 
