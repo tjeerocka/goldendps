@@ -32,21 +32,11 @@ class PartyManager
 	/** Nameless, logged-out members older than this are stale connections. */
 	private static final long STALE_MEMBER_MS = 15_000;
 
-	/** Raids that list member names: name, party status varbit, first and last name varcstr. */
-	private static final Object[][] NAMED_RAIDS = {
-		{"ToB", 6440, 330, 334},
-		{"ToA", 14345, 1099, 1106},
-		{"Archive", 16386, 1573, 1580},
-	};
-	/** VarPlayerID.RAIDS_PARTY_GROUPHOLDER: CoX raid party id, the same for every member. */
-	private static final int COX_PARTY_VARP = 1427;
-	/** VarbitID.RAIDS_CLIENT_PARTYSIZE. */
-	private static final int COX_PARTY_SIZE_VARBIT = 5424;
-
 	private final Client client;
 	private final PartyService partyService;
 	private final GoldenDpsConfig config;
 	private final ChatNotifier chat;
+	private final RaidPartyDetector raidPartyDetector;
 
 	private final PartyLeader leader = new PartyLeader();
 	private final RaidParty raidParty = new RaidParty();
@@ -58,12 +48,14 @@ class PartyManager
 	private long localMemberId;
 
 	@Inject
-	PartyManager(Client client, PartyService partyService, GoldenDpsConfig config, ChatNotifier chat)
+	PartyManager(Client client, PartyService partyService, GoldenDpsConfig config, ChatNotifier chat,
+		RaidPartyDetector raidPartyDetector)
 	{
 		this.client = client;
 		this.partyService = partyService;
 		this.config = config;
 		this.chat = chat;
+		this.raidPartyDetector = raidPartyDetector;
 	}
 
 	boolean inParty()
@@ -115,10 +107,15 @@ class PartyManager
 		leader.left();
 	}
 
-	/** A GoldenDPS update arrived from this member. */
-	void reporterSeen(long memberId, String name, long now)
+	/** A GoldenDPS message arrived from this member. */
+	void pluginSeen(long memberId)
 	{
 		leader.sawPlugin(memberId);
+	}
+
+	/** A GoldenDPS update arrived from this player. */
+	void reporterSeen(String name, long now)
+	{
 		reporters.put(name, now);
 	}
 
@@ -286,34 +283,18 @@ class PartyManager
 		{
 			return;
 		}
-		String raid = null;
-		String name = null;
-		for (Object[] r : NAMED_RAIDS)
-		{
-			if (client.getVarbitValue((int) r[1]) > 0)
-			{
-				List<String> names = new ArrayList<>();
-				for (int v = (int) r[2]; v <= (int) r[3]; v++)
-				{
-					names.add(client.getVarcStrValue(v));
-				}
-				raid = (String) r[0];
-				name = RaidParty.partyName(raid, client.getWorld(), names);
-				break;
-			}
-		}
-		if (raid == null)
-		{
-			name = RaidParty.coxPartyName(client.getWorld(), client.getVarpValue(COX_PARTY_VARP),
-				client.getVarbitValue(COX_PARTY_SIZE_VARBIT));
-			raid = "CoX";
-		}
+		RaidPartyDetector.Detected raid = raidPartyDetector.current();
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
-		String join = raidParty.tick(name, current);
-		if (join != null)
+		RaidParty.Action action = raidParty.tick(raid.partyName, current);
+		if (action.join != null)
 		{
-			changeParty(join);
-			chat.info("joined the " + raid + " party automatically (everyone in your raid with GoldenDPS).");
+			changeParty(action.join);
+			chat.info("joined the " + raid.raid + " party automatically (everyone in your raid with GoldenDPS).");
+		}
+		else if (action.leave)
+		{
+			changeParty(null);
+			chat.info("left the raid party.");
 		}
 	}
 
@@ -332,6 +313,7 @@ class PartyManager
 		long now = System.currentTimeMillis();
 		kicked.values().removeIf(t -> now - t > KICK_HIDE_MS);
 		firstSeen.keySet().retainAll(memberIds());
+		PartyMember local = partyService.getLocalMember();
 		for (PartyMember m : partyService.getMembers())
 		{
 			if (kicked.containsKey(m.getMemberId()))
@@ -340,7 +322,7 @@ class PartyManager
 			}
 			GoldenDpsPartyPanel.Member row = new GoldenDpsPartyPanel.Member();
 			row.id = m.getMemberId();
-			row.you = m.getMemberId() == localMemberId;
+			row.you = local != null && m.getMemberId() == local.getMemberId();
 			String name = Names.clean(m.getDisplayName());
 			long seen = firstSeen.computeIfAbsent(m.getMemberId(), id -> now);
 			if (!row.you && name == null && !m.isLoggedIn() && now - seen > STALE_MEMBER_MS)

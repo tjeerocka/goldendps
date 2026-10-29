@@ -1,77 +1,84 @@
 package com.goldendps;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.party.messages.PartyMemberMessage;
 
 /**
- * What one player sends to the party once per game tick (only when something happened).
- * Like RuneLite's DPS Counter "DpsUpdate", but with all hits of the tick in one message,
- * plus damage taken and healing.
- *
- * <p>The party server knows messages by class name, so this name must not change
- * (and must be different from other plugins' messages).</p>
+ * Everything one player did in a game tick, sent to the party. Sent every tick, so the JSON
+ * field names are kept short. The party server identifies messages by class name, which must
+ * therefore never change.
  */
 public class GoldenDpsUpdate extends PartyMemberMessage
 {
-	/** One hitsplat of the sender on an NPC. */
 	public static class Hit
 	{
-		/** NPC index: the same on every client in the same world / instance. */
-		public int i;
-		public int id;
-		public String nm;
-		public int a;
+		/** The same on every client in the same world or instance. */
+		@SerializedName("i")
+		public int npcIndex;
+		@SerializedName("id")
+		public int npcId;
+		@SerializedName("nm")
+		public String npcName;
+		@SerializedName("a")
+		public int amount;
 		public boolean miss;
 		public boolean boss;
-		/** Where the NPC is. Instances have their own map coordinates, so this tells instances apart. */
+		/** NPC position; instances have their own coordinates, which tells instances apart. */
 		public int x;
 		public int y;
-		public int p;
-		/** Source: weapon or spell ("Scythe of vitur", "Dragon claws (spec)"). Null from old versions. */
-		public String s;
+		@SerializedName("p")
+		public int plane;
+		/** Weapon, special attack or spell; null from older versions. */
+		@SerializedName("s")
+		public String source;
 
 		public Hit()
 		{
 		}
 
-		Hit(int index, int npcId, String name, int amount, boolean miss, boolean boss, WorldPoint pos)
+		Hit(int npcIndex, int npcId, String npcName, int amount, boolean miss, boolean boss, WorldPoint pos)
 		{
-			if (pos != null)
-			{
-				this.x = pos.getX();
-				this.y = pos.getY();
-				this.p = pos.getPlane();
-			}
-			this.i = index;
-			this.id = npcId;
-			this.nm = name;
-			this.a = amount;
+			this.npcIndex = npcIndex;
+			this.npcId = npcId;
+			this.npcName = npcName;
+			this.amount = amount;
 			this.miss = miss;
 			this.boss = boss;
+			if (pos != null)
+			{
+				x = pos.getX();
+				y = pos.getY();
+				plane = pos.getPlane();
+			}
 		}
 	}
 
-	/** Version of this message, so later versions can stay compatible. */
-	public int v = 3;
-	/** Sender's world. Hits only match your targets when you are on the same world. */
-	public int w;
-	/** Sender's in-game name. */
-	public String n;
-	public List<Hit> h = new ArrayList<>();
+	@SerializedName("v")
+	public int version = 3;
+	@SerializedName("w")
+	public int world;
+	@SerializedName("n")
+	public String name;
+	@SerializedName("h")
+	public List<Hit> hits = new ArrayList<>();
 	public int taken;
 	public int food;
-	public int life;
+	@SerializedName("life")
+	public int lifesteal;
 	public int regen;
-	public int other;
-	/** Overhealing (wasted) from food and from lifesteal. */
-	public int of;
-	public int ol;
+	@SerializedName("other")
+	public int healOther;
+	@SerializedName("of")
+	public int foodOverheal;
+	@SerializedName("ol")
+	public int lifestealOverheal;
 
 	boolean isEmpty()
 	{
-		return h.isEmpty() && taken == 0 && food == 0 && life == 0 && regen == 0 && other == 0
-			&& of == 0 && ol == 0;
+		return hits.isEmpty() && taken == 0 && food == 0 && lifesteal == 0 && regen == 0 && healOther == 0
+			&& foodOverheal == 0 && lifestealOverheal == 0;
 	}
 }

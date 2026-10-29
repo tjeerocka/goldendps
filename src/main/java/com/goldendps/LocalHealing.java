@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
@@ -24,10 +23,9 @@ import net.runelite.api.gameval.SpotanimID;
  * Feeds the game events into {@link HealthWatcher}, which turns HP changes into heals and overheal.
  * Client thread only.
  */
-@Singleton
 class LocalHealing
 {
-	static final int WEAPON_SLOT = 3;
+	private static final int WEAPON_SLOT = 3;
 	/** A food click is confirmed when the item leaves the inventory within this many ticks. */
 	private static final int EAT_CONFIRM_TICKS = 3;
 	private static final int[] SANGUINESTI_HEAL = {SpotanimID.SANGUINESTI_STAFF_HEAL, SpotanimID.SANGUINESTI_STAFF_HEAL_JUSTICIAR};
@@ -140,7 +138,7 @@ class LocalHealing
 		return items.length > WEAPON_SLOT && items[WEAPON_SLOT].getId() > 0 ? itemName(items[WEAPON_SLOT].getId()) : null;
 	}
 
-	String itemName(int itemId)
+	private String itemName(int itemId)
 	{
 		ItemComposition def = client.getItemDefinition(itemId);
 		return def == null ? null : def.getName();

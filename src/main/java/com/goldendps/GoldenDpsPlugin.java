@@ -17,11 +17,13 @@ import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
 import java.io.File;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -41,6 +43,7 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -65,6 +68,7 @@ import net.runelite.client.util.Text;
  * are moved there from the websocket thread, and the panel receives finished reports on the
  * Swing thread.
  */
+@Slf4j
 @PluginDescriptor(
 	name = "GoldenDPS",
 	description = "Damage, DPS and healing meter for groups, shared through RuneLite Party",
@@ -77,8 +81,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	private static final int PANEL_EVERY_TICKS = 2;
 	private static final int EAT_ANIMATION = 829;
-	/** VarPlayerID.SA_ENERGY. */
-	private static final int SPEC_ENERGY_VARP = 300;
 	private static final int MAX_SOURCE_LENGTH = 64;
 
 	@Inject
@@ -303,8 +305,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				healing.youHit(npc, amount, tick);
 			}
 			GoldenDpsUpdate.Hit sent = new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos);
-			sent.s = source;
-			outgoing.h.add(sent);
+			sent.source = source;
+			outgoing.hits.add(sent);
 		}
 		else if (hitsplat.isOthers() && isGroupMode())
 		{
@@ -328,6 +330,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	public void onAnimationChanged(AnimationChanged e)
 	{
 		Actor actor = e.getActor();
+		if (actor == null)
+		{
+			return;
+		}
 		int anim = actor.getAnimation();
 		Actor target = actor.getInteracting();
 		if (anim == -1 || anim == EAT_ANIMATION || !(target instanceof NPC))
@@ -414,7 +420,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		long now = System.currentTimeMillis();
 		int tick = client.getTickCount();
 
-		int spec = client.getVarpValue(SPEC_ENERGY_VARP);
+		int spec = client.getVarpValue(VarPlayerID.SA_ENERGY);
 		if (lastSpecEnergy >= 0 && spec < lastSpecEnergy)
 		{
 			attackSource.specUsed(tick, healing.weaponName());
@@ -450,17 +456,17 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			case FOOD:
 				outgoing.food += heal.amount;
-				outgoing.of += heal.overheal;
+				outgoing.foodOverheal += heal.overheal;
 				break;
 			case LIFESTEAL:
-				outgoing.life += heal.amount;
-				outgoing.ol += heal.overheal;
+				outgoing.lifesteal += heal.amount;
+				outgoing.lifestealOverheal += heal.overheal;
 				break;
 			case REGEN:
 				outgoing.regen += heal.amount;
 				break;
 			case HEAL_OTHER:
-				outgoing.other += heal.amount;
+				outgoing.healOther += heal.amount;
 				break;
 			default:
 				break;
@@ -523,11 +529,19 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Subscribe
 	public void onClientShutdown(ClientShutdown e)
 	{
-		tracker.endNow(System.currentTimeMillis(), "Client closed");
-		Future<?> write = storage.saveNow();
-		if (write != null)
+		// not on the client thread, but the game loop has stopped by now
+		try
 		{
-			e.waitFor(write);
+			tracker.endNow(System.currentTimeMillis(), "Client closed");
+			Future<?> write = storage.saveNow();
+			if (write != null)
+			{
+				e.waitFor(write);
+			}
+		}
+		catch (ConcurrentModificationException ex)
+		{
+			log.warn("Could not save on shutdown", ex);
 		}
 	}
 
@@ -568,7 +582,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			return;
 		}
-		String name = Names.clean(u.n);
+		party.pluginSeen(u.getMemberId());
+		String name = Names.clean(u.name);
 		if (name == null)
 		{
 			PartyMember m = partyService.getMemberById(u.getMemberId());
@@ -580,22 +595,22 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		long now = System.currentTimeMillis();
-		party.reporterSeen(u.getMemberId(), name, now);
+		party.reporterSeen(name, now);
 		boolean together = !config.othersOnlyTogether() || party.isInstanceMate(name);
 		boolean counted = together;
-		if (u.h != null)
+		if (u.hits != null)
 		{
-			for (GoldenDpsUpdate.Hit hit : u.h)
+			for (GoldenDpsUpdate.Hit hit : u.hits)
 			{
-				boolean boss = hit.boss || bosses.isBoss(hit.id, hit.nm);
-				if (!together && !(boss && isSameNpc(u.w, hit)))
+				boolean boss = hit.boss || bosses.isBoss(hit.npcId, hit.npcName);
+				if (!together && !(boss && isSameNpc(u.world, hit)))
 				{
 					continue;
 				}
 				counted = true;
-				String source = hit.s == null || hit.s.length() > MAX_SOURCE_LENGTH ? null : hit.s;
-				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.w, hit, name), hit.id, hit.nm,
-					boss, hit.a, hit.miss, source);
+				String source = hit.source == null || hit.source.length() > MAX_SOURCE_LENGTH ? null : hit.source;
+				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.world, hit, name), hit.npcId, hit.npcName,
+					boss, hit.amount, hit.miss, source);
 			}
 		}
 		Fight current = tracker.getCurrent();
@@ -604,10 +619,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			return;
 		}
 		tracker.damageTaken(now, name, PlayerKind.PARTY, u.taken);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, u.food, u.of);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.LIFESTEAL, u.life, u.ol);
+		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, u.food, u.foodOverheal);
+		tracker.heal(now, name, PlayerKind.PARTY, HealType.LIFESTEAL, u.lifesteal, u.lifestealOverheal);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.REGEN, u.regen);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.HEAL_OTHER, u.other);
+		tracker.heal(now, name, PlayerKind.PARTY, HealType.HEAL_OTHER, u.healOther);
 	}
 
 	private void sendPartyUpdate()
@@ -618,8 +633,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			return;
 		}
-		u.w = client.getWorld();
-		u.n = localName();
+		u.world = client.getWorld();
+		u.name = localName();
 		partyService.send(u);
 	}
 
@@ -642,32 +657,33 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		return !config.othersOnlyTogether() || (f != null && f.hasBossTarget());
 	}
 
-	/** The hit NPC is the same one in your scene (same world, index and id). */
+	/** The NPC in your scene that a party member hit, or null when you cannot see it. */
+	private NPC npcInScene(int world, GoldenDpsUpdate.Hit hit)
+	{
+		WorldView wv = client.getTopLevelWorldView();
+		if (world != client.getWorld() || wv == null)
+		{
+			return null;
+		}
+		NPC npc = wv.npcs().byIndex(hit.npcIndex);
+		return npc != null && npc.getId() == hit.npcId ? npc : null;
+	}
+
 	private boolean isSameNpc(int world, GoldenDpsUpdate.Hit hit)
 	{
-		if (world != client.getWorld())
-		{
-			return false;
-		}
-		WorldView wv = client.getTopLevelWorldView();
-		NPC npc = wv == null ? null : wv.npcs().byIndex(hit.i);
-		return npc != null && npc.getId() == hit.id;
+		return npcInScene(world, hit) != null;
 	}
 
 	/** Your key for the NPC when it is the same one you see, otherwise a key of its own. */
 	private String partyTargetKey(int world, GoldenDpsUpdate.Hit hit, String sender)
 	{
-		if (world == client.getWorld())
+		NPC npc = npcInScene(world, hit);
+		WorldPoint pos = npc == null ? null : npc.getWorldLocation();
+		if (pos != null)
 		{
-			WorldView wv = client.getTopLevelWorldView();
-			NPC npc = wv == null ? null : wv.npcs().byIndex(hit.i);
-			WorldPoint pos = npc == null ? null : npc.getWorldLocation();
-			if (pos != null && npc.getId() == hit.id)
-			{
-				matcher.seen(TargetMatcher.key(world, hit.i), pos.getX(), pos.getY(), pos.getPlane());
-			}
+			matcher.seen(TargetMatcher.key(world, hit.npcIndex), pos.getX(), pos.getY(), pos.getPlane());
 		}
-		return matcher.partyKey(client.getWorld(), world, hit.i, hit.x, hit.y, hit.p, sender);
+		return matcher.partyKey(client.getWorld(), world, hit.npcIndex, hit.x, hit.y, hit.plane, sender);
 	}
 
 	// ---- overlay and panel ----

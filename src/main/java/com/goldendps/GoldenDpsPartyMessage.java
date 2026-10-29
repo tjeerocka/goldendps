@@ -1,15 +1,16 @@
 package com.goldendps;
 
+import com.google.gson.annotations.SerializedName;
 import net.runelite.client.party.messages.PartyMemberMessage;
 
 /**
- * GoldenDPS party control (RuneLite parties have no leader or kick):
+ * Party control, since RuneLite parties have no leader or kick:
  * <ul>
- * <li>{@code hi}: "I run GoldenDPS, and I think the leader is {@link #leader}" (0 = don't know)</li>
- * <li>{@code leader}: the leader says who leads</li>
- * <li>{@code kick}: the leader asks {@link #target}'s GoldenDPS to leave the party</li>
+ * <li>{@code hi}: a member runs GoldenDPS and names the leader it knows (0 if none)</li>
+ * <li>{@code leader}: the leader announces itself</li>
+ * <li>{@code kick}: the leader asks the {@link #target} member to leave</li>
  * </ul>
- * The party server knows messages by class name, so this name must not change.
+ * The party server identifies messages by class name, which must therefore never change.
  */
 public class GoldenDpsPartyMessage extends PartyMemberMessage
 {
@@ -17,7 +18,8 @@ public class GoldenDpsPartyMessage extends PartyMemberMessage
 	static final String LEADER = "leader";
 	static final String KICK = "kick";
 
-	public int v = 1;
+	@SerializedName("v")
+	public int version = 1;
 	public String type;
 	public long leader;
 	public long target;

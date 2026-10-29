@@ -17,12 +17,12 @@ public class RaidPartyTest
 
 	private static String tickUntilStable(RaidParty r, String name, String current)
 	{
-		String join = null;
+		RaidParty.Action action = RaidParty.Action.NONE;
 		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
 		{
-			join = r.tick(name, current);
+			action = r.tick(name, current);
 		}
-		return join;
+		return action.join;
 	}
 
 	@Test
@@ -56,10 +56,10 @@ public class RaidPartyTest
 		RaidParty r = new RaidParty();
 		for (int i = 1; i < RaidParty.STABLE_TICKS; i++)
 		{
-			assertNull(r.tick(P1, null));
+			assertNull(r.tick(P1, null).join);
 		}
-		assertEquals(P1, r.tick(P1, null));
-		assertNull(r.tick(P1, P1));
+		assertEquals(P1, r.tick(P1, null).join);
+		assertNull(r.tick(P1, P1).join);
 	}
 
 	@Test
@@ -76,18 +76,32 @@ public class RaidPartyTest
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < 20; i++)
 		{
-			assertNull(r.tick(P1, "my friends"));
+			assertNull(r.tick(P1, "my friends").join);
+			assertFalse(r.tick(null, "my friends").leave);
 		}
 	}
 
 	@Test
-	public void staysInThePartyAfterTheRaid()
+	public void leavesOnceAfterTheRaid()
 	{
 		RaidParty r = new RaidParty();
 		tickUntilStable(r, P1, null);
-		for (int i = 0; i < 50; i++)
+		for (int i = 1; i < RaidParty.LEAVE_TICKS; i++)
 		{
-			assertNull(r.tick(null, P1));
+			assertFalse(r.tick(null, P1).leave);
+		}
+		assertTrue(r.tick(null, P1).leave);
+		assertFalse("only once", r.tick(null, P1).leave);
+	}
+
+	@Test
+	public void shortGapsWhileLoadingDoNotLeave()
+	{
+		RaidParty r = new RaidParty();
+		tickUntilStable(r, P1, null);
+		for (int i = 0; i < 30; i++)
+		{
+			assertFalse(r.tick(i % 5 == 0 ? P1 : null, P1).leave);
 		}
 		assertTrue(RaidParty.isAuto(P1));
 		assertFalse(RaidParty.isAuto("my friends"));

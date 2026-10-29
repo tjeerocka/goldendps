@@ -1,13 +1,11 @@
 package com.goldendps;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.ChatMessageType;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 
 /** Local chat messages (only visible to you). */
-@Singleton
 class ChatNotifier
 {
 	private static final String PREFIX = "GoldenDPS: ";

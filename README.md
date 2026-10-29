@@ -36,8 +36,8 @@ DPS. A fight ends when the boss dies or after 5 minutes without hits.
 
 Every member of a raid party derives the same party name from data the game shows all of them: the
 member list in ToB, ToA and the Fractured Archive, or the raid party id in CoX. GoldenDPS joins that
-party once the raid party has been stable for a few ticks. A party you joined yourself is never
-changed.
+party once the raid party has been stable for a few ticks, and leaves it again when the raid party is
+gone. A party you joined yourself is never changed.
 
 ### Healing
 

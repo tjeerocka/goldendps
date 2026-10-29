@@ -10,16 +10,37 @@ import java.util.Locale;
 /**
  * Automatic party for raids. Every member derives the same party name from data the game gives
  * all of them (the member names, or the CoX raid party id), so they meet in one RuneLite party
- * without exchanging anything. A party the player joined by hand is never changed.
+ * without exchanging anything. The party is left again when the raid party is gone.
+ * A party the player joined by hand is never changed.
  */
 public class RaidParty
 {
 	/** The raid party must stay the same this long before joining (people join one by one). */
 	public static final int STABLE_TICKS = 5;
+	/** No raid party for this long means the raid is over (short gaps happen while loading). */
+	public static final int LEAVE_TICKS = 10;
 	public static final String PREFIX = "goldendps ";
+
+	/** What to do with the RuneLite party this tick. */
+	public static final class Action
+	{
+		public static final Action NONE = new Action(null, false);
+		public static final Action LEAVE = new Action(null, true);
+
+		/** The party to join, or null. */
+		public final String join;
+		public final boolean leave;
+
+		private Action(String join, boolean leave)
+		{
+			this.join = join;
+			this.leave = leave;
+		}
+	}
 
 	private String candidate;
 	private int stableTicks;
+	private int ticksWithoutRaidParty;
 
 	/** Party name for a raid with a member list, or null when fewer than two names are known. */
 	public static String partyName(String raid, int world, List<String> names)
@@ -68,28 +89,30 @@ public class RaidParty
 	 *
 	 * @param name         party name for the raid party you are in, or null
 	 * @param currentParty the RuneLite party you are in, or null
-	 * @return the party to join, or null
 	 */
-	public String tick(String name, String currentParty)
+	public Action tick(String name, String currentParty)
 	{
+		boolean inAutoParty = isAuto(currentParty);
 		if (name == null)
 		{
 			candidate = null;
 			stableTicks = 0;
-			return null;
+			ticksWithoutRaidParty++;
+			return inAutoParty && ticksWithoutRaidParty == LEAVE_TICKS ? Action.LEAVE : Action.NONE;
 		}
+		ticksWithoutRaidParty = 0;
 		if (!name.equals(candidate))
 		{
 			candidate = name;
 			stableTicks = 0;
 		}
 		stableTicks++;
-		boolean manual = currentParty != null && !isAuto(currentParty);
+		boolean manual = currentParty != null && !inAutoParty;
 		if (manual || name.equals(currentParty) || stableTicks < STABLE_TICKS)
 		{
-			return null;
+			return Action.NONE;
 		}
-		return name;
+		return new Action(name, false);
 	}
 
 	private static String hash(String s)

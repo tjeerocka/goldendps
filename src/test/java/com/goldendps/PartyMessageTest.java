@@ -13,10 +13,10 @@ public class PartyMessageTest
 	{
 		GoldenDpsUpdate u = new GoldenDpsUpdate();
 		assertTrue(u.isEmpty());
-		u.w = 302;
-		u.n = "Zezima";
-		u.h.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 47, false, true, new net.runelite.api.coords.WorldPoint(2272, 4065, 0)));
-		u.h.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 0, true, true, null));
+		u.world = 302;
+		u.name = "Zezima";
+		u.hits.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 47, false, true, new net.runelite.api.coords.WorldPoint(2272, 4065, 0)));
+		u.hits.add(new GoldenDpsUpdate.Hit(1234, 8061, "Vorkath", 0, true, true, null));
 		u.food = 20;
 		u.setMemberId(99);
 		assertFalse(u.isEmpty());
@@ -24,17 +24,18 @@ public class PartyMessageTest
 		Gson gson = new Gson();
 		String json = gson.toJson(u);
 		assertFalse("member id is set by the party server, not sent", json.contains("memberId"));
+		assertTrue("short field names on the wire", json.contains("\"h\":[") && json.contains("\"a\":47"));
 
 		GoldenDpsUpdate back = gson.fromJson(json, GoldenDpsUpdate.class);
-		assertEquals(302, back.w);
-		assertEquals("Zezima", back.n);
-		assertEquals(2, back.h.size());
-		assertEquals(47, back.h.get(0).a);
-		assertTrue(back.h.get(1).miss);
-		assertTrue(back.h.get(0).boss);
+		assertEquals(302, back.world);
+		assertEquals("Zezima", back.name);
+		assertEquals(2, back.hits.size());
+		assertEquals(47, back.hits.get(0).amount);
+		assertTrue(back.hits.get(1).miss);
+		assertTrue(back.hits.get(0).boss);
 		assertEquals(20, back.food);
-		assertEquals(2272, back.h.get(0).x);
-		assertEquals(4065, back.h.get(0).y);
+		assertEquals(2272, back.hits.get(0).x);
+		assertEquals(4065, back.hits.get(0).y);
 	}
 
 	@Test
