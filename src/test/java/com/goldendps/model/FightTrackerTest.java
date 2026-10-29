@@ -541,7 +541,7 @@ public class FightTrackerTest
 		assertEquals(100.0 / 15, boss.row("Me").dps, D);
 	}
 
-	// ---- active time (like Details!) ----
+	// ---- active time ----
 
 	@Test
 	public void afkGapIsNotCounted()

@@ -21,11 +21,11 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 /** Bar meter on the game screen, with a second meter for the current boss. */
 class GoldenDpsOverlay extends Overlay
 {
-	/** WoW class colors, picked per player name. */
+	/** Bar colors for other players, picked per player name. */
 	private static final Color[] PALETTE = {
-		new Color(0x3FC7EB), new Color(0xAAD372), new Color(0xF48CBA), new Color(0xC69B6D),
-		new Color(0x8788EE), new Color(0x00FF98), new Color(0xFF7C0A), new Color(0x0070DD),
-		new Color(0xC41E3A), new Color(0xA330C9), new Color(0x33937F), new Color(0xFFFFFF),
+		new Color(0x4FA3E0), new Color(0x8BC34A), new Color(0xE57BB0), new Color(0xB08A5A),
+		new Color(0x7E7EE6), new Color(0x26C6A0), new Color(0xF0883E), new Color(0x2F6FD6),
+		new Color(0xD04848), new Color(0x9C4FD6), new Color(0x4E9E8C), new Color(0xE0E0E0),
 	};
 	private static final Color UNKNOWN_COLOR = new Color(120, 120, 120);
 	private static final Color EFFECTS_COLOR = new Color(70, 160, 70);

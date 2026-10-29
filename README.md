@@ -1,6 +1,6 @@
 # GoldenDPS
 
-A damage and healing meter for groups, in the style of World of Warcraft's Details! and Recount.
+A damage and healing meter for groups.
 Party members who run GoldenDPS share their numbers through RuneLite Party, so everyone sees the
 whole group.
 

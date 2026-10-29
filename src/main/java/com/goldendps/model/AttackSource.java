@@ -2,7 +2,7 @@ package com.goldendps.model;
 
 /**
  * Works out what made each of your hits: the weapon, a special attack or a spell you clicked.
- * Used for the breakdown per weapon / spell (like the Details! spell breakdown).
+ * Used for the damage breakdown per weapon, special attack and spell.
  * <ul>
  * <li>An attack animation saves the weapon you hold (or the spell you clicked just before).</li>
  * <li>Spec energy going down marks the next hits (that tick and the one after, for claws) as "(spec)".</li>

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builds a short Details!-style report of a fight, one chat line per player:
+ * Builds a short report of a fight, one chat line per player:
  * <pre>
  * GoldenDPS Damage - Vorkath 1:23 - total 27.4k (330.1/s)
  * 1. Kurt Yoghurt 12.3k 148.2/s 45%
