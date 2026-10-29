@@ -9,6 +9,7 @@ import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
+import com.goldendps.model.MaxHits;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.RaidZone;
@@ -102,6 +103,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private GoldenDpsOverlay overlay;
 
 	@Inject
+	private HeadIconOverlay headIconOverlay;
+
+	@Inject
+	private MaxHitPopupOverlay maxHitPopupOverlay;
+
+	@Inject
 	private ClientToolbar clientToolbar;
 
 	@Inject
@@ -131,6 +138,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final TargetMatcher matcher = new TargetMatcher();
 	private final AttackSource attackSource = new AttackSource();
 	private final RaidZone raidZone = new RaidZone();
+	private final FunEffects fun = new FunEffects();
 
 	private FightStorage storage;
 	private GoldenDpsPanel panel;
@@ -179,6 +187,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		applyConfig();
 
 		overlayManager.add(overlay);
+		overlayManager.add(headIconOverlay);
+		overlayManager.add(maxHitPopupOverlay);
 		wsClient.registerMessage(GoldenDpsUpdate.class);
 		wsClient.registerMessage(GoldenDpsPartyMessage.class);
 
@@ -217,6 +227,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		wsClient.unregisterMessage(GoldenDpsUpdate.class);
 		wsClient.unregisterMessage(GoldenDpsPartyMessage.class);
 		overlayManager.remove(overlay);
+		overlayManager.remove(headIconOverlay);
+		overlayManager.remove(maxHitPopupOverlay);
 		clientToolbar.removeNavigation(navButton);
 		panel = null;
 		navButton = null;
@@ -303,6 +315,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			if (!miss)
 			{
 				healing.youHit(npc, amount, tick);
+				announceMaxHit(fun.hit(localName(), amount, now));
 			}
 			GoldenDpsUpdate.Hit sent = new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos);
 			sent.source = source;
@@ -611,6 +624,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				String source = hit.source == null || hit.source.length() > MAX_SOURCE_LENGTH ? null : hit.source;
 				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.world, hit, name), hit.npcId, hit.npcName,
 					boss, hit.amount, hit.miss, source);
+				if (!hit.miss)
+				{
+					announceMaxHit(fun.hit(name, hit.amount, now));
+				}
 			}
 		}
 		Fight current = tracker.getCurrent();
@@ -716,6 +733,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			? tracker.getSessionTotal(now)
 			: tracker.getDisplayFight();
 		overlayCache = f == null ? null : FightReport.of(f, config.bossOnly(), config.countRegen(), now);
+		updateFun(now);
 
 		Fight shown = tracker.getBossDisplayFight();
 		long hideMs = config.bossHideSeconds() * 1000L;
@@ -733,6 +751,29 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		FightReport report = FightReport.of(shown, true, config.countRegen(), now);
 		String pb = BossRecords.meterTag(storage.record(report.getTitle()), storage.compare(shown.id));
 		bossCache = new BossMeter(report, shown.bossDiedMs() > 0, hidesIn, pb);
+	}
+
+	private void updateFun(long now)
+	{
+		Fight fight = tracker.getDisplayFight();
+		Fight boss = tracker.getBossDisplayFight();
+		FightReport fightReport = fight == null ? null : FightReport.of(fight, false, config.countRegen(), now);
+		FightReport bossReport = boss == null || !boss.hasBossTarget()
+			? null : FightReport.of(boss, true, config.countRegen(), now);
+		fun.update(fightReport, fight == null ? 0 : fight.endMs, bossReport, boss == null ? 0 : boss.endMs, now);
+	}
+
+	private void announceMaxHit(MaxHits.NewMax max)
+	{
+		if (max != null && config.maxHitPopup())
+		{
+			chat.highlight(max.player + " hit a new max hit: " + max.amount + " (was " + max.previous + ").");
+		}
+	}
+
+	FunEffects fun()
+	{
+		return fun;
 	}
 
 	/** Builds the panel data on the client thread and hands it to Swing. */
@@ -901,6 +942,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		onClientThread(() ->
 		{
 			tracker.resetSession(System.currentTimeMillis());
+			fun.resetSession();
 			storage.save();
 		});
 	}
@@ -916,6 +958,25 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			tracker.clearHistory();
 			storage.save();
+		});
+	}
+
+	void testCrown()
+	{
+		clientThread.invoke(() -> fun.testCrown(localName(), System.currentTimeMillis()));
+	}
+
+	void testSnacks()
+	{
+		clientThread.invoke(() -> fun.testSnacks(localName(), System.currentTimeMillis()));
+	}
+
+	void testMaxHit()
+	{
+		clientThread.invoke(() ->
+		{
+			fun.testMaxHit(localName(), System.currentTimeMillis());
+			chat.highlight(localName() + " hit a new max hit: 99 (test).");
 		});
 	}
 

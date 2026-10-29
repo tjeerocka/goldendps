@@ -19,6 +19,10 @@ A DPS, damage and healing meter for groups and individuals.
 - **Raids**: in CoX, ToB, ToA and the Fractured Archive one fight covers the whole raid, and every boss
   also gets a fight of its own.
 - **Report to party**: sends the top five to the RuneLite party chat.
+- **Fun extras** in group fights: a crown over the MVP, a burger over the top healer of the fight or
+  raid, fries over the top healer on the current boss (one player can get both), and hungry lines from
+  the snack holders. A banner and chat line announce every new max hit of the session, and the
+  biggest hit of the fight is shown under the meter.
 - **Party tab**: join a party by name, see who runs GoldenDPS, and (as leader) remove members who run it.
   In raids, one click puts everyone with GoldenDPS in the same party.
 

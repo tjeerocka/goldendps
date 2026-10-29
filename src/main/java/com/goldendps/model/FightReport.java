@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.ToLongFunction;
 
 /**
  * Numbers for the overlay and the panel, worked out from one {@link Fight}.
@@ -381,6 +382,43 @@ public class FightReport
 			sum += value(row, mode);
 		}
 		return sum;
+	}
+
+	/** The player with the most damage, or null. */
+	public PlayerRow topDamage()
+	{
+		return topPlayer(r -> r.damage);
+	}
+
+	/** The player with the most healing, or null. */
+	public PlayerRow topHealer()
+	{
+		return topPlayer(r -> r.healing);
+	}
+
+	/** The player with the biggest hit, or null. */
+	public PlayerRow topHit()
+	{
+		return topPlayer(r -> r.biggestHit);
+	}
+
+	/** Number of real players (you, party members and estimated players). */
+	public int playerCount()
+	{
+		return (int) rows.stream().filter(PlayerRow::isPlayer).count();
+	}
+
+	private PlayerRow topPlayer(ToLongFunction<PlayerRow> value)
+	{
+		PlayerRow best = null;
+		for (PlayerRow r : rows)
+		{
+			if (r.isPlayer() && value.applyAsLong(r) > 0 && (best == null || value.applyAsLong(r) > value.applyAsLong(best)))
+			{
+				best = r;
+			}
+		}
+		return best;
 	}
 
 	public List<PlayerRow> getRows()

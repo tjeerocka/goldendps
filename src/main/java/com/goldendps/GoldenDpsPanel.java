@@ -142,6 +142,13 @@ class GoldenDpsPanel extends PluginPanel
 		top.add(button("Report to party", "Send the top 5 of the shown fight to your RuneLite party chat",
 			plugin::reportPanelToParty));
 
+		JPanel tests = new JPanel(new GridLayout(1, 3, 4, 0));
+		tests.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		tests.add(button("Test crown", "Show the MVP crown on you for 15 seconds", plugin::testCrown));
+		tests.add(button("Test snacks", "Show the burger, fries and hungry lines on you for 15 seconds", plugin::testSnacks));
+		tests.add(button("Test max hit", "Show the max hit popup", plugin::testMaxHit));
+		top.add(tests);
+
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 		content.setBackground(ColorScheme.DARK_GRAY_COLOR);
 
@@ -334,6 +341,11 @@ class GoldenDpsPanel extends PluginPanel
 		}
 		sum.add(line("Group damage", Format.amount(r.getTotalDamage())));
 		sum.add(line("Group DPS", Format.dps(r.getGroupDps())));
+		FightReport.PlayerRow topHit = r.topHit();
+		if (topHit != null)
+		{
+			sum.add(line("Max hit", topHit.biggestHit + " (" + topHit.name + ")"));
+		}
 		if (d.bossReport != null)
 		{
 			sum.add(line("Boss time", Format.duration(d.bossReport.getDurationMs())));

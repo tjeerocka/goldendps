@@ -45,6 +45,9 @@ public interface GoldenDpsConfig extends Config
 	@ConfigSection(name = "Overlay", description = "The meter on the game screen", position = 2)
 	String overlaySection = "overlay";
 
+	@ConfigSection(name = "Fun", description = "Extras for group fights", position = 3)
+	String funSection = "fun";
+
 	@ConfigItem(
 		keyName = "idleSeconds",
 		name = "End fight after",
@@ -310,4 +313,52 @@ public interface GoldenDpsConfig extends Config
 		return 20;
 	}
 
+
+	@ConfigItem(
+		keyName = "mvpCrown",
+		name = "Crown on the MVP",
+		description = "A crown over the player with the most damage in a group fight",
+		position = 0,
+		section = funSection
+	)
+	default boolean mvpCrown()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "healerSnack",
+		name = "Snack on the top healer",
+		description = "A burger or fries and hungry lines over the player who healed the most in a group fight",
+		position = 1,
+		section = funSection
+	)
+	default boolean healerSnack()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "maxHitPopup",
+		name = "Max hit popup",
+		description = "A banner and a chat line when someone beats their biggest hit of the session",
+		position = 2,
+		section = funSection
+	)
+	default boolean maxHitPopup()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showMaxHit",
+		name = "Max hit on the meter",
+		description = "Show the biggest hit of the fight under the meter",
+		position = 3,
+		section = funSection
+	)
+	default boolean showMaxHit()
+	{
+		return true;
+	}
 }
