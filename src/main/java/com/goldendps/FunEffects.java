@@ -1,8 +1,11 @@
 package com.goldendps;
 
 import com.goldendps.model.FightReport;
+import com.goldendps.model.Format;
 import com.goldendps.model.HungryTalk;
 import com.goldendps.model.MaxHits;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -16,6 +19,22 @@ class FunEffects
 	private static final long SHOW_AFTER_FIGHT_MS = 30_000;
 	private static final long POPUP_MS = 3000;
 	private static final long TEST_MS = 15_000;
+	private static final long SAY_MS = 4000;
+
+	/** Something a player "says" over their head for a while (drawn by the overlay only). */
+	private static final class Speech
+	{
+		final String text;
+		final long until;
+		final boolean maxHit;
+
+		Speech(String text, long until, boolean maxHit)
+		{
+			this.text = text;
+			this.until = until;
+			this.maxHit = maxHit;
+		}
+	}
 
 	private final MaxHits maxHits = new MaxHits();
 	private final HungryTalk burgerTalk = new HungryTalk(new Random());
@@ -29,18 +48,38 @@ class FunEffects
 	private String testPlayer;
 	private long testCrownUntil;
 	private long testSnackUntil;
+	private final Map<String, Speech> speech = new HashMap<>();
+	private String lastBossFightId;
 
 	/**
-	 * @param fight the running or last fight (the whole raid inside a raid), or null
-	 * @param boss  the current or last boss fight, or null
+	 * @param fight  the running or last fight (the whole raid inside a raid), or null
+	 * @param boss   the current or last boss fight, or null
+	 * @param bossId id of that boss fight, to announce its healer once
 	 */
-	void update(FightReport fight, long fightEndedMs, FightReport boss, long bossEndedMs, long now)
+	void update(FightReport fight, long fightEndedMs, FightReport boss, long bossEndedMs, String bossId, long now)
 	{
 		FightReport shownFight = visible(fight, fightEndedMs, now) ? fight : null;
 		FightReport shownBoss = visible(boss, bossEndedMs, now) ? boss : null;
 		mvp = name(shownFight == null ? null : shownFight.topDamage());
 		burger = name(shownFight == null ? null : shownFight.topHealer());
-		fries = name(shownBoss == null ? null : shownBoss.topHealer());
+		FightReport.PlayerRow bossHealer = shownBoss == null ? null : shownBoss.topHealer();
+		fries = name(bossHealer);
+		if (bossHealer != null && bossEndedMs > 0 && !bossId.equals(lastBossFightId))
+		{
+			lastBossFightId = bossId;
+			say(bossHealer.name, healedLine(bossHealer.healing), now, false);
+		}
+		speech.values().removeIf(s -> now >= s.until);
+	}
+
+	private static String healedLine(long healed)
+	{
+		return "I healed " + Format.amount(healed) + " HP!";
+	}
+
+	private void say(String player, String text, long now, boolean maxHit)
+	{
+		speech.put(player, new Speech(text, now + SAY_MS, maxHit));
 	}
 
 	private static boolean visible(FightReport report, long endedMs, long now)
@@ -60,6 +99,7 @@ class FunEffects
 		if (max != null)
 		{
 			showPopup(max.player + " - NEW MAX HIT! " + max.amount, now);
+			say(max.player, "NEW MAX HIT! " + max.amount, now, true);
 		}
 		return max;
 	}
@@ -86,11 +126,25 @@ class FunEffects
 
 	boolean anyone(long now)
 	{
-		return now < testCrownUntil || now < testSnackUntil || mvp != null || burger != null || fries != null;
+		return now < testCrownUntil || now < testSnackUntil || mvp != null || burger != null || fries != null
+			|| !speech.isEmpty();
 	}
 
-	/** The hungry line of a player with a snack, or null. */
-	String hungryLine(String player, long now)
+	/**
+	 * What the player says now: a new max hit or the boss heal first, otherwise a hungry line
+	 * while they hold a snack. Null when they say nothing.
+	 */
+	String line(String player, long now, boolean snackTalk, boolean maxHitTalk)
+	{
+		Speech s = speech.get(player);
+		if (s != null && now < s.until && (s.maxHit ? maxHitTalk : snackTalk))
+		{
+			return s.text;
+		}
+		return snackTalk ? hungryLine(player, now) : null;
+	}
+
+	private String hungryLine(String player, long now)
 	{
 		if (hasBurger(player, now))
 		{
@@ -114,11 +168,13 @@ class FunEffects
 	{
 		testPlayer = player;
 		testSnackUntil = now + TEST_MS;
+		say(player, healedLine(1234), now, false);
 	}
 
 	void testMaxHit(String player, long now)
 	{
 		showPopup(player + " - NEW MAX HIT! 99", now);
+		say(player, "NEW MAX HIT! 99", now, true);
 	}
 
 	private void showPopup(String text, long now)

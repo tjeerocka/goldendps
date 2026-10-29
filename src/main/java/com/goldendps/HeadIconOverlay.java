@@ -57,7 +57,7 @@ class HeadIconOverlay extends Overlay
 		return null;
 	}
 
-	/** Stacks the icons upwards from the head: burger, fries, crown, then the hungry line. */
+	/** Stacks the icons upwards from the head: burger, fries, crown, then what the player says. */
 	private void drawAbove(Graphics2D g, Player p, String name, long now)
 	{
 		int height = p.getLogicalHeight() + ABOVE_HEAD;
@@ -77,7 +77,7 @@ class HeadIconOverlay extends Overlay
 			drawIcon(g, p, FunIcons.CROWN, height);
 			height += ICON_STEP;
 		}
-		String line = snacks ? fun.hungryLine(name, now) : null;
+		String line = fun.line(name, now, snacks, config.maxHitPopup());
 		if (line != null)
 		{
 			drawText(g, p, line, height + 8);

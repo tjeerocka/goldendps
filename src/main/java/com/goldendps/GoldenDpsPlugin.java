@@ -760,7 +760,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		FightReport fightReport = fight == null ? null : FightReport.of(fight, false, config.countRegen(), now);
 		FightReport bossReport = boss == null || !boss.hasBossTarget()
 			? null : FightReport.of(boss, true, config.countRegen(), now);
-		fun.update(fightReport, fight == null ? 0 : fight.endMs, bossReport, boss == null ? 0 : boss.endMs, now);
+		fun.update(fightReport, fight == null ? 0 : fight.endMs, bossReport, boss == null ? 0 : boss.endMs,
+			boss == null ? "" : boss.id, now);
 	}
 
 	private void announceMaxHit(MaxHits.NewMax max)
