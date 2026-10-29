@@ -193,9 +193,9 @@ public class BossRecords
 		if (c.kill.myDps > 0)
 		{
 			String best = b == null || b.bestDps <= 0 ? ""
-				: c.newBestDps ? " NEW BEST! (was " + Format.dps(b.bestDps) + ")"
+				: c.newBestDps ? " NEW BEST (" + Format.dps(b.bestDps) + ")"
 				: " (best " + Format.dps(b.bestDps) + ")";
-			out.add(new String[]{"Your boss DPS", Format.dps(c.kill.myDps) + best});
+			out.add(new String[]{"Your DPS", Format.dps(c.kill.myDps) + best});
 		}
 		double vs = c.vsLastDpsPercent();
 		if (!Double.isNaN(vs))

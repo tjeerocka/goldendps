@@ -29,6 +29,8 @@ public class GoldenDpsUpdate extends PartyMemberMessage
 		public int x;
 		public int y;
 		public int p;
+		/** Source: weapon or spell ("Scythe of vitur", "Dragon claws (spec)"). Null from old versions. */
+		public String s;
 
 		public Hit()
 		{

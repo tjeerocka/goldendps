@@ -419,6 +419,18 @@ class GoldenDpsPanel extends PluginPanel
 		card.add(line("Biggest hit", String.valueOf(row.biggestHit)));
 		double acc = row.accuracy();
 		card.add(line("Accuracy", acc < 0 ? "-" : String.format("%.0f%% (%d/%d)", acc, row.hits, row.hits + row.misses)));
+		if (!row.sources.isEmpty())
+		{
+			// like the Details! spell breakdown: damage per weapon / spec / spell
+			card.add(line("Breakdown", ""));
+			for (FightReport.SourceRow s : row.sources)
+			{
+				JComponent l = line("  " + s.name, Format.amount(s.damage) + "  (" + Format.percent(s.percent) + ")");
+				l.setToolTipText(String.format("%s: %d hits, %d misses, biggest %d, average %.1f per attack",
+					s.name, s.hits, s.misses, s.biggestHit, s.average()));
+				card.add(l);
+			}
+		}
 		if (row.isEstimate())
 		{
 			card.add(line("", "No GoldenDPS: damage is a guess"));

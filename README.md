@@ -156,6 +156,18 @@ Every boss kill is compared with your records for that boss:
 - Saved in `<account id>.records.json`, so PBs stay when old fights are removed from the history.
   The first time, PBs are built from your saved fights.
 
+## Breakdown per weapon / spell
+
+Like the Details! spell breakdown. Each player card in the panel shows damage per source:
+
+- **Weapon**: the weapon you held when your attack started (switching while an arrow flies is fine).
+- **Special attacks**: own line, for example `Dragon claws (spec)` (found by spec energy going down).
+- **Spells you click** (Cast on an NPC): by spell name, for example `Ice Barrage`. Autocast shows the staff.
+- Hover a line for hits, misses, biggest hit and average per attack.
+- Exact for you. Party members only show a breakdown when they also have GoldenDPS (this version).
+  Players without GoldenDPS have no breakdown.
+- Thrall hits look like your own hits, so they count for the weapon you hold.
+
 ## Saving
 
 Fight history is saved per account in

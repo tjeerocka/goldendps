@@ -36,6 +36,8 @@ public class FightReport
 		public long overFood;
 		public long overLifesteal;
 		public long damageTaken;
+		/** Damage per weapon / spell, biggest first. Empty when not known. */
+		public List<SourceRow> sources = new ArrayList<>();
 
 		/** Share of this player's healing that was wasted, 0..100 (0 when nothing was healed). */
 		public double overhealPercent()
@@ -60,6 +62,25 @@ public class FightReport
 		public boolean isEstimate()
 		{
 			return kind == PlayerKind.ESTIMATE;
+		}
+	}
+
+	/** One line of the breakdown: damage with one weapon or spell. */
+	public static class SourceRow
+	{
+		public String name;
+		public long damage;
+		public int hits;
+		public int misses;
+		public int biggestHit;
+		/** Share of this player's damage, 0..100. */
+		public double percent;
+
+		/** Average damage per attack (hits and misses). */
+		public double average()
+		{
+			int attacks = hits + misses;
+			return attacks == 0 ? 0 : (double) damage / attacks;
 		}
 	}
 
@@ -114,6 +135,40 @@ public class FightReport
 				row.biggestHit = Math.max(row.biggestHit, d.biggestHit);
 				knownByTarget.merge(e.getKey(), d.damage, Long::sum);
 			}
+			Map<String, SourceRow> src = new LinkedHashMap<>();
+			if (p.kind != PlayerKind.ESTIMATE)
+			{
+				for (Map.Entry<String, Map<String, TargetDamage>> s : p.sources().entrySet())
+				{
+					for (Map.Entry<String, TargetDamage> e : s.getValue().entrySet())
+					{
+						if (!counts(fight, e.getKey(), bossOnly) || !countsFor(fight, p, e.getKey()))
+						{
+							continue;
+						}
+						SourceRow sr = src.computeIfAbsent(s.getKey(), k ->
+						{
+							SourceRow n = new SourceRow();
+							n.name = k;
+							return n;
+						});
+						TargetDamage d = e.getValue();
+						sr.damage += d.damage;
+						sr.hits += d.hits;
+						sr.misses += d.misses;
+						sr.biggestHit = Math.max(sr.biggestHit, d.biggestHit);
+					}
+				}
+			}
+			for (SourceRow sr : src.values())
+			{
+				if (sr.hits + sr.misses > 0)
+				{
+					sr.percent = row.damage == 0 ? 0 : 100.0 * sr.damage / row.damage;
+					row.sources.add(sr);
+				}
+			}
+			row.sources.sort((a, b) -> Long.compare(b.damage, a.damage));
 			row.healFood = p.healFood;
 			row.healLifesteal = p.healLifesteal;
 			row.healRegen = p.healRegen;

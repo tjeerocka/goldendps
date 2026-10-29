@@ -22,6 +22,11 @@ public class PlayerStats
 	/** Wasted healing (full heal minus what really healed). */
 	public long overFood;
 	public long overLifesteal;
+	/**
+	 * Damage per source (weapon / spell, like the Details! spell breakdown), then per target key.
+	 * Only for your own hits and party members with GoldenDPS.
+	 */
+	public Map<String, Map<String, TargetDamage>> bySource = new LinkedHashMap<>();
 
 	public PlayerStats()
 	{
@@ -36,6 +41,27 @@ public class PlayerStats
 	public void addHit(String targetKey, int amount, boolean miss)
 	{
 		byTarget.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
+	}
+
+	/** A hit with a known source (weapon or spell). Source null = only the normal hit. */
+	public void addHit(String targetKey, int amount, boolean miss, String source)
+	{
+		addHit(targetKey, amount, miss);
+		if (source != null && !source.isEmpty())
+		{
+			sources().computeIfAbsent(source, k -> new LinkedHashMap<>())
+				.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
+		}
+	}
+
+	/** Never null (old save files have no sources). */
+	public Map<String, Map<String, TargetDamage>> sources()
+	{
+		if (bySource == null)
+		{
+			bySource = new LinkedHashMap<>();
+		}
+		return bySource;
 	}
 
 	public void addEstimate(String targetKey, int amount, boolean miss)
@@ -121,6 +147,14 @@ public class PlayerStats
 		for (Map.Entry<String, TargetDamage> e : o.estByTarget.entrySet())
 		{
 			estByTarget.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
+		}
+		for (Map.Entry<String, Map<String, TargetDamage>> s : o.sources().entrySet())
+		{
+			Map<String, TargetDamage> mine = sources().computeIfAbsent(s.getKey(), k -> new LinkedHashMap<>());
+			for (Map.Entry<String, TargetDamage> e : s.getValue().entrySet())
+			{
+				mine.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
+			}
 		}
 		damageTaken += o.damageTaken;
 		seenTaken += o.seenTaken;

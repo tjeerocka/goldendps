@@ -128,7 +128,7 @@ public class BossRecordsTest
 		assertEquals("NEW PB!", BossRecords.meterTag(r.get("Vorkath"), fast));
 		List<String[]> lines = BossRecords.killLines(fast);
 		assertEquals("0:50 NEW PB! (was 1:00)", lines.get(0)[1]);
-		assertTrue(lines.get(1)[1].contains("NEW BEST!"));
+		assertTrue(lines.get(1)[1].contains("NEW BEST ("));
 		assertEquals("vs last kill", lines.get(2)[0]);
 		assertTrue(lines.get(2)[1].startsWith("+"));
 		assertEquals("3", lines.get(3)[1]);

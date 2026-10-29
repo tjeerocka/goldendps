@@ -70,12 +70,19 @@ public class FightTracker
 	public void playerHit(long now, String player, PlayerKind kind, String targetKey, int npcId,
 		String npcName, boolean boss, int amount, boolean miss)
 	{
+		playerHit(now, player, kind, targetKey, npcId, npcName, boss, amount, miss, null);
+	}
+
+	/** Same, with the source of the hit (weapon or spell name, null = unknown). */
+	public void playerHit(long now, String player, PlayerKind kind, String targetKey, int npcId,
+		String npcName, boolean boss, int amount, boolean miss, String source)
+	{
 		if (current == null && kind == PlayerKind.PARTY)
 		{
 			Fight late = recentFightWithTarget(now, targetKey);
 			if (late != null)
 			{
-				late.player(player, kind).addHit(targetKey, amount, miss);
+				late.player(player, kind).addHit(targetKey, amount, miss, source);
 				return;
 			}
 		}
@@ -87,7 +94,7 @@ public class FightTracker
 			t.firstMs = now;
 		}
 		t.lastMs = Math.max(t.lastMs, now);
-		f.player(player, kind).addHit(targetKey, amount, miss);
+		f.player(player, kind).addHit(targetKey, amount, miss, source);
 		f.activity(now);
 	}
 

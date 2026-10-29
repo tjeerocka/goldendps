@@ -372,6 +372,15 @@ public class Fight
 				String k = keyMap.getOrDefault(e.getKey(), e.getKey());
 				remapped.estByTarget.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
 			}
+			for (Map.Entry<String, Map<String, TargetDamage>> s : p.sources().entrySet())
+			{
+				Map<String, TargetDamage> to = remapped.sources().computeIfAbsent(s.getKey(), x -> new LinkedHashMap<>());
+				for (Map.Entry<String, TargetDamage> e : s.getValue().entrySet())
+				{
+					String k = keyMap.getOrDefault(e.getKey(), e.getKey());
+					to.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
+				}
+			}
 			mine.merge(remapped);
 		}
 	}

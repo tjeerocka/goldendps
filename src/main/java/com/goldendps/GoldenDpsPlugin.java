@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.AttackSource;
 import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
@@ -102,6 +103,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	/** A click on Eat / Drink must be followed by the item leaving the inventory within this many ticks. */
 	private static final int EAT_CONFIRM_TICKS = 3;
 	private static final int WEAPON_SLOT = 3;
+	/** VarPlayerID.SA_ENERGY: special attack energy x10. */
+	private static final int SPEC_ENERGY_VARP = 300;
 	private static final int[] SANGUINESTI_HEAL = {SpotanimID.SANGUINESTI_STAFF_HEAL, SpotanimID.SANGUINESTI_STAFF_HEAL_JUSTICIAR};
 	private static final int[] BLOOD_SPELL_IMPACT = {SpotanimID.BLOOD_RUSH_IMPACT, SpotanimID.BLOOD_BLITZ_IMPACT,
 		SpotanimID.SPELL_BLOOD_BURST_IMPACT, SpotanimID.SPELL_BLOOD_BARRAGE_IMPACT};
@@ -172,6 +175,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private GoldenDpsUpdate outgoing = new GoldenDpsUpdate();
 	private volatile FightReport overlayCache;
 	private volatile BossMeter bossCache;
+	/** Which weapon / spec / spell made your hits (for the breakdown). Client thread. */
+	private final AttackSource attackSource = new AttackSource();
+	private int lastSpecEnergy = -1;
 	/** Personal bests of the account. Client thread. */
 	private BossRecords records = new BossRecords();
 	private boolean recordsLoaded;
@@ -307,14 +313,17 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			{
 				boolean miss = type == HitsplatID.BLOCK_ME || amount <= 0;
 				// playerHit first, then seenHit (see FightTracker)
-				tracker.playerHit(now, localName(), PlayerKind.LOCAL, key, npc.getId(), name, boss, amount, miss);
+				String source = attackSource.sourceForHit(client.getTickCount(), weaponName());
+				tracker.playerHit(now, localName(), PlayerKind.LOCAL, key, npc.getId(), name, boss, amount, miss, source);
 				tracker.seenHit(now, key, npc.getId(), name, boss, amount);
 				if (!miss)
 				{
 					health.myHit(client.getTickCount());
 					myDamageThisTick.merge(npc, amount, Integer::sum);
 				}
-				outgoing.h.add(new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos));
+				GoldenDpsUpdate.Hit sent = new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos);
+				sent.s = source;
+				outgoing.h.add(sent);
 			}
 			else if (hitsplat.isOthers() && isGroupMode())
 			{
@@ -367,7 +376,16 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	public void onAnimationChanged(AnimationChanged e)
 	{
 		Actor actor = e.getActor();
-		if (!(actor instanceof Player) || actor == client.getLocalPlayer() || !config.estimateOthers()
+		if (actor != null && actor == client.getLocalPlayer())
+		{
+			int anim = actor.getAnimation();
+			if (anim != -1 && anim != EAT_ANIMATION && actor.getInteracting() instanceof NPC)
+			{
+				attackSource.attack(client.getTickCount(), weaponName());
+			}
+			return;
+		}
+		if (!(actor instanceof Player) || !config.estimateOthers()
 			|| !isGroupMode())
 		{
 			return;
@@ -418,6 +436,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			if (target != null && (target.startsWith("Heal Other") || target.startsWith("Heal Group")))
 			{
 				health.healOtherCast(tick);
+			}
+			else if (target != null && target.contains("->"))
+			{
+				attackSource.castClicked(tick, target);
 			}
 		}
 	}
@@ -483,6 +505,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		int tick = client.getTickCount();
 
 		checkLifesteal(tick);
+		int spec = client.getVarpValue(SPEC_ENERGY_VARP);
+		if (lastSpecEnergy >= 0 && spec < lastSpecEnergy)
+		{
+			attackSource.specUsed(tick, weaponName());
+		}
+		lastSpecEnergy = spec;
 		for (HealthWatcher.Heal heal : health.endTick(tick))
 		{
 			if (heal.type == HealType.RECEIVED || tracker.getCurrent() == null)
@@ -600,6 +628,18 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		return false;
 	}
 
+	/** Name of the weapon you hold now, or null. Client thread. */
+	private String weaponName()
+	{
+		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
+		if (worn == null)
+		{
+			return null;
+		}
+		Item[] items = worn.getItems();
+		return items.length > WEAPON_SLOT && items[WEAPON_SLOT].getId() > 0 ? itemName(items[WEAPON_SLOT].getId()) : null;
+	}
+
 	private String itemName(int itemId)
 	{
 		ItemComposition def = client.getItemDefinition(itemId);
@@ -622,6 +662,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			myDamageThisTick.clear();
 			eatClicks.clear();
 			lastInventory = null;
+			attackSource.reset();
+			lastSpecEnergy = -1;
 			outgoing = new GoldenDpsUpdate();
 			tracker.endNow(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
 			saveAsync();
@@ -685,7 +727,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			{
 				boolean boss = hit.boss || bosses.isBoss(hit.id, hit.nm);
 				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.w, hit, name), hit.id, hit.nm,
-					boss, hit.a, hit.miss);
+					boss, hit.a, hit.miss, hit.s == null || hit.s.length() > 64 ? null : hit.s);
 			}
 		}
 		tracker.damageTaken(now, name, PlayerKind.PARTY, u.taken);
