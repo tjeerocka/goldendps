@@ -17,6 +17,10 @@ public class TargetStats
 	/** Someone in the party (or you) hit it. Only these targets count for "Others (unknown)". */
 	public boolean engaged;
 	public boolean died;
+	/** First and last hit by you / your party, and when it died (ms, 0 = not yet). */
+	public long firstMs;
+	public long lastMs;
+	public long diedMs;
 
 	public TargetStats()
 	{
@@ -37,6 +41,12 @@ public class TargetStats
 		engaged |= o.engaged;
 		died |= o.died;
 		boss |= o.boss;
+		if (o.firstMs > 0 && (firstMs == 0 || o.firstMs < firstMs))
+		{
+			firstMs = o.firstMs;
+		}
+		lastMs = Math.max(lastMs, o.lastMs);
+		diedMs = Math.max(diedMs, o.diedMs);
 	}
 
 	public TargetStats copy()

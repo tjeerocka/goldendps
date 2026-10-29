@@ -71,6 +71,11 @@ public class FightTracker
 		Fight f = ensureFight(now);
 		TargetStats t = f.target(targetKey, npcId, npcName, boss);
 		t.engaged = true;
+		if (t.firstMs == 0)
+		{
+			t.firstMs = now;
+		}
+		t.lastMs = Math.max(t.lastMs, now);
 		f.player(player, kind).addHit(targetKey, amount, miss);
 		f.lastActivityMs = now;
 	}
@@ -174,6 +179,7 @@ public class FightTracker
 			return;
 		}
 		t.died = true;
+		t.diedMs = now;
 		if (!(boss || t.boss) || !t.engaged)
 		{
 			return;

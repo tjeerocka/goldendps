@@ -62,6 +62,8 @@ class GoldenDpsPanel extends PluginPanel
 		int fights;
 		long startMs;
 		String localName;
+		/** Only boss damage over the boss time. Null when no boss was fought (or boss only is on). */
+		FightReport bossReport;
 	}
 
 	private static final Color GOLD = new Color(255, 196, 0);
@@ -212,6 +214,12 @@ class GoldenDpsPanel extends PluginPanel
 		}
 		sum.add(line("Group damage", Format.amount(r.getTotalDamage())));
 		sum.add(line("Group DPS", Format.dps(r.getGroupDps())));
+		if (d.bossReport != null)
+		{
+			sum.add(line("Boss time", Format.duration(d.bossReport.getDurationMs())));
+			sum.add(line("Boss damage", Format.amount(d.bossReport.getTotalDamage())));
+			sum.add(line("Boss DPS", Format.dps(d.bossReport.getGroupDps())));
+		}
 		if (d.endReason != null && d.fights == 0)
 		{
 			sum.add(line("Ended", d.endReason));
@@ -224,7 +232,7 @@ class GoldenDpsPanel extends PluginPanel
 		for (FightReport.PlayerRow row : rows)
 		{
 			content.add(Box.createVerticalStrut(6));
-			content.add(playerCard(row, d.localName));
+			content.add(playerCard(row, d.bossReport == null ? null : d.bossReport.row(row.name)));
 		}
 
 		// targets
@@ -270,7 +278,7 @@ class GoldenDpsPanel extends PluginPanel
 		}
 	}
 
-	private JPanel playerCard(FightReport.PlayerRow row, String localName)
+	private JPanel playerCard(FightReport.PlayerRow row, FightReport.PlayerRow bossRow)
 	{
 		JPanel card = section();
 		Color nameColor = row.kind == PlayerKind.LOCAL ? GOLD
@@ -280,6 +288,11 @@ class GoldenDpsPanel extends PluginPanel
 		card.add(bold(name, nameColor));
 		card.add(line("Damage", Format.amount(row.damage) + "  (" + Format.percent(row.percent) + ")"));
 		card.add(line("DPS", Format.dps(row.dps)));
+		if (bossRow != null && bossRow.damage > 0)
+		{
+			card.add(line("Boss damage", Format.amount(bossRow.damage) + "  (" + Format.percent(bossRow.percent) + ")"));
+			card.add(line("Boss DPS", Format.dps(bossRow.dps)));
+		}
 		if (!row.isPlayer())
 		{
 			String why = row.kind == PlayerKind.UNKNOWN

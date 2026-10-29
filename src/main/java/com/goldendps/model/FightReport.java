@@ -83,7 +83,16 @@ public class FightReport
 	{
 		FightReport r = new FightReport();
 		r.durationMs = fight.durationMs(nowMs);
-		r.title = fight.title();
+		if (bossOnly)
+		{
+			// boss DPS: only the time spent on bosses, not the trash before
+			long boss = fight.bossDurationMs(nowMs);
+			if (boss > 0)
+			{
+				r.durationMs = boss;
+			}
+		}
+		r.title = fight.title(bossOnly && fight.hasBossTarget());
 		double seconds = r.durationMs / 1000.0;
 
 		Map<String, Long> knownByTarget = new LinkedHashMap<>();

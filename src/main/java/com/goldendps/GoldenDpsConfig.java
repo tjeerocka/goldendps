@@ -201,7 +201,7 @@ public interface GoldenDpsConfig extends Config
 	@Units(Units.PIXELS)
 	default int overlayWidth()
 	{
-		return 220;
+		return 240;
 	}
 
 	@ConfigItem(
@@ -226,5 +226,31 @@ public interface GoldenDpsConfig extends Config
 	default Color myColor()
 	{
 		return new Color(255, 196, 0);
+	}
+
+	@ConfigItem(
+		keyName = "bossMeter",
+		name = "Boss meter",
+		description = "Extra bars under the main meter with only the damage on the boss, and DPS over the boss time",
+		position = 7,
+		section = overlaySection
+	)
+	default boolean bossMeter()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "bossHideSeconds",
+		name = "Hide boss meter after",
+		description = "How long the boss meter stays after the boss died. A new boss fight shows a new one.",
+		position = 8,
+		section = overlaySection
+	)
+	@Range(min = 3, max = 600)
+	@Units(Units.SECONDS)
+	default int bossHideSeconds()
+	{
+		return 20;
 	}
 }

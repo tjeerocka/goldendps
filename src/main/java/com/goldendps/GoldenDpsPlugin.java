@@ -155,6 +155,23 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private int ticks;
 	private GoldenDpsUpdate outgoing = new GoldenDpsUpdate();
 	private volatile FightReport overlayCache;
+	private volatile BossMeter bossCache;
+
+	/** What the boss meter shows (made once per tick on the client thread). */
+	static class BossMeter
+	{
+		final FightReport report;
+		final boolean dead;
+		/** Seconds until the boss meter hides, after the boss died. */
+		final int hidesIn;
+
+		BossMeter(FightReport report, boolean dead, int hidesIn)
+		{
+			this.report = report;
+			this.dead = dead;
+			this.hidesIn = hidesIn;
+		}
+	}
 
 	@Provides
 	GoldenDpsConfig provideConfig(ConfigManager configManager)
@@ -201,6 +218,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			tracker.clearHistory();
 			account = -1;
 			overlayCache = null;
+			bossCache = null;
 			health.reset();
 			outgoing = new GoldenDpsUpdate();
 		});
@@ -770,6 +788,31 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			? tracker.getSessionTotal(now)
 			: tracker.getDisplayFight();
 		overlayCache = f == null ? null : FightReport.of(f, config.bossOnly(), config.countRegen(), now);
+
+		// boss meter: always the current / last fight, only boss damage and boss time
+		Fight shown = tracker.getDisplayFight();
+		long hideMs = config.bossHideSeconds() * 1000L;
+		if (config.bossMeter() && !config.bossOnly() && shown != null && shown.bossMeterVisible(now, hideMs))
+		{
+			long over = shown.bossDiedMs();
+			if (over == 0 && !shown.isActive())
+			{
+				over = shown.endMs;
+			}
+			int hidesIn = over == 0 ? -1 : (int) Math.max(0, (over + hideMs - now + 999) / 1000);
+			bossCache = new BossMeter(FightReport.of(shown, true, config.countRegen(), now),
+				shown.bossDiedMs() > 0, hidesIn);
+		}
+		else
+		{
+			bossCache = null;
+		}
+	}
+
+	/** Boss meter for the overlay, or null when it is hidden. */
+	BossMeter bossMeter()
+	{
+		return bossCache;
 	}
 
 	boolean isFightRunning()
@@ -821,6 +864,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			data.endReason = fight.endReason;
 			data.fights = fight.mergedFights;
 			data.startMs = fight.startMs;
+			if (!config.bossOnly() && fight.hasBossTarget())
+			{
+				data.bossReport = FightReport.of(fight, true, config.countRegen(), now);
+			}
 		}
 		data.localName = localName();
 		SwingUtilities.invokeLater(() -> p.update(data));

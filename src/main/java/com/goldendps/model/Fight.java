@@ -20,6 +20,8 @@ public class Fight
 	/** Only used for merged totals: sum of the fight times. */
 	public long mergedDurationMs;
 	public int mergedFights;
+	/** Only used for merged totals: sum of the boss times. */
+	public long mergedBossMs;
 
 	public Map<String, PlayerStats> players = new LinkedHashMap<>();
 	public Map<String, TargetStats> targets = new LinkedHashMap<>();
@@ -57,6 +59,83 @@ public class Fight
 			d = nowMs - startMs;
 		}
 		return Math.max(MIN_DURATION_MS, d);
+	}
+
+	/**
+	 * Time spent on bosses: from the first hit on a boss to the last boss death
+	 * (or the last hit / now while a boss is alive). 0 when no boss was fought.
+	 */
+	public long bossDurationMs(long nowMs)
+	{
+		if (mergedFights > 0)
+		{
+			return mergedBossMs;
+		}
+		long start = 0;
+		long end = 0;
+		boolean alive = false;
+		for (TargetStats t : targets.values())
+		{
+			if (!t.boss || !t.engaged || t.firstMs <= 0)
+			{
+				continue;
+			}
+			start = start == 0 ? t.firstMs : Math.min(start, t.firstMs);
+			if (t.died && t.diedMs > 0)
+			{
+				end = Math.max(end, t.diedMs);
+			}
+			else
+			{
+				alive = true;
+				end = Math.max(end, t.lastMs);
+			}
+		}
+		if (start == 0)
+		{
+			return 0;
+		}
+		if (alive && isActive())
+		{
+			end = Math.max(end, nowMs);
+		}
+		return Math.max(MIN_DURATION_MS, end - start);
+	}
+
+	/** When the last boss died, if every boss we fought is dead. Else 0. */
+	public long bossDiedMs()
+	{
+		long died = 0;
+		for (TargetStats t : targets.values())
+		{
+			if (t.boss && t.engaged)
+			{
+				if (!t.died || t.diedMs <= 0)
+				{
+					return 0;
+				}
+				died = Math.max(died, t.diedMs);
+			}
+		}
+		return died;
+	}
+
+	/**
+	 * Show the boss meter? Yes while a boss fight runs, and for hideAfterMs after
+	 * the boss died (or after the fight ended without a kill).
+	 */
+	public boolean bossMeterVisible(long nowMs, long hideAfterMs)
+	{
+		if (mergedFights > 0 || !hasBossTarget())
+		{
+			return false;
+		}
+		long over = bossDiedMs();
+		if (over == 0 && !isActive())
+		{
+			over = endMs;
+		}
+		return over == 0 || nowMs - over < hideAfterMs;
 	}
 
 	public PlayerStats player(String name, PlayerKind kind)
@@ -116,6 +195,12 @@ public class Fight
 	/** Name for lists: the boss (or target) that took the most damage. */
 	public String title()
 	{
+		return title(false);
+	}
+
+	/** Name for lists. bossOnly: only boss targets count. */
+	public String title(boolean bossOnly)
+	{
 		Map<String, Long> byName = new HashMap<>();
 		Map<String, Boolean> bossByName = new HashMap<>();
 		for (PlayerStats p : players.values())
@@ -123,6 +208,10 @@ public class Fight
 			for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
 			{
 				TargetStats t = targets.get(e.getKey());
+				if (bossOnly && (t == null || !t.boss))
+				{
+					continue;
+				}
 				String n = t == null || t.name == null ? "Unknown" : t.name;
 				byName.merge(n, e.getValue().damage, Long::sum);
 				if (t != null && t.boss)
@@ -154,6 +243,7 @@ public class Fight
 	public void merge(Fight o, long nowMs)
 	{
 		mergedDurationMs += o.durationMs(nowMs);
+		mergedBossMs += o.bossDurationMs(nowMs);
 		mergedFights += o.mergedFights > 0 ? o.mergedFights : 1;
 		if (startMs == 0 || (o.startMs > 0 && o.startMs < startMs))
 		{
@@ -217,6 +307,7 @@ public class Fight
 		c.endReason = endReason;
 		c.mergedDurationMs = mergedDurationMs;
 		c.mergedFights = mergedFights;
+		c.mergedBossMs = mergedBossMs;
 		for (PlayerStats p : players.values())
 		{
 			c.players.put(p.name, p.copy());

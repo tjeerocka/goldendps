@@ -448,6 +448,98 @@ public class FightTrackerTest
 	}
 
 	@Test
+	public void bossDpsUsesOnlyBossTime()
+	{
+		myHit(0, RAT, false, 100);           // trash first
+		myHit(10_000, BOSS, true, 50);       // boss from 10s
+		myHit(20_000, BOSS, true, 50);
+		tracker.npcDied(30_000, BOSS, true); // boss dead at 30s
+
+		Fight f = tracker.getHistory().get(0);
+		assertEquals(30_000, f.durationMs(99_999));
+		assertEquals(20_000, f.bossDurationMs(99_999));
+
+		FightReport all = FightReport.of(f, false, false, 99_999);
+		FightReport boss = FightReport.of(f, true, false, 99_999);
+		assertEquals(200.0 / 30, all.row("Me").dps, D);
+		assertEquals(100.0 / 20, boss.row("Me").dps, D);
+		assertEquals(20_000, boss.getDurationMs());
+		assertEquals("Vorkath", boss.getTitle());
+	}
+
+	@Test
+	public void bossTimeGrowsWhileTheBossIsAlive()
+	{
+		myHit(0, RAT, false, 10);
+		myHit(5000, BOSS, true, 10);
+		Fight f = tracker.getCurrent();
+		assertEquals(7000, f.bossDurationMs(12_000));
+		assertEquals(0, f.bossDiedMs());
+	}
+
+	@Test
+	public void noBossMeansNoBossTime()
+	{
+		myHit(0, RAT, false, 10);
+		Fight f = tracker.getCurrent();
+		assertEquals(0, f.bossDurationMs(5000));
+		assertFalse(f.bossMeterVisible(5000, 20_000));
+		// boss only without a boss: normal fight time
+		assertEquals(5000, FightReport.of(f, true, false, 5000).getDurationMs());
+	}
+
+	@Test
+	public void bossMeterHidesAfterTheTimer()
+	{
+		myHit(0, BOSS, true, 10);
+		assertTrue("visible during the fight", tracker.getCurrent().bossMeterVisible(500_000, 20_000));
+		tracker.npcDied(6000, BOSS, true);
+
+		Fight f = tracker.getDisplayFight();
+		assertEquals(6000, f.bossDiedMs());
+		assertTrue(f.bossMeterVisible(25_999, 20_000));
+		assertFalse(f.bossMeterVisible(26_000, 20_000));
+	}
+
+	@Test
+	public void bossMeterHidesAfterEscapeWithoutKill()
+	{
+		myHit(1000, BOSS, true, 10);
+		tracker.tick(11_000); // idle: fight ends at the last hit (1000)
+		Fight f = tracker.getDisplayFight();
+		assertTrue(f.bossMeterVisible(20_999, 20_000));
+		assertFalse(f.bossMeterVisible(21_000, 20_000));
+	}
+
+	@Test
+	public void newBossFightReplacesTheOldBossMeter()
+	{
+		myHit(0, BOSS, true, 10);
+		tracker.npcDied(600, BOSS, true);
+		myHit(5000, "301:11", true, 30);
+		Fight f = tracker.getDisplayFight();
+		assertTrue(f.isActive());
+		assertTrue(f.bossMeterVisible(5000, 20_000));
+		assertEquals(30, FightReport.of(f, true, false, 6000).getTotalDamage());
+	}
+
+	@Test
+	public void sessionBossTimeIsTheSumOfBossFights()
+	{
+		myHit(0, RAT, false, 10);
+		myHit(2000, BOSS, true, 50);
+		tracker.npcDied(12_000, BOSS, true); // 10s boss
+		myHit(60_000, BOSS, true, 50);
+		tracker.npcDied(65_000, BOSS, true); // 5s boss
+
+		Fight total = tracker.getSessionTotal(70_000);
+		assertEquals(15_000, total.bossDurationMs(70_000));
+		assertFalse(total.bossMeterVisible(70_000, 20_000));
+		FightReport boss = FightReport.of(total, true, false, 70_000);
+		assertEquals(100.0 / 15, boss.row("Me").dps, D);
+	}
+
+	@Test
 	public void copyIsDeep()
 	{
 		myHit(0, RAT, false, 5);

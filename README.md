@@ -83,6 +83,12 @@ Party members send their overhealing too (they need this version).
 
 - Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Damage taken**,
   **Toggle Boss only**, **Toggle Fight / Session**, **Reset Session**.
+- Damage bars show damage, DPS and share: `820  13.7/s  50%`.
+- **Boss meter** (red header, under the main meter): only damage on the boss, and DPS over the
+  boss time (first hit on the boss to its death), so trash before the boss does not count.
+  After the boss dies it shows `(12s)` and hides after that time (setting **Hide boss meter after**,
+  default 20 s). The next boss fight shows a new one. Settings: **Boss meter** on/off.
+- The panel shows Boss time / Boss damage / Boss DPS for the fight and per player.
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.
 
