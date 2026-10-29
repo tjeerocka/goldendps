@@ -35,6 +35,13 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	private int lastSx;
 	private int lastSy;
 	private boolean unsafe;
+	/** For the status line: how often the copy was drawn / the real one hidden. */
+	private int frames;
+	private int draws;
+	private int hides;
+	private int lastDraws = -1;
+	private int lastHides = -1;
+	private String lastStatus = "";
 
 	FatHealerRenderer(Client client)
 	{
@@ -69,6 +76,23 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 				setLocation(lp, target.getWorldView().getPlane());
 				setZ(net.runelite.api.Perspective.getTileHeight(client, lp, target.getWorldView().getPlane()));
 				setOrientation(target.getCurrentOrientation());
+			}
+		}
+
+		// status line: count draws over about one second (50 frames)
+		if (++frames >= 50)
+		{
+			lastDraws = draws;
+			lastHides = hides;
+			frames = 0;
+			draws = 0;
+			hides = 0;
+			String st = status();
+			if (!st.equals(lastStatus))
+			{
+				log.info("GoldenDPS fat healer: {} (draws/s {}, hides/s {}, registered {})", st, lastDraws, lastHides,
+					client.isRuneLiteObjectRegistered(this));
+				lastStatus = st;
 			}
 		}
 
@@ -114,7 +138,39 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	public boolean addEntity(Renderable renderable, boolean ui)
 	{
 		// ui = overhead text, HP bars, hitsplats: keep those
-		return ui || !(renderable instanceof Player) || !isFat((Player) renderable);
+		boolean hide = !ui && renderable instanceof Player && isFat((Player) renderable);
+		if (hide)
+		{
+			hides++;
+		}
+		return !hide;
+	}
+
+	/** Short text for the panel: what the fat healer is doing right now. */
+	String status()
+	{
+		if (target == null)
+		{
+			return "nobody is fat";
+		}
+		if (unsafe)
+		{
+			return "stopped (safety check)";
+		}
+		if (!client.isRuneLiteObjectRegistered(this))
+		{
+			return "copy not added";
+		}
+		if (lastDraws == 0)
+		{
+			return "added, but not drawn";
+		}
+		if (lastDraws < 0)
+		{
+			return "starting...";
+		}
+		return "drawn +" + Math.round(width) + "%/+" + Math.round(height) + "%"
+			+ (lastHides > 0 ? ", real hidden" : ", real NOT hidden");
 	}
 
 	// ---- RuneLiteObjectController: the fat copy ----
@@ -127,6 +183,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			return null;
 		}
+		draws++;
 		Model m = p.getModel();
 		if (m == null || unsafe)
 		{

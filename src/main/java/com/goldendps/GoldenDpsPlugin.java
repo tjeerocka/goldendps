@@ -983,6 +983,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 		}
 		data.localName = localName();
+		data.fatStatus = fatTest || fatName != null
+			? (fatName != null && fatHealer.getFatPlayer() == null && findPlayer(fatName) == null
+				? "player \"" + fatName + "\" not found" : fatHealer.status())
+			: null;
 		SwingUtilities.invokeLater(() -> p.update(data));
 	}
 
