@@ -126,7 +126,7 @@ The side panel has two tabs: **Meter** (fights) and **Party**. GoldenDPS uses Ru
 - **Members**: green dot = online, ★ = leader, `(you)`, `no GoldenDPS` = only the Party plugin.
 - **Leader**: whoever starts the party (alone in it). New GoldenDPS members are told who leads.
   If the leader leaves, the GoldenDPS member who joined the party system first takes over.
-- **Kick** (leader only): the kicked player's GoldenDPS leaves the party. RuneLite parties have no
+- **Kick** (leader only, click twice: "Kick" then "Sure?"): the kicked player's GoldenDPS leaves the party. RuneLite parties have no
   real kick, so this only works on players with GoldenDPS, and they could join again with the same
   name: start a new party name if needed.
 - **Leave**: leave the party.

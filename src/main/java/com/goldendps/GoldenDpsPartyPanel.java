@@ -58,6 +58,11 @@ class GoldenDpsPartyPanel extends JPanel
 	private final JPanel memberList = new JPanel();
 	private final JButton leaveButton;
 	private final JButton joinButton;
+	/** Kick needs two clicks: the first one asks "Sure?" for a few seconds. */
+	private long confirmKickId = -1;
+	private long confirmUntil;
+	static final long KICK_CONFIRM_MS = 4000;
+	private View lastView = new View();
 	private final JButton randomButton;
 	private final JButton copyButton;
 	private String shownCode;
@@ -126,6 +131,7 @@ class GoldenDpsPartyPanel extends JPanel
 
 	void update(View v)
 	{
+		lastView = v;
 		if (v.inParty)
 		{
 			int online = 0;
@@ -208,8 +214,10 @@ class GoldenDpsPartyPanel extends JPanel
 
 		if (youLead && !m.you)
 		{
-			JButton kick = button("Kick", m.hasPlugin ? "Remove " + m.name + " from the party"
-				: "Can't kick: " + m.name + " does not run GoldenDPS", KICK, () -> plugin.kickFromParty(m.id, m.name));
+			boolean sure = confirmKickId == m.id && System.currentTimeMillis() < confirmUntil;
+			JButton kick = button(sure ? "Sure?" : "Kick", !m.hasPlugin ? "Can't kick: " + m.name + " does not run GoldenDPS"
+				: sure ? "Click again to remove " + m.name : "Remove " + m.name + " from the party (click twice)",
+				KICK, () -> kickClicked(m));
 			kick.setEnabled(m.hasPlugin);
 			row.add(kick, BorderLayout.EAST);
 		}
@@ -221,6 +229,24 @@ class GoldenDpsPartyPanel extends JPanel
 		wrap.setAlignmentX(LEFT_ALIGNMENT);
 		wrap.add(row);
 		return wrap;
+	}
+
+	private void kickClicked(Member m)
+	{
+		long now = System.currentTimeMillis();
+		if (confirmKickId == m.id && now < confirmUntil)
+		{
+			confirmKickId = -1;
+			plugin.kickFromParty(m.id, m.name);
+			return;
+		}
+		confirmKickId = m.id;
+		confirmUntil = now + KICK_CONFIRM_MS;
+		update(lastView);
+		// back to "Kick" when you don't click again
+		javax.swing.Timer t = new javax.swing.Timer((int) KICK_CONFIRM_MS + 50, e -> update(lastView));
+		t.setRepeats(false);
+		t.start();
 	}
 
 	private void join()

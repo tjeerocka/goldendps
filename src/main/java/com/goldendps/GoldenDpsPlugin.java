@@ -185,6 +185,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private boolean rejoinPending = true;
 	/** Ticks to wait after login before reading the saved party (the account's settings load first). */
 	private int rejoinWait = REJOIN_WAIT_TICKS;
+	/**
+	 * Members you kicked (member id → time). The party server can keep a member for a while after
+	 * they left, so we hide them right away. Client thread.
+	 */
+	private final Map<Long, Long> kicked = new HashMap<>();
+	private static final long KICK_HIDE_MS = 120_000;
 	private static final int REJOIN_WAIT_TICKS = 3;
 	/** Personal bests of the account. Client thread. */
 	private BossRecords records = new BossRecords();
@@ -1108,7 +1114,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				return;
 			}
 			partyService.send(new GoldenDpsPartyMessage(GoldenDpsPartyMessage.KICK, partyLeader.getLeader(), memberId));
+			kicked.put(memberId, System.currentTimeMillis());
 			localMessage("GoldenDPS: removed " + name + " from the party.");
+			updatePanel();
 		});
 	}
 
@@ -1326,8 +1334,15 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		v.youLead = partyLeader.isLeader();
 		v.auto = RaidParty.isAuto(v.code);
 		PartyMember local = partyService.getLocalMember();
+		long nowMs = System.currentTimeMillis();
+		kicked.values().removeIf(t -> nowMs - t > KICK_HIDE_MS);
 		for (PartyMember m : partyService.getMembers())
 		{
+			if (kicked.containsKey(m.getMemberId()))
+			{
+				// kicked: gone for us, even if the party server still lists them for a moment
+				continue;
+			}
 			GoldenDpsPartyPanel.Member row = new GoldenDpsPartyPanel.Member();
 			row.id = m.getMemberId();
 			row.you = local != null && m.getMemberId() == local.getMemberId();
