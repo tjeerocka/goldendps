@@ -83,6 +83,7 @@ Party members send their overhealing too (they need this version).
 
 - Overlay: colored bars, sorted. Right-click: **Show Damage / DPS / Healing / Damage taken**,
   **Toggle Boss only**, **Toggle Fight / Session**, **Reset Session**.
+- The main meter header says `Damage overall` (all targets), or `Damage - Session`.
 - Damage bars show damage, DPS and share: `820  13.7/s  50%`.
 - **Boss meter** (red header, under the main meter): only damage on the boss, and DPS over the
   boss time (first hit on the boss to its death), so trash before the boss does not count.

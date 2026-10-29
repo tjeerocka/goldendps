@@ -80,13 +80,9 @@ class GoldenDpsOverlay extends Overlay
 		FontMetrics fm = g.getFontMetrics();
 		int width = config.overlayWidth();
 
-		// main meter: "Damage - Vorkath +1     0:42"
-		String scope = config.overlayScope() == GoldenDpsConfig.Scope.SESSION ? "Session" : null;
-		String title = mode.getLabel();
-		if (report != null)
-		{
-			title += " - " + (scope != null ? scope : report.getTitle());
-		}
+		// main meter: "Damage overall     0:42" (all targets; the boss meter has the boss name)
+		boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
+		String title = mode.getLabel() + (session ? " - Session" : " overall");
 		if (config.bossOnly())
 		{
 			title += " (boss)";
