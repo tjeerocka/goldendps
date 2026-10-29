@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
@@ -171,6 +172,13 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private GoldenDpsUpdate outgoing = new GoldenDpsUpdate();
 	private volatile FightReport overlayCache;
 	private volatile BossMeter bossCache;
+	/** Personal bests of the account. Client thread. */
+	private BossRecords records = new BossRecords();
+	private boolean recordsLoaded;
+	/** Kills that ended while the records were still loading. */
+	private final List<BossRecords.Kill> pendingKills = new ArrayList<>();
+	/** How each boss kill compared with the PBs (fight id → compare). */
+	private final Map<String, BossRecords.Compare> killCompares = new HashMap<>();
 
 	/** What the boss meter shows (made once per tick on the client thread). */
 	static class BossMeter
@@ -179,12 +187,15 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		final boolean dead;
 		/** Seconds until the boss meter hides, after the boss died. */
 		final int hidesIn;
+		/** "NEW PB!", "PB 1:10" or null. */
+		final String pb;
 
-		BossMeter(FightReport report, boolean dead, int hidesIn)
+		BossMeter(FightReport report, boolean dead, int hidesIn, String pb)
 		{
 			this.report = report;
 			this.dead = dead;
 			this.hidesIn = hidesIn;
+			this.pb = pb;
 		}
 	}
 
@@ -705,6 +716,45 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	{
 		dirty = true;
 		saveAsync();
+		BossRecords.Kill k = BossRecords.kill(fight, config.countRegen());
+		if (k == null || account == -1)
+		{
+			return;
+		}
+		if (!recordsLoaded)
+		{
+			pendingKills.add(k);
+			return;
+		}
+		killCompares.put(fight.id, records.add(k));
+		saveRecordsAsync();
+	}
+
+	private void saveRecordsAsync()
+	{
+		if (account == -1 || store == null || !recordsLoaded)
+		{
+			return;
+		}
+		final long acc = account;
+		final BossRecords copy = records.copy();
+		executor.execute(() ->
+		{
+			try
+			{
+				store.saveRecords(acc, copy);
+			}
+			catch (Exception ex)
+			{
+				log.warn("GoldenDPS: could not save personal bests", ex);
+			}
+		});
+	}
+
+	/** The personal bests, for the panel. Client thread. */
+	List<BossRecords.Record> personalBests()
+	{
+		return records.list();
 	}
 
 	/** Loads the history of the account that is logged in (once per account). */
@@ -722,17 +772,46 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		tracker.endNow(System.currentTimeMillis(), "Account changed");
 		tracker.clearHistory();
 		account = hash;
+		records = new BossRecords();
+		recordsLoaded = false;
+		pendingKills.clear();
+		killCompares.clear();
 		executor.execute(() ->
 		{
 			try
 			{
 				List<Fight> loaded = store.load(hash);
+				BossRecords savedRecords = store.loadRecords(hash);
 				clientThread.invokeLater(() ->
 				{
 					if (account != hash)
 					{
 						return;
 					}
+					// personal bests: saved ones, or (first time) built from the saved fights
+					BossRecords rec = savedRecords;
+					if (rec == null)
+					{
+						rec = new BossRecords();
+						rec.seed(loaded, config.countRegen());
+					}
+					records = rec;
+					recordsLoaded = true;
+					List<Fight> ended = tracker.getHistory();
+					for (int i = 0; i < pendingKills.size(); i++)
+					{
+						BossRecords.Kill k = pendingKills.get(i);
+						BossRecords.Compare c = records.add(k);
+						for (Fight f : ended)
+						{
+							if (f.bossDiedMs() == k.whenMs)
+							{
+								killCompares.put(f.id, c);
+							}
+						}
+					}
+					pendingKills.clear();
+					saveRecordsAsync();
 					// fights that ended while loading come first (newest first)
 					List<Fight> all = new ArrayList<>(tracker.getHistory());
 					all.addAll(loaded);
@@ -821,8 +900,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				over = shown.endMs;
 			}
 			int hidesIn = over == 0 ? -1 : (int) Math.max(0, (over + hideMs - now + 999) / 1000);
-			bossCache = new BossMeter(FightReport.of(shown, true, config.countRegen(), now),
-				shown.bossDiedMs() > 0, hidesIn);
+			FightReport br = FightReport.of(shown, true, config.countRegen(), now);
+			String pb = BossRecords.meterTag(records.get(br.getTitle()), killCompares.get(shown.id));
+			bossCache = new BossMeter(br, shown.bossDiedMs() > 0, hidesIn, pb);
 		}
 		else
 		{
@@ -885,8 +965,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			{
 				data.bossReport = FightReport.of(fight, true, config.countRegen(), now);
 			}
+			data.killLines = BossRecords.killLines(killCompares.get(fight.id));
 		}
 		data.localName = localName();
+		data.personalBests = records.list();
 		data.party = partyView();
 		SwingUtilities.invokeLater(() -> p.update(data));
 	}

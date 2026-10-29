@@ -105,8 +105,11 @@ class GoldenDpsOverlay extends Overlay
 			y += 2;
 			String bTitle = "Boss - " + boss.report.getTitle() + (boss.dead ? " (dead)" : "");
 			String bRight = Format.duration(boss.report.getDurationMs())
+				+ (boss.pb != null ? "  " + boss.pb : "")
 				+ (boss.hidesIn >= 0 ? "  (" + boss.hidesIn + "s)" : "");
-			y = drawMeter(g, fm, y, width, bTitle, bRight, boss.dead ? Color.LIGHT_GRAY : Color.WHITE,
+			Color bColor = boss.pb != null && boss.pb.startsWith("NEW") ? new Color(255, 196, 0)
+				: boss.dead ? Color.LIGHT_GRAY : Color.WHITE;
+			y = drawMeter(g, fm, y, width, bTitle, bRight, bColor,
 				BOSS_HEADER_BG, boss.report, bossRows, MeterMode.DAMAGE);
 		}
 		return new Dimension(width, y);

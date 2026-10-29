@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
@@ -67,6 +68,10 @@ class GoldenDpsPanel extends PluginPanel
 		GoldenDpsPartyPanel.View party = new GoldenDpsPartyPanel.View();
 		/** Only boss damage over the boss time. Null when no boss was fought (or boss only is on). */
 		FightReport bossReport;
+		/** PB lines when this fight was a boss kill: {label, value}. */
+		List<String[]> killLines = new ArrayList<>();
+		/** All personal bests (most kills first). */
+		List<BossRecords.Record> personalBests = new ArrayList<>();
 	}
 
 	private static final Color GOLD = new Color(255, 196, 0);
@@ -296,6 +301,19 @@ class GoldenDpsPanel extends PluginPanel
 			sum.add(line("Boss damage", Format.amount(d.bossReport.getTotalDamage())));
 			sum.add(line("Boss DPS", Format.dps(d.bossReport.getGroupDps())));
 		}
+		for (String[] kl : d.killLines)
+		{
+			JComponent c = line(kl[0], kl[1]);
+			if (kl[1].contains("NEW"))
+			{
+				c.setForeground(GOLD);
+				for (java.awt.Component child : c.getComponents())
+				{
+					child.setForeground(GOLD);
+				}
+			}
+			sum.add(c);
+		}
 		if (d.endReason != null && d.fights == 0)
 		{
 			sum.add(line("Ended", d.endReason));
@@ -323,6 +341,27 @@ class GoldenDpsPanel extends PluginPanel
 				content.add(Box.createVerticalStrut(4));
 				content.add(targetCard(t));
 			}
+		}
+
+		// personal bests of all bosses
+		if (!d.personalBests.isEmpty())
+		{
+			content.add(Box.createVerticalStrut(10));
+			JLabel h = bold("Personal bests", GOLD);
+			h.setAlignmentX(LEFT_ALIGNMENT);
+			content.add(h);
+			content.add(Box.createVerticalStrut(4));
+			JPanel pbs = section();
+			for (BossRecords.Record rec : d.personalBests)
+			{
+				pbs.add(bold(rec.boss + "  (" + rec.kills + " kc)", Color.WHITE));
+				pbs.add(line("Fastest", Format.duration(rec.fastestMs)));
+				if (rec.bestDps > 0)
+				{
+					pbs.add(line("Best DPS", Format.dps(rec.bestDps)));
+				}
+			}
+			content.add(pbs);
 		}
 
 		content.revalidate();

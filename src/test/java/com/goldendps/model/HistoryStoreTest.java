@@ -92,4 +92,22 @@ public class HistoryStoreTest
 		// old fights are from another session: not in this session's total
 		assertEquals(null, t.getSessionTotal(0));
 	}
+
+	@Test
+	public void recordsAreSavedInTheirOwnFile() throws Exception
+	{
+		HistoryStore store = new HistoryStore(new Gson(), folder.getRoot().toPath());
+		assertTrue(store.loadRecords(7) == null);
+		BossRecords r = new BossRecords();
+		BossRecords.Kill k = new BossRecords.Kill();
+		k.boss = "Zulrah";
+		k.timeMs = 61_000;
+		k.myDps = 5.5;
+		r.add(k);
+		store.saveRecords(7, r);
+		BossRecords back = store.loadRecords(7);
+		assertEquals(61_000, back.get("Zulrah").fastestMs);
+		assertEquals(1, back.get("Zulrah").kills);
+		assertTrue("fights file untouched", store.load(7).isEmpty());
+	}
 }

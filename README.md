@@ -144,6 +144,18 @@ GoldenDPS Damage - Vorkath 1:23 - total 27.4k (330.1/s)
 - The game chats (public, private, clan, friends, group) are not possible: Jagex does not allow
   plugins to send messages in the game chat.
 
+## Personal bests per boss
+
+Every boss kill is compared with your records for that boss:
+
+- **Fastest kill** (boss time, from the first boss hit to the death) and **your best DPS** on the boss.
+- The boss meter shows `PB 1:10` during the fight and `NEW PB!` (gold) after a faster kill.
+- The panel shows for a kill: `Kill time 0:50 NEW PB! (was 1:00)`, `Your boss DPS 8.1 (best 9.0)`,
+  `vs last kill +5% DPS` and the kill count.
+- At the bottom of the Meter tab: **Personal bests** for all bosses (kc, fastest, best DPS).
+- Saved in `<account id>.records.json`, so PBs stay when old fights are removed from the history.
+  The first time, PBs are built from your saved fights.
+
 ## Saving
 
 Fight history is saved per account in

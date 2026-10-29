@@ -69,6 +69,50 @@ public class HistoryStore
 		}
 	}
 
+	/** Personal bests, in their own file so they stay when old fights are dropped. */
+	public void saveRecords(long accountHash, BossRecords records) throws IOException
+	{
+		Files.createDirectories(dir);
+		Path target = dir.resolve(accountHash + ".records.json");
+		Path tmp = dir.resolve(accountHash + ".records.json.tmp");
+		try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8))
+		{
+			gson.toJson(records, w);
+		}
+		try
+		{
+			Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+		}
+		catch (AtomicMoveNotSupportedException e)
+		{
+			Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	/** Saved personal bests, or null when there are none yet (or the file is broken). */
+	public BossRecords loadRecords(long accountHash) throws IOException
+	{
+		Path file = dir.resolve(accountHash + ".records.json");
+		if (!Files.exists(file))
+		{
+			return null;
+		}
+		try (Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8))
+		{
+			BossRecords data = gson.fromJson(r, BossRecords.class);
+			if (data == null || data.byBoss == null)
+			{
+				return null;
+			}
+			data.byBoss.values().removeIf(x -> x == null || x.boss == null);
+			return data;
+		}
+		catch (JsonParseException e)
+		{
+			return null;
+		}
+	}
+
 	/** Saved fights, newest first. Empty list if there is no file or it can't be read. */
 	public List<Fight> load(long accountHash) throws IOException
 	{
