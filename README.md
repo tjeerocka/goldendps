@@ -114,6 +114,19 @@ The side panel has two tabs: **Meter** (fights) and **Party**. GoldenDPS uses Ru
   name: start a new party name if needed.
 - **Leave**: leave the party.
 
+### Auto party in raids
+
+In **Theatre of Blood**, **Tombs of Amascut** and **The Fractured Archive**, everyone with GoldenDPS joins
+the same party by itself. The game shows every member the names of the raid party; GoldenDPS makes the
+same party name from the raid, the world and the sorted names, so nobody has to type anything.
+
+- Only when you are not in a party you joined yourself (it never changes your own party).
+- Waits until the names stay the same for 5 ticks (people join the lobby one by one); when someone
+  joins or leaves the raid party, everyone moves to the new party name.
+- After the raid (no raid party for 10 ticks) you leave the raid party again.
+- Setting: **Auto party in raids** (on by default). Chambers of Xeric is not supported (it does not show
+  the member names the same way).
+
 ## Report to party (like Details! "Report")
 
 - Overlay right-click **Report to party**: what the overlay shows (fight or session).

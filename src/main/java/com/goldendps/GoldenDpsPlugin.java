@@ -11,6 +11,7 @@ import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PartyLeader;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.RaidParty;
 import com.goldendps.model.ReportFormatter;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
@@ -146,6 +147,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final HitAttributor attributor = new HitAttributor();
 	private final TargetMatcher matcher = new TargetMatcher();
 	private final PartyLeader partyLeader = new PartyLeader();
+	private final RaidParty raidParty = new RaidParty();
 	/** Your member id in the current party (a new one per party), 0 = not in one. */
 	private long lastPartyMemberId;
 	/** Party members who send GoldenDPS data: name to time of their last message. */
@@ -511,6 +513,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		refreshOverlay();
+		raidPartyTick();
 		partyTick(now);
 		if (++ticks % PANEL_EVERY_TICKS == 0)
 		{
@@ -1031,6 +1034,60 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		return ids;
 	}
 
+	/**
+	 * The raids that show their members' names to every member: raid name, party status varbit
+	 * (0 = no raid party) and the first and last name string. Same numbers as RuneLite's gameval
+	 * TOB_ / TOA_ / TFA_CLIENT_PARTYSTATUS and _CLIENT_NAME0..
+	 */
+	private static final Object[][] RAIDS = {
+		{"ToB", 6440, 330, 334},
+		{"ToA", 14345, 1099, 1106},
+		{"Archive", 16386, 1573, 1580},
+	};
+
+	/** Every game tick: auto party in raids (see RaidParty). */
+	private void raidPartyTick()
+	{
+		if (!config.autoRaidParty())
+		{
+			if (raidParty.getJoined() != null)
+			{
+				raidParty.reset();
+			}
+			return;
+		}
+		String name = null;
+		String raid = null;
+		for (Object[] r : RAIDS)
+		{
+			if (client.getVarbitValue((int) r[1]) > 0)
+			{
+				List<String> names = new ArrayList<>();
+				for (int v = (int) r[2]; v <= (int) r[3]; v++)
+				{
+					names.add(client.getVarcStrValue(v));
+				}
+				raid = (String) r[0];
+				name = RaidParty.partyName(raid, client.getWorld(), names);
+				break;
+			}
+		}
+		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		RaidParty.Action a = raidParty.tick(name, current);
+		if (a.join != null)
+		{
+			partyService.changeParty(a.join);
+			partyLeader.left();
+			localMessage("GoldenDPS: joined the " + raid + " party automatically (everyone in your raid with GoldenDPS).");
+		}
+		else if (a.leave)
+		{
+			partyService.changeParty(null);
+			partyLeader.left();
+			localMessage("GoldenDPS: left the raid party.");
+		}
+	}
+
 	/** Every game tick: notice joining / leaving, and work out the leader. */
 	private void partyTick(long now)
 	{
@@ -1068,6 +1125,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		v.code = partyService.getPartyPassphrase();
 		v.youLead = partyLeader.isLeader();
+		v.auto = v.code != null && v.code.equals(raidParty.getJoined());
 		PartyMember local = partyService.getLocalMember();
 		for (PartyMember m : partyService.getMembers())
 		{

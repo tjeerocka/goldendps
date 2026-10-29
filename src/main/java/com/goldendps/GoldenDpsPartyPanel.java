@@ -42,6 +42,8 @@ class GoldenDpsPartyPanel extends JPanel
 		boolean inParty;
 		String code;
 		boolean youLead;
+		/** True when this is an automatic raid party. */
+		boolean auto;
 		List<Member> members = new ArrayList<>();
 	}
 
@@ -147,6 +149,10 @@ class GoldenDpsPartyPanel extends JPanel
 		memberList.removeAll();
 		if (v.inParty)
 		{
+			if (v.auto)
+			{
+				memberList.add(small("Raid party (joined automatically)", GOLD));
+			}
 			memberList.add(small(v.youLead ? "Members - you lead" : "Members", ColorScheme.LIGHT_GRAY_COLOR));
 			for (Member m : v.members)
 			{
