@@ -70,6 +70,22 @@ public class RaidParty
 		return PREFIX + raid.toLowerCase(Locale.ROOT) + " " + hash(key);
 	}
 
+	/**
+	 * Chambers of Xeric: the game gives every member of a raid party (made on the recruiting board)
+	 * the same party id. Null when you are in no CoX party, or alone in it.
+	 *
+	 * @param partyId   varp RAIDS_PARTY_GROUPHOLDER (-1 = no party)
+	 * @param partySize varbit RAIDS_CLIENT_PARTYSIZE (0 = not known yet)
+	 */
+	public static String coxPartyName(int world, int partyId, int partySize)
+	{
+		if (partyId <= 0 || partySize == 1)
+		{
+			return null;
+		}
+		return PREFIX + "cox " + hash("CoX|" + world + "|" + partyId);
+	}
+
 	private static String hash(String s)
 	{
 		try

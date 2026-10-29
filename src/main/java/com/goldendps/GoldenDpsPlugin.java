@@ -107,6 +107,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private static final int WEAPON_SLOT = 3;
 	/** VarPlayerID.SA_ENERGY: special attack energy x10. */
 	private static final int SPEC_ENERGY_VARP = 300;
+	/** VarPlayerID.RAIDS_PARTY_GROUPHOLDER: the CoX raid party id (-1 = none), the same for every member. */
+	private static final int COX_PARTY_VARP = 1427;
+	/** VarbitID.RAIDS_CLIENT_PARTYSIZE. */
+	private static final int COX_PARTY_SIZE_VARBIT = 5424;
 	private static final int[] SANGUINESTI_HEAL = {SpotanimID.SANGUINESTI_STAFF_HEAL, SpotanimID.SANGUINESTI_STAFF_HEAL_JUSTICIAR};
 	private static final int[] BLOOD_SPELL_IMPACT = {SpotanimID.BLOOD_RUSH_IMPACT, SpotanimID.BLOOD_BLITZ_IMPACT,
 		SpotanimID.SPELL_BLOOD_BURST_IMPACT, SpotanimID.SPELL_BLOOD_BARRAGE_IMPACT};
@@ -1290,6 +1294,17 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				raid = (String) r[0];
 				name = RaidParty.partyName(raid, client.getWorld(), names);
 				break;
+			}
+		}
+		if (raid == null)
+		{
+			// CoX has no name list, but every member gets the same raid party id
+			String cox = RaidParty.coxPartyName(client.getWorld(), client.getVarpValue(COX_PARTY_VARP),
+				client.getVarbitValue(COX_PARTY_SIZE_VARBIT));
+			if (cox != null)
+			{
+				raid = "CoX";
+				name = cox;
 			}
 		}
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;

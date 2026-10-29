@@ -139,7 +139,7 @@ The side panel has two tabs: **Meter** (fights) and **Party**. GoldenDPS uses Ru
 
 ### Auto party in raids
 
-In **Theatre of Blood**, **Tombs of Amascut** and **The Fractured Archive**, everyone with GoldenDPS joins
+In **Chambers of Xeric**, **Theatre of Blood**, **Tombs of Amascut** and **The Fractured Archive**, everyone with GoldenDPS joins
 the same party by itself. The game shows every member the names of the raid party; GoldenDPS makes the
 same party name from the raid, the world and the sorted names, so nobody has to type anything.
 
@@ -149,8 +149,10 @@ same party name from the raid, the world and the sorted names, so nobody has to 
   joins or leaves the raid party, everyone moves to the new party name.
 - After the raid you **stay** in the party, until you leave it yourself or make a raid party with
   other people (then you move to the new one).
-- Setting: **Auto party in raids** (on by default). Chambers of Xeric is not supported (it does not show
-  the member names the same way).
+- **Chambers of Xeric**: there is no name list, but the game gives everyone in a raid party (made on the
+  recruiting board) the same raid party id. GoldenDPS uses that id instead of the names. When someone
+  joins the CoX party later, the id stays the same, so nobody has to move.
+- Setting: **Auto party in raids** (on by default).
 
 ## Report to party (like Details! "Report")
 

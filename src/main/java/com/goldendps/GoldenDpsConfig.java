@@ -173,7 +173,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "autoRaidParty",
 		name = "Auto party in raids",
-		description = "In ToB, ToA and the Fractured Archive, everyone with GoldenDPS joins the same party by "
+		description = "In CoX, ToB, ToA and the Fractured Archive, everyone with GoldenDPS joins the same party by "
 			+ "itself (made from the raid members' names). Never changes a party you joined yourself.",
 		position = 8,
 		section = fightSection

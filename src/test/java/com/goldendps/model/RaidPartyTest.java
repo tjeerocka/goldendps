@@ -125,4 +125,16 @@ public class RaidPartyTest
 			assertFalse("never leaves your own party", r.tick(null, "my friends").leave);
 		}
 	}
+
+	@Test
+	public void coxUsesTheRaidPartyId()
+	{
+		String a = RaidParty.coxPartyName(302, 12345, 0);
+		assertEquals(a, RaidParty.coxPartyName(302, 12345, 3));
+		assertTrue(a.startsWith(RaidParty.PREFIX + "cox "));
+		assertNotEquals(a, RaidParty.coxPartyName(303, 12345, 3));
+		assertNotEquals(a, RaidParty.coxPartyName(302, 999, 3));
+		assertNull("no party", RaidParty.coxPartyName(302, -1, 0));
+		assertNull("alone", RaidParty.coxPartyName(302, 12345, 1));
+	}
 }
