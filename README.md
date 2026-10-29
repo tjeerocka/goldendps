@@ -127,7 +127,8 @@ The side panel has two tabs: **Meter** (fights) and **Party**. GoldenDPS uses Ru
 - **Leader**: whoever starts the party (alone in it). New GoldenDPS members are told who leads.
   If the leader leaves, the GoldenDPS member who joined the party system first takes over.
 - **Chat notices**: `<name> joined the party.` (green), `<name> left the party.` (orange) and kicks (red).
-  People already in a party you join are not announced.
+  People already in a party you join are not announced. Instead, 5 s after you join (or log in) you get
+  `you are in the party "name" with A, B.`
 - **Kick** (leader only, click twice: "Kick" then "Sure?"): the kicked player's GoldenDPS leaves the party. RuneLite parties have no
   real kick, so this only works on players with GoldenDPS, and they could join again with the same
   name: start a new party name if needed.

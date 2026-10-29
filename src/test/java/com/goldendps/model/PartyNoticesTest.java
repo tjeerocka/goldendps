@@ -64,4 +64,19 @@ public class PartyNoticesTest
 		// you joined another party: new member id
 		assertTrue(n.tick(11_000, 2, members(7, "B")).isEmpty());
 	}
+
+	@Test
+	public void theOneWhoJoinsHearsWhoIsInThePartyOnce()
+	{
+		PartyNotices n = new PartyNotices();
+		n.tick(0, 1, members());
+		assertTrue(n.welcome(0) == null);
+		n.tick(2000, 1, members(5, "Zezima", 6, "Bob"));
+		n.tick(PartyNotices.QUIET_MS, 1, members(5, "Zezima", 6, "Bob"));
+		List<String> w = n.welcome(PartyNotices.QUIET_MS);
+		assertEquals("GoldenDPS: you are in the party \"tjeerocka\" with Bob, Zezima.", PartyNotices.welcomeText("tjeerocka", w));
+		assertTrue("only once", n.welcome(9000) == null);
+		assertEquals("GoldenDPS: you are in the party \"x\". Nobody else is in it yet.",
+			PartyNotices.welcomeText("x", new java.util.ArrayList<>()));
+	}
 }

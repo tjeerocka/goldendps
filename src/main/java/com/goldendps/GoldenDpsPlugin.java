@@ -695,6 +695,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			lastInventory = null;
 			attackSource.reset();
 			raidZone.reset();
+			// after the next login: tell again who is in your party
+			partyNotices.reset();
 			tracker.endRaid(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
 			lastSpecEnergy = -1;
 			outgoing = new GoldenDpsUpdate();
@@ -1363,6 +1365,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			localMessage(colour(n.joined ? COL_JOIN : COL_LEFT,
 				"GoldenDPS: " + n.name + (n.joined ? " joined the party." : " left the party.")));
+		}
+		List<String> others = partyNotices.welcome(now);
+		if (others != null)
+		{
+			// the one who joins also gets a notice (who is in the party with you)
+			localMessage(colour(COL_JOIN, PartyNotices.welcomeText(partyService.getPartyPassphrase(), others)));
 		}
 	}
 

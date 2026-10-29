@@ -34,6 +34,7 @@ public class PartyNotices
 	private final Set<Long> silentLeave = new HashSet<>();
 	private long partyKey = Long.MIN_VALUE;
 	private long quietUntil;
+	private boolean welcomed;
 
 	/**
 	 * Call every tick while in a party.
@@ -50,6 +51,7 @@ public class PartyNotices
 			known.clear();
 			silentLeave.clear();
 			quietUntil = now + QUIET_MS;
+			welcomed = false;
 		}
 		boolean quiet = now < quietUntil;
 		for (Map.Entry<Long, String> e : named.entrySet())
@@ -76,6 +78,33 @@ public class PartyNotices
 			return true;
 		});
 		return out;
+	}
+
+	/**
+	 * Once per party, when the names are in ({@link #QUIET_MS} after you joined): who is in it with you.
+	 * Null before that and after it was given. Call after {@link #tick}.
+	 */
+	public List<String> welcome(long now)
+	{
+		if (welcomed || partyKey == Long.MIN_VALUE || now < quietUntil)
+		{
+			return null;
+		}
+		welcomed = true;
+		List<String> names = new ArrayList<>(known.values());
+		names.sort(String.CASE_INSENSITIVE_ORDER);
+		return names;
+	}
+
+	/** Text for {@link #welcome}. */
+	public static String welcomeText(String party, List<String> others)
+	{
+		String in = "GoldenDPS: you are in the party \"" + party + "\"";
+		if (others.isEmpty())
+		{
+			return in + ". Nobody else is in it yet.";
+		}
+		return in + " with " + String.join(", ", others) + ".";
 	}
 
 	/** You kicked this member: no "left" notice later. */
