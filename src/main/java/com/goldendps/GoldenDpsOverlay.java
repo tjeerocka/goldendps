@@ -95,15 +95,15 @@ class GoldenDpsOverlay extends Overlay
 		{
 			title += "  OH " + Format.percent(report.groupOverhealPercent());
 		}
+		FightReport.PlayerRow topHit = report == null || !config.showMaxHit() ? null : report.topHit();
+		if (topHit != null)
+		{
+			title += "  Max " + topHit.biggestHit;
+		}
 		boolean paused = plugin.isFightPaused();
 		String right = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
 		Color rightColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
 		int y = drawMeter(g, fm, 0, width, title, right, rightColor, HEADER_BG, report, rows, mode);
-		FightReport.PlayerRow topHit = report == null || !config.showMaxHit() ? null : report.topHit();
-		if (topHit != null)
-		{
-			y = drawMaxHit(g, fm, y, width, topHit);
-		}
 
 		if (boss != null && !bossRows.isEmpty())
 		{
@@ -200,21 +200,6 @@ class GoldenDpsOverlay extends Overlay
 			}
 		}
 		return top + height;
-	}
-
-	/** One line under the meter: "Max hit  78  Kurt Yoghurt". */
-	private int drawMaxHit(Graphics2D g, FontMetrics fm, int top, int width, FightReport.PlayerRow row)
-	{
-		int rowH = fm.getHeight() + 3;
-		g.setColor(BACKGROUND);
-		g.fillRect(0, top, width, rowH);
-		int textY = top + rowH - (rowH - fm.getAscent()) / 2 - 1;
-		String label = "Max hit";
-		String name = fit(fm, row.name, width / 2);
-		drawText(g, label, PAD + 2, textY, CATEGORY_COLOR);
-		drawText(g, String.valueOf(row.biggestHit), PAD + 2 + fm.stringWidth(label) + COL_GAP, textY, PB_COLOR);
-		drawText(g, name, width - PAD - 2 - fm.stringWidth(name), textY, Color.WHITE);
-		return top + rowH;
 	}
 
 	private Color colorFor(FightReport.PlayerRow row)

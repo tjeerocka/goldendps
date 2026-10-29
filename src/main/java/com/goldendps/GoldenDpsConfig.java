@@ -353,7 +353,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "showMaxHit",
 		name = "Max hit on the meter",
-		description = "Show the biggest hit of the fight under the meter",
+		description = "Show the biggest hit of the fight in the meter header",
 		position = 3,
 		section = funSection
 	)

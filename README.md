@@ -24,7 +24,7 @@ A DPS, damage and healing meter for groups and individuals.
   the snack holders. When a boss dies, the fries holder says how much they healed on the boss and the
   burger holder the total of the fight or raid. A chat
   line and a line over the head announce every new max hit of the session, and the
-  biggest hit of the fight is shown under the meter. These lines last 5 seconds; while one shows, that
+  biggest hit of the fight is shown in the meter header. These lines last 5 seconds; while one shows, that
   player's typed chat only appears in the chatbox.
 - **Party tab**: join a party by name, see who runs GoldenDPS, and (as leader) remove members who run it.
   In raids, one click puts everyone with GoldenDPS in the same party.
