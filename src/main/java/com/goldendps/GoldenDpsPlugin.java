@@ -12,6 +12,7 @@ import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PartyLeader;
+import com.goldendps.model.PartyNotices;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.RaidParty;
 import com.goldendps.model.RaidZone;
@@ -195,6 +196,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final Map<Long, Long> memberSeen = new HashMap<>();
 	/** A member with no name who is not logged in after this long is an old, closed connection. */
 	private static final long GHOST_MS = 15_000;
+	/** Chat notices when someone joins or leaves the party. */
+	private final PartyNotices partyNotices = new PartyNotices();
+	/** Chat colours: joined green, left orange, kicked red. */
+	static final String COL_JOIN = "1aa31a";
+	static final String COL_LEFT = "c27c00";
+	static final String COL_KICK = "d42020";
 	private static final int REJOIN_WAIT_TICKS = 3;
 	/** Personal bests of the account. Client thread. */
 	private BossRecords records = new BossRecords();
@@ -1119,7 +1126,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 			partyService.send(new GoldenDpsPartyMessage(GoldenDpsPartyMessage.KICK, partyLeader.getLeader(), memberId));
 			kicked.put(memberId, System.currentTimeMillis());
-			localMessage("GoldenDPS: removed " + name + " from the party.");
+			partyNotices.kicked(memberId);
+			localMessage(colour(COL_KICK, "GoldenDPS: removed " + name + " from the party."));
 			updatePanel();
 		});
 	}
@@ -1158,9 +1166,22 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 					PartyMember by = partyService.getMemberById(m.getMemberId());
 					partyService.changeParty(null);
 					partyLeader.left();
-					localMessage("GoldenDPS: you were removed from the party"
-						+ (by != null ? " by " + cleanName(by.getDisplayName()) : "") + ".");
+					localMessage(colour(COL_KICK, "GoldenDPS: you were removed from the party"
+						+ (by != null ? " by " + cleanName(by.getDisplayName()) : "") + "."));
 					updatePanel();
+				}
+				else if (m.leader == m.getMemberId() && m.leader == partyLeader.getLeader())
+				{
+					// someone else was kicked: say so in red (not "left")
+					PartyMember target = partyService.getMemberById(m.target);
+					PartyMember by = partyService.getMemberById(m.getMemberId());
+					String who = target == null ? null : cleanName(target.getDisplayName());
+					partyNotices.kicked(m.target);
+					if (who != null)
+					{
+						localMessage(colour(COL_KICK, "GoldenDPS: " + who + " was removed from the party"
+							+ (by != null ? " by " + cleanName(by.getDisplayName()) : "") + "."));
+					}
 				}
 				break;
 			default:
@@ -1314,6 +1335,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 				partyLeader.left();
 			}
 			lastPartyMemberId = 0;
+			partyNotices.reset();
 			return;
 		}
 		if (local.getMemberId() != lastPartyMemberId)
@@ -1326,6 +1348,21 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (partyLeader.tick(now, partyMemberIds()) && partyLeader.isLeader())
 		{
 			sendPartyControl(GoldenDpsPartyMessage.LEADER, 0);
+		}
+
+		Map<Long, String> named = new HashMap<>();
+		for (PartyMember m : partyService.getMembers())
+		{
+			String n = cleanName(m.getDisplayName());
+			if (n != null && m.getMemberId() != local.getMemberId() && !kicked.containsKey(m.getMemberId()))
+			{
+				named.put(m.getMemberId(), n);
+			}
+		}
+		for (PartyNotices.Notice n : partyNotices.tick(now, local.getMemberId(), named))
+		{
+			localMessage(colour(n.joined ? COL_JOIN : COL_LEFT,
+				"GoldenDPS: " + n.name + (n.joined ? " joined the party." : " left the party.")));
 		}
 	}
 
@@ -1427,6 +1464,11 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			partyService.send(new PartyChatMessage(line));
 		}
+	}
+
+	private static String colour(String hex, String text)
+	{
+		return "<col=" + hex + ">" + text + "</col>";
 	}
 
 	private void localMessage(String text)
