@@ -47,6 +47,8 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	private int slowFrame = -1;
 	/** Per vertex: highest layer of its faces (reused array). */
 	private int[] vertexLayer = new int[0];
+	/** Per vertex: only used by small triangles (see pushLayers). */
+	private byte[] vertexDetail = new byte[0];
 	/** For the status line: how often the copy was drawn / the real one hidden. */
 	private int frames;
 	private int draws;
@@ -321,6 +323,13 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	static final float LAYER_STEP = 3f;
 	/** The top layer is never pushed out further than this. */
 	static final float MAX_PUSH = 12f;
+	/**
+	 * Logos and symbols are many small triangles lying flat on the big triangles of a cape: points
+	 * that only belong to small triangles are lifted this much more, so they are really in front.
+	 */
+	static final float DETAIL_PUSH = 2f;
+	/** "Small" triangle: twice its area below this (in model units squared). */
+	static final float SMALL_FACE_AREA2 = 80f;
 
 	/**
 	 * Real players are drawn layer by layer (body, then cape, then the cape logo) without a depth test;
@@ -336,51 +345,70 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		int[] f2 = m.getFaceIndices2();
 		int[] f3 = m.getFaceIndices3();
 		float[] vx = m.getVerticesX();
+		float[] vy = m.getVerticesY();
 		float[] vz = m.getVerticesZ();
-		if (pri == null || f1 == null || f2 == null || f3 == null || vx == null || vz == null)
+		if (f1 == null || f2 == null || f3 == null || vx == null || vy == null || vz == null)
 		{
 			return;
 		}
-		int faces = Math.min(m.getFaceCount(), Math.min(pri.length, Math.min(f1.length, Math.min(f2.length, f3.length))));
-		int verts = Math.min(m.getVerticesCount(), Math.min(vx.length, vz.length));
+		int faces = Math.min(m.getFaceCount(), Math.min(f1.length, Math.min(f2.length, f3.length)));
+		if (pri != null)
+		{
+			faces = Math.min(faces, pri.length);
+		}
+		int verts = Math.min(m.getVerticesCount(), Math.min(vx.length, Math.min(vy.length, vz.length)));
 
 		// layers that are used, numbered 0, 1, 2, ... from the lowest
 		int[] rank = new int[256];
-		boolean[] used = new boolean[256];
-		for (int f = 0; f < faces; f++)
-		{
-			used[pri[f] & 0xff] = true;
-		}
 		int layers = 0;
-		for (int p = 0; p < 256; p++)
+		if (pri != null)
 		{
-			if (used[p])
+			boolean[] used = new boolean[256];
+			for (int f = 0; f < faces; f++)
 			{
-				rank[p] = layers++;
+				used[pri[f] & 0xff] = true;
+			}
+			for (int p = 0; p < 256; p++)
+			{
+				if (used[p])
+				{
+					rank[p] = layers++;
+				}
 			}
 		}
-		if (layers <= 1)
-		{
-			return;
-		}
-		float step = Math.min(LAYER_STEP, MAX_PUSH / (layers - 1));
+		float step = layers > 1 ? Math.min(LAYER_STEP, MAX_PUSH / (layers - 1)) : 0;
 
 		if (vertexLayer.length < verts)
 		{
 			vertexLayer = new int[verts];
+			vertexDetail = new byte[verts];
 		}
 		java.util.Arrays.fill(vertexLayer, 0, verts, 0);
+		// detail: 0 = not used yet, 1 = only used by small triangles (logo, symbol), 2 = used by a big one
+		java.util.Arrays.fill(vertexDetail, 0, verts, (byte) 0);
 		for (int f = 0; f < faces; f++)
 		{
-			int r = rank[pri[f] & 0xff];
-			setLayer(f1[f], r, verts);
-			setLayer(f2[f], r, verts);
-			setLayer(f3[f], r, verts);
+			int a = f1[f];
+			int b = f2[f];
+			int c = f3[f];
+			if (a < 0 || b < 0 || c < 0 || a >= verts || b >= verts || c >= verts)
+			{
+				continue;
+			}
+			int r = pri == null ? 0 : rank[pri[f] & 0xff];
+			setLayer(a, r);
+			setLayer(b, r);
+			setLayer(c, r);
+
+			boolean small = area2(vx, vy, vz, a, b, c) < SMALL_FACE_AREA2;
+			setDetail(a, small);
+			setDetail(b, small);
+			setDetail(c, small);
 		}
 		for (int v = 0; v < verts; v++)
 		{
-			int r = vertexLayer[v];
-			if (r == 0)
+			float out = vertexLayer[v] * step + (vertexDetail[v] == 1 ? DETAIL_PUSH : 0);
+			if (out <= 0)
 			{
 				continue;
 			}
@@ -391,15 +419,42 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			{
 				continue;
 			}
-			float push = r * step / d;
+			float push = out / d;
 			vx[v] = x + x * push;
 			vz[v] = z + z * push;
 		}
 	}
 
-	private void setLayer(int v, int r, int verts)
+	/** Twice the area of a triangle (length of the cross product). */
+	private static float area2(float[] vx, float[] vy, float[] vz, int a, int b, int c)
 	{
-		if (v >= 0 && v < verts && r > vertexLayer[v])
+		float ux = vx[b] - vx[a];
+		float uy = vy[b] - vy[a];
+		float uz = vz[b] - vz[a];
+		float wx = vx[c] - vx[a];
+		float wy = vy[c] - vy[a];
+		float wz = vz[c] - vz[a];
+		float cx = uy * wz - uz * wy;
+		float cy = uz * wx - ux * wz;
+		float cz = ux * wy - uy * wx;
+		return (float) Math.sqrt(cx * cx + cy * cy + cz * cz);
+	}
+
+	private void setDetail(int v, boolean small)
+	{
+		if (!small)
+		{
+			vertexDetail[v] = 2;
+		}
+		else if (vertexDetail[v] == 0)
+		{
+			vertexDetail[v] = 1;
+		}
+	}
+
+	private void setLayer(int v, int r)
+	{
+		if (r > vertexLayer[v])
 		{
 			vertexLayer[v] = r;
 		}

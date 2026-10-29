@@ -321,56 +321,117 @@ public class FatHealerRendererTest
 		});
 	}
 
+	/** Distance of vertex v from the middle of the body (the vertical axis). */
+	private static float out(float[] vx, float[] vz, int v)
+	{
+		return (float) Math.sqrt(vx[v] * vx[v] + vz[v] * vz[v]);
+	}
+
+	/** n big triangles (60 units wide) on the back (z = -20), one per layer, each with its own 3 points. */
+	private static float[][] bigTriangles(int n)
+	{
+		float[] vx = new float[n * 3];
+		float[] vy = new float[n * 3];
+		float[] vz = new float[n * 3];
+		for (int t = 0; t < n; t++)
+		{
+			vx[t * 3] = -30f;
+			vx[t * 3 + 1] = 30f;
+			vx[t * 3 + 2] = 0f;
+			vy[t * 3] = -100f;
+			vy[t * 3 + 1] = -100f;
+			vy[t * 3 + 2] = -160f;
+			vz[t * 3] = vz[t * 3 + 1] = vz[t * 3 + 2] = -20f;
+		}
+		return new float[][]{vx, vy, vz};
+	}
+
+	private static int[][] faces(int n)
+	{
+		int[] f1 = new int[n];
+		int[] f2 = new int[n];
+		int[] f3 = new int[n];
+		for (int t = 0; t < n; t++)
+		{
+			f1[t] = t * 3;
+			f2[t] = t * 3 + 1;
+			f3[t] = t * 3 + 2;
+		}
+		return new int[][]{f1, f2, f3};
+	}
+
 	@Test
 	public void higherLayersArePushedOutward()
 	{
-		// body point (layer 0), cape point behind it (layer 5), logo point on the cape (layer 9),
-		// all at z = -20 (the back), plus one shared point
-		float[] vx = {0f, 0f, 0f, 1f};
-		float[] vy = {-100f, -100f, -100f, -100f};
-		float[] vz = {-20f, -20f, -20f, -20f};
-		int[] f1 = {0, 1, 2};
-		int[] f2 = {3, 3, 3};
-		int[] f3 = {0, 1, 2};
-		byte[] pri = {0, 5, 9};
-		Model m = layeredModel(vx, vy, vz, f1, f2, f3, pri);
+		// body (layer 0), cape (layer 5), cape logo (layer 9): same place before
+		float[][] v = bigTriangles(3);
+		int[][] f = faces(3);
+		Model m = layeredModel(v[0], v[1], v[2], f[0], f[1], f[2], new byte[]{0, 5, 9});
+		float before = out(v[0], v[2], 2);
 
 		new FatHealerRenderer(fakeClient()).pushLayers(m);
-		assertEquals("body stays", -20f, vz[0], 0.0001);
-		assertEquals("cape 1 layer out", -20f - FatHealerRenderer.LAYER_STEP, vz[1], 0.0001);
-		assertEquals("logo 2 layers out", -20f - 2 * FatHealerRenderer.LAYER_STEP, vz[2], 0.0001);
-		assertTrue("logo in front of cape, cape behind body (seen from behind)", vz[2] < vz[1] && vz[1] < vz[0]);
+		float step = FatHealerRenderer.LAYER_STEP;
+		assertEquals("body stays", before, out(v[0], v[2], 2), 0.001);
+		assertEquals("cape 1 layer out", before + step, out(v[0], v[2], 5), 0.001);
+		assertEquals("logo 2 layers out", before + 2 * step, out(v[0], v[2], 8), 0.001);
 	}
 
 	@Test
 	public void manyLayersAreNeverPushedFurtherThanTheMax()
 	{
 		int n = 12;
-		float[] vx = new float[n];
-		float[] vy = new float[n];
-		float[] vz = new float[n];
-		int[] f = new int[n];
+		float[][] v = bigTriangles(n);
+		int[][] f = faces(n);
 		byte[] pri = new byte[n];
 		for (int i = 0; i < n; i++)
 		{
-			vz[i] = -30f;
-			f[i] = i;
 			pri[i] = (byte) i;
 		}
-		Model m = layeredModel(vx, vy, vz, f, f, f, pri);
-		new FatHealerRenderer(fakeClient()).pushLayers(m);
-		assertEquals(-30f - FatHealerRenderer.MAX_PUSH, vz[n - 1], 0.0001);
+		float before = out(v[0], v[2], 2);
+		new FatHealerRenderer(fakeClient()).pushLayers(layeredModel(v[0], v[1], v[2], f[0], f[1], f[2], pri));
+		assertEquals(before + FatHealerRenderer.MAX_PUSH, out(v[0], v[2], (n - 1) * 3 + 2), 0.001);
 	}
 
 	@Test
-	public void oneLayerOrNoLayersChangesNothing()
+	public void oneBigLayerChangesNothing()
 	{
-		float[] vz = {-20f};
-		Model one = layeredModel(new float[]{0f}, new float[]{0f}, vz, new int[]{0}, new int[]{0}, new int[]{0}, new byte[]{4});
-		new FatHealerRenderer(fakeClient()).pushLayers(one);
-		assertEquals(-20f, vz[0], 0f);
-		// fake models without layer data (null) are left alone
+		float[][] v = bigTriangles(1);
+		int[][] f = faces(1);
+		float before = out(v[0], v[2], 2);
+		new FatHealerRenderer(fakeClient()).pushLayers(layeredModel(v[0], v[1], v[2], f[0], f[1], f[2], new byte[]{4}));
+		assertEquals(before, out(v[0], v[2], 2), 0f);
+		// fake models without face data are left alone
 		new FatHealerRenderer(fakeClient()).pushLayers(fakeModel(new float[]{1f}, new float[]{1f}, new ArrayList<>()));
+	}
+
+	@Test
+	public void smallLogoTrianglesOnTheCapeAreLifted()
+	{
+		// a big cape triangle and a small logo triangle lying flat on it, SAME layer
+		float[] vx = {-30f, 30f, 0f, -2f, 2f, 0f};
+		float[] vy = {-100f, -100f, -160f, -130f, -130f, -134f};
+		float[] vz = {-20f, -20f, -20f, -20f, -20f, -20f};
+		Model m = layeredModel(vx, vy, vz, new int[]{0, 3}, new int[]{1, 4}, new int[]{2, 5}, new byte[]{3, 3});
+		float capeBefore = out(vx, vz, 2);
+		float logoBefore = out(vx, vz, 5);
+
+		new FatHealerRenderer(fakeClient()).pushLayers(m);
+		assertEquals("cape stays", capeBefore, out(vx, vz, 2), 0.001);
+		assertEquals("logo lifted", logoBefore + FatHealerRenderer.DETAIL_PUSH, out(vx, vz, 5), 0.001);
+	}
+
+	@Test
+	public void pointsSharedWithBigTrianglesAreNotLifted()
+	{
+		// small triangle that uses one point of the big triangle: that point stays
+		float[] vx = {-30f, 30f, 0f, 2f, 1f};
+		float[] vy = {-100f, -100f, -160f, -160f, -157f};
+		float[] vz = {-20f, -20f, -20f, -20f, -20f};
+		Model m = layeredModel(vx, vy, vz, new int[]{0, 2}, new int[]{1, 3}, new int[]{2, 4}, null);
+		float sharedBefore = out(vx, vz, 2);
+		new FatHealerRenderer(fakeClient()).pushLayers(m);
+		assertEquals(sharedBefore, out(vx, vz, 2), 0.001);
+		assertTrue("own small points are lifted", out(vx, vz, 4) > 20.5f);
 	}
 
 	@Test
