@@ -13,15 +13,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Saves fight history as JSON, one file per account: {@code <dir>/<accountHash>.json}.
- * Writes to a temp file first and then moves it, so a crash never leaves half a file.
- */
+/** Fight history and personal bests as JSON, one file of each per account. */
 public class HistoryStore
 {
 	public static final int VERSION = 1;
 
-	/** What is in the file. */
 	public static class SaveFile
 	{
 		public int version = VERSION;
@@ -51,10 +47,25 @@ public class HistoryStore
 		data.accountHash = accountHash;
 		data.savedAt = now;
 		data.fights = new ArrayList<>(fights);
+		write(fileFor(accountHash), data);
+	}
 
+	/** Personal bests have their own file, so they outlive the fights they came from. */
+	public void saveRecords(long accountHash, BossRecords records) throws IOException
+	{
+		write(recordsFile(accountHash), records);
+	}
+
+	private Path recordsFile(long accountHash)
+	{
+		return dir.resolve(accountHash + ".records.json");
+	}
+
+	/** Writes to a temporary file first, so a crash never leaves a half-written file. */
+	private void write(Path target, Object data) throws IOException
+	{
 		Files.createDirectories(dir);
-		Path target = fileFor(accountHash);
-		Path tmp = dir.resolve(accountHash + ".json.tmp");
+		Path tmp = target.resolveSibling(target.getFileName() + ".tmp");
 		try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8))
 		{
 			gson.toJson(data, w);
@@ -69,30 +80,10 @@ public class HistoryStore
 		}
 	}
 
-	/** Personal bests, in their own file so they stay when old fights are dropped. */
-	public void saveRecords(long accountHash, BossRecords records) throws IOException
-	{
-		Files.createDirectories(dir);
-		Path target = dir.resolve(accountHash + ".records.json");
-		Path tmp = dir.resolve(accountHash + ".records.json.tmp");
-		try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8))
-		{
-			gson.toJson(records, w);
-		}
-		try
-		{
-			Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-		}
-		catch (AtomicMoveNotSupportedException e)
-		{
-			Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
-		}
-	}
-
-	/** Saved personal bests, or null when there are none yet (or the file is broken). */
+	/** Saved personal bests, or null when there are none or the file is broken. */
 	public BossRecords loadRecords(long accountHash) throws IOException
 	{
-		Path file = dir.resolve(accountHash + ".records.json");
+		Path file = recordsFile(accountHash);
 		if (!Files.exists(file))
 		{
 			return null;
@@ -113,7 +104,7 @@ public class HistoryStore
 		}
 	}
 
-	/** Saved fights, newest first. Empty list if there is no file or it can't be read. */
+	/** Saved fights, newest first. A broken file is kept aside and an empty list returned. */
 	public List<Fight> load(long accountHash) throws IOException
 	{
 		Path file = fileFor(accountHash);
@@ -140,7 +131,6 @@ public class HistoryStore
 		}
 		catch (JsonParseException e)
 		{
-			// Keep the broken file for the user, start fresh
 			Files.move(file, dir.resolve(accountHash + ".broken-" + System.currentTimeMillis() + ".json"),
 				StandardCopyOption.REPLACE_EXISTING);
 			return new ArrayList<>();

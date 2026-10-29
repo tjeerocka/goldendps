@@ -18,10 +18,10 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-/** WoW-style bars: one colored bar per player, biggest on top. Right-click to change what it shows. */
+/** Bar meter on the game screen, with a second meter for the current boss. */
 class GoldenDpsOverlay extends Overlay
 {
-	/** WoW class colors, so party members get nice different colors. */
+	/** WoW class colors, picked per player name. */
 	private static final Color[] PALETTE = {
 		new Color(0x3FC7EB), new Color(0xAAD372), new Color(0xF48CBA), new Color(0xC69B6D),
 		new Color(0x8788EE), new Color(0x00FF98), new Color(0xFF7C0A), new Color(0x0070DD),
@@ -36,6 +36,8 @@ class GoldenDpsOverlay extends Overlay
 	private static final int PAD = 3;
 	private static final int COL_GAP = 9;
 	private static final Color CATEGORY_COLOR = new Color(190, 190, 190);
+	private static final Color TITLE_COLOR = new Color(255, 200, 0);
+	private static final Color PB_COLOR = new Color(255, 196, 0);
 
 	private final GoldenDpsPlugin plugin;
 	private final GoldenDpsConfig config;
@@ -83,7 +85,6 @@ class GoldenDpsOverlay extends Overlay
 		FontMetrics fm = g.getFontMetrics();
 		int width = config.overlayWidth();
 
-		// main meter: "Damage overall     0:42" (all targets; the boss meter has the boss name)
 		boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
 		String title = mode.getLabel() + (session ? " - Session" : " overall");
 		if (config.bossOnly())
@@ -99,7 +100,6 @@ class GoldenDpsOverlay extends Overlay
 		Color rightColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
 		int y = drawMeter(g, fm, 0, width, title, right, rightColor, HEADER_BG, report, rows, mode);
 
-		// boss meter: only damage on the boss, DPS over the boss time
 		if (boss != null && !bossRows.isEmpty())
 		{
 			y += 2;
@@ -107,7 +107,7 @@ class GoldenDpsOverlay extends Overlay
 			String bRight = Format.duration(boss.report.getDurationMs())
 				+ (boss.pb != null ? "  " + boss.pb : "")
 				+ (boss.hidesIn >= 0 ? "  (" + boss.hidesIn + "s)" : "");
-			Color bColor = boss.pb != null && boss.pb.startsWith("NEW") ? new Color(255, 196, 0)
+			Color bColor = boss.pb != null && boss.pb.startsWith("NEW") ? PB_COLOR
 				: boss.dead ? Color.LIGHT_GRAY : Color.WHITE;
 			y = drawMeter(g, fm, y, width, bTitle, bRight, bColor,
 				BOSS_HEADER_BG, boss.report, bossRows, MeterMode.DAMAGE);
@@ -115,13 +115,13 @@ class GoldenDpsOverlay extends Overlay
 		return new Dimension(width, y);
 	}
 
-	/** One block: header and bars. Returns the y under it. */
+	/** Draws a header and its bars; returns the y below them. */
 	private int drawMeter(Graphics2D g, FontMetrics fm, int top, int width, String title, String right,
 		Color rightColor, Color headerBg, FightReport report, List<FightReport.PlayerRow> rows, MeterMode mode)
 	{
 		int rowH = fm.getHeight() + 3;
 		int shown = Math.min(rows.size(), config.maxRows());
-		// header + category row (only when there are bars) + bars
+		// header, column labels (only with bars), bars
 		int height = rowH * (shown + 1 + (shown > 0 ? 1 : 0)) + PAD;
 
 		g.setColor(BACKGROUND);
@@ -131,7 +131,7 @@ class GoldenDpsOverlay extends Overlay
 
 		int textY = rowH - (rowH - fm.getAscent()) / 2 - 1;
 		int rightW = fm.stringWidth(right);
-		drawText(g, fit(fm, title, width - rightW - 3 * PAD), PAD, top + textY, new Color(255, 200, 0));
+		drawText(g, fit(fm, title, width - rightW - 3 * PAD), PAD, top + textY, TITLE_COLOR);
 		drawText(g, right, width - PAD - rightW, top + textY, rightColor);
 
 		if (shown == 0)
@@ -139,7 +139,7 @@ class GoldenDpsOverlay extends Overlay
 			return top + height;
 		}
 
-		// columns: widest of the label and the values, laid out from the right
+		// each column is as wide as its widest cell, laid out from the right
 		String[] labels = columnLabels(mode);
 		double total = report.total(mode);
 		String[][] cells = new String[shown][];
@@ -165,7 +165,6 @@ class GoldenDpsOverlay extends Overlay
 		}
 		int nameMaxW = x - PAD - 2;
 
-		// category row: "Player   Damage  DPS  %"
 		int cy = top + rowH + textY - 1;
 		drawText(g, "Player", PAD + 2, cy, CATEGORY_COLOR);
 		for (int c = 0; c < labels.length; c++)
@@ -215,7 +214,7 @@ class GoldenDpsOverlay extends Overlay
 		return PALETTE[Math.floorMod(row.name.hashCode(), PALETTE.length)];
 	}
 
-	/** Column categories per mode (after the player name). */
+	/** Column labels after the player name. */
 	static String[] columnLabels(MeterMode mode)
 	{
 		switch (mode)
@@ -232,7 +231,6 @@ class GoldenDpsOverlay extends Overlay
 		}
 	}
 
-	/** Values for the columns of {@link #columnLabels}. */
 	static String[] columnValues(FightReport.PlayerRow row, MeterMode mode, double total)
 	{
 		double v = FightReport.value(row, mode);
@@ -259,7 +257,7 @@ class GoldenDpsOverlay extends Overlay
 		g.drawString(s, x, y);
 	}
 
-	/** Cut text with ".." so it fits. */
+	/** Shortens the text with ".." to fit. */
 	private static String fit(FontMetrics fm, String s, int maxW)
 	{
 		if (fm.stringWidth(s) <= maxW)

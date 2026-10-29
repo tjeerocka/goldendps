@@ -39,13 +39,16 @@ public interface GoldenDpsConfig extends Config
 	@ConfigSection(name = "Fights", description = "When a fight starts and ends", position = 0)
 	String fightSection = "fights";
 
-	@ConfigSection(name = "Overlay", description = "The bars on the game screen", position = 1)
+	@ConfigSection(name = "Party", description = "Sharing with your RuneLite party", position = 1)
+	String partySection = "party";
+
+	@ConfigSection(name = "Overlay", description = "The meter on the game screen", position = 2)
 	String overlaySection = "overlay";
 
 	@ConfigItem(
 		keyName = "idleSeconds",
 		name = "End fight after",
-		description = "The fight ends when nobody hit anything for this long (or when the boss dies). AFK time is not counted in DPS (see Pause clock after).",
+		description = "The fight ends when the boss dies or nobody hits anything for this long",
 		position = 0,
 		section = fightSection
 	)
@@ -59,8 +62,9 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "pauseSeconds",
 		name = "Pause clock after",
-		description = "Active time, like Details!: when nobody hits for this long, the fight clock stops until the next hit, so AFK time does not lower DPS. 0 = never pause.",
-		position = 0,
+		description = "The fight clock stops when nobody hits for this long, so AFK time does not lower DPS."
+			+ " 0 disables it.",
+		position = 1,
 		section = fightSection
 	)
 	@Range(min = 0, max = 120)
@@ -73,8 +77,8 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = BOSS_ONLY_KEY,
 		name = "Boss only",
-		description = "Only count damage on bosses (non-boss targets are hidden)",
-		position = 1,
+		description = "Only count damage on bosses",
+		position = 2,
 		section = fightSection
 	)
 	default boolean bossOnly()
@@ -85,8 +89,8 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "extraBosses",
 		name = "Extra bosses",
-		description = "More NPC names to treat as a boss, comma separated (for example: Scurrius, Duke Sucellus)",
-		position = 2,
+		description = "More NPC names to treat as bosses, comma separated",
+		position = 3,
 		section = fightSection
 	)
 	default String extraBosses()
@@ -97,8 +101,8 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "countRegen",
 		name = "Count natural regen",
-		description = "Count small +1/+2 HP regen as healing",
-		position = 3,
+		description = "Count natural HP regeneration as healing",
+		position = 4,
 		section = fightSection
 	)
 	default boolean countRegen()
@@ -110,7 +114,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "maxHistory",
 		name = "Fights to keep",
 		description = "How many past fights are saved",
-		position = 4,
+		position = 5,
 		section = fightSection
 	)
 	@Range(min = 5, max = 500)
@@ -120,11 +124,24 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "raidFight",
+		name = "One fight per raid",
+		description = "In CoX, ToB, ToA and the Fractured Archive, one fight counts the whole raid until you leave."
+			+ " Every boss also gets its own fight.",
+		position = 6,
+		section = fightSection
+	)
+	default boolean raidFight()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "shareWithParty",
 		name = "Share with party",
-		description = "Send your numbers to your RuneLite party (they need GoldenDPS too)",
-		position = 5,
-		section = fightSection
+		description = "Send your numbers to party members who run GoldenDPS",
+		position = 0,
+		section = partySection
 	)
 	default boolean shareWithParty()
 	{
@@ -134,10 +151,9 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "othersOnlyTogether",
 		name = "Others only when together",
-		description = "Party members (and guesses for other players) only count when you are in the same instance "
-			+ "(raid, boss room) or fight the same boss. Off: party members always count.",
-		position = 5,
-		section = fightSection
+		description = "Count party members only when you are in the same instance or fight the same boss",
+		position = 1,
+		section = partySection
 	)
 	default boolean othersOnlyTogether()
 	{
@@ -147,9 +163,9 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "estimateOthers",
 		name = "Guess other players",
-		description = "Guess who did the hits of players without GoldenDPS (from their attack animation and timing). Marked with ~",
-		position = 6,
-		section = fightSection
+		description = "Estimate the damage of players without GoldenDPS from their attack animations (marked with ~)",
+		position = 2,
+		section = partySection
 	)
 	default boolean estimateOthers()
 	{
@@ -160,8 +176,8 @@ public interface GoldenDpsConfig extends Config
 		keyName = "nearbyDamageTaken",
 		name = "Damage taken of others",
 		description = "Count the hitsplats you see on players without GoldenDPS as their damage taken",
-		position = 7,
-		section = fightSection
+		position = 3,
+		section = partySection
 	)
 	default boolean nearbyDamageTaken()
 	{
@@ -171,10 +187,10 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "autoRaidParty",
 		name = "Auto party in raids",
-		description = "In CoX, ToB, ToA and the Fractured Archive, everyone with GoldenDPS joins the same party by "
-			+ "itself (made from the raid members' names). Never changes a party you joined yourself.",
-		position = 8,
-		section = fightSection
+		description = "In CoX, ToB, ToA and the Fractured Archive, join one party with everyone in your raid"
+			+ " who runs GoldenDPS. A party you joined yourself is never changed.",
+		position = 4,
+		section = partySection
 	)
 	default boolean autoRaidParty()
 	{
@@ -182,22 +198,9 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "raidFight",
-		name = "One fight per raid",
-		description = "In CoX, ToB, ToA and the Fractured Archive the meter starts fresh when you enter the raid "
-			+ "and counts the whole raid until you leave. Each boss still gets its own boss meter and fight.",
-		position = 9,
-		section = fightSection
-	)
-	default boolean raidFight()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "showOverlay",
 		name = "Show overlay",
-		description = "Show the damage bars on the game screen",
+		description = "Show the meter on the game screen",
 		position = 0,
 		section = overlaySection
 	)
@@ -209,7 +212,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = MODE_KEY,
 		name = "Show",
-		description = "What the bars show. You can also right-click the overlay.",
+		description = "What the bars show. Also in the overlay right-click menu.",
 		position = 1,
 		section = overlaySection
 	)
@@ -221,7 +224,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = SCOPE_KEY,
 		name = "Data",
-		description = "Current (or last) fight, or the total of this session",
+		description = "The current or last fight, or the total of this session",
 		position = 2,
 		section = overlaySection
 	)
@@ -246,7 +249,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "overlayWidth",
 		name = "Width",
-		description = "Overlay width in pixels",
+		description = "Overlay width",
 		position = 4,
 		section = overlaySection
 	)
@@ -284,7 +287,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "bossMeter",
 		name = "Boss meter",
-		description = "Extra bars under the main meter with only the damage on the boss, and DPS over the boss time",
+		description = "A second meter with only the damage on the boss, over the boss time",
 		position = 7,
 		section = overlaySection
 	)
@@ -296,7 +299,7 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "bossHideSeconds",
 		name = "Hide boss meter after",
-		description = "How long the boss meter stays after the boss died. A new boss fight shows a new one.",
+		description = "How long the boss meter stays after the boss died",
 		position = 8,
 		section = overlaySection
 	)
@@ -306,4 +309,5 @@ public interface GoldenDpsConfig extends Config
 	{
 		return 20;
 	}
+
 }

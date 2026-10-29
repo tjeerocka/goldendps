@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +20,13 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 
-/** The "Party" card in the side panel. Only touched on the Swing thread. */
+/** The party tab of the side panel. Swing thread only. */
 class GoldenDpsPartyPanel extends JPanel
 {
-	/** One row in the member list. */
 	static class Member
 	{
 		long id;
@@ -36,13 +37,12 @@ class GoldenDpsPartyPanel extends JPanel
 		boolean hasPlugin;
 	}
 
-	/** Everything the card shows, made on the client thread. */
+	/** Everything the tab shows, built on the client thread. */
 	static class View
 	{
 		boolean inParty;
 		String code;
 		boolean youLead;
-		/** True when this is an automatic raid party. */
 		boolean auto;
 		List<Member> members = new ArrayList<>();
 	}
@@ -51,21 +51,24 @@ class GoldenDpsPartyPanel extends JPanel
 	private static final Color ONLINE = new Color(90, 200, 90);
 	private static final Color OFFLINE = new Color(110, 110, 110);
 	private static final Color KICK = new Color(170, 50, 50);
+	/** Kick needs a second click within this time. */
+	private static final int KICK_CONFIRM_MS = 4000;
+	private static final String JOIN_TIP = "Join (or start) the party with this name";
+	private static final String RANDOM_TIP = "Fill in a random party name";
+	private static final String LEAVE_FIRST = "Leave this party first";
 
 	private final GoldenDpsPlugin plugin;
 	private final JLabel status = new JLabel();
 	private final JTextField nameField = new JTextField();
 	private final JPanel memberList = new JPanel();
-	private final JButton leaveButton;
 	private final JButton joinButton;
-	/** Kick needs two clicks: the first one asks "Sure?" for a few seconds. */
-	private long confirmKickId = -1;
-	private long confirmUntil;
-	static final long KICK_CONFIRM_MS = 4000;
-	private View lastView = new View();
 	private final JButton randomButton;
 	private final JButton copyButton;
+	private final JButton leaveButton;
+	private View lastView = new View();
 	private String shownCode;
+	private long confirmKickId = -1;
+	private long confirmUntil;
 
 	GoldenDpsPartyPanel(GoldenDpsPlugin plugin)
 	{
@@ -76,7 +79,6 @@ class GoldenDpsPartyPanel extends JPanel
 			BorderFactory.createMatteBorder(0, 3, 0, 0, GOLD),
 			BorderFactory.createEmptyBorder(6, 8, 8, 8)));
 
-		// header: "Party" and the status on the right
 		JPanel header = new JPanel(new BorderLayout());
 		header.setOpaque(false);
 		JLabel title = new JLabel("Party");
@@ -86,21 +88,19 @@ class GoldenDpsPartyPanel extends JPanel
 		header.add(title, BorderLayout.WEST);
 		header.add(status, BorderLayout.EAST);
 
-		// party name + join
 		JLabel nameLabel = small("Party name", ColorScheme.LIGHT_GRAY_COLOR);
 		nameLabel.setToolTipText("Everyone who joins with the same name is in the same party");
 		nameField.setToolTipText("Type a party name (spaces are fine), or press Random");
 		nameField.addActionListener(e -> join());
-		joinButton = button("Join", "Join (or start) the party with this name", ColorScheme.BRAND_ORANGE, this::join);
-		JButton join = joinButton;
+		joinButton = button("Join", JOIN_TIP, ColorScheme.BRAND_ORANGE, this::join);
 		JPanel nameRow = new JPanel(new BorderLayout(4, 0));
 		nameRow.setOpaque(false);
 		nameRow.add(nameField, BorderLayout.CENTER);
-		nameRow.add(join, BorderLayout.EAST);
+		nameRow.add(joinButton, BorderLayout.EAST);
 
 		JPanel actions = new JPanel(new GridLayout(1, 3, 4, 0));
 		actions.setOpaque(false);
-		randomButton = button("Random", "Fill in a random party name", null, plugin::randomPartyName);
+		randomButton = button("Random", RANDOM_TIP, null, plugin::randomPartyName);
 		actions.add(randomButton);
 		copyButton = button("Copy", "Copy the party name to send to your friends", null, this::copy);
 		actions.add(copyButton);
@@ -122,7 +122,6 @@ class GoldenDpsPartyPanel extends JPanel
 		update(new View());
 	}
 
-	/** Put a party name in the box (for "Random"). */
 	void setPartyName(String name)
 	{
 		nameField.setText(name);
@@ -141,7 +140,6 @@ class GoldenDpsPartyPanel extends JPanel
 			}
 			status.setText(online + " online");
 			status.setForeground(ONLINE);
-			// in a party: the box shows its name and can't be changed (leave first)
 			if (v.code != null && !v.code.equals(nameField.getText()))
 			{
 				nameField.setText(v.code);
@@ -155,15 +153,14 @@ class GoldenDpsPartyPanel extends JPanel
 		shownCode = v.inParty ? v.code : null;
 		leaveButton.setEnabled(v.inParty);
 		copyButton.setEnabled(v.inParty);
-		// Random and Join only to make or join a party when you are not in one
+		// switching party needs an explicit Leave first
 		nameField.setEditable(!v.inParty);
 		randomButton.setEnabled(!v.inParty);
 		joinButton.setEnabled(!v.inParty);
 		joinButton.setBackground(v.inParty ? ColorScheme.DARKER_GRAY_COLOR : ColorScheme.BRAND_ORANGE);
-		String why = v.inParty ? "Leave this party first" : null;
-		randomButton.setToolTipText(why != null ? why : "Fill in a random party name");
-		joinButton.setToolTipText(why != null ? why : "Join (or start) the party with this name");
-		nameField.setToolTipText(why != null ? "Your party name. Leave this party first to pick another one"
+		randomButton.setToolTipText(v.inParty ? LEAVE_FIRST : RANDOM_TIP);
+		joinButton.setToolTipText(v.inParty ? LEAVE_FIRST : JOIN_TIP);
+		nameField.setToolTipText(v.inParty ? "Your party name. " + LEAVE_FIRST + " to pick another one."
 			: "Type a party name (spaces are fine), or press Random");
 
 		memberList.removeAll();
@@ -243,10 +240,9 @@ class GoldenDpsPartyPanel extends JPanel
 		confirmKickId = m.id;
 		confirmUntil = now + KICK_CONFIRM_MS;
 		update(lastView);
-		// back to "Kick" when you don't click again
-		javax.swing.Timer t = new javax.swing.Timer((int) KICK_CONFIRM_MS + 50, e -> update(lastView));
-		t.setRepeats(false);
-		t.start();
+		Timer reset = new Timer(KICK_CONFIRM_MS + 50, e -> update(lastView));
+		reset.setRepeats(false);
+		reset.start();
 	}
 
 	private void join()
@@ -266,7 +262,7 @@ class GoldenDpsPartyPanel extends JPanel
 	{
 		if (shownCode != null)
 		{
-			java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(shownCode), null);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(shownCode), null);
 		}
 	}
 
@@ -295,7 +291,7 @@ class GoldenDpsPartyPanel extends JPanel
 		return b;
 	}
 
-	/** Small round online / offline dot. */
+	/** Online / offline dot. */
 	private static class Dot extends JComponent
 	{
 		private final Color color;

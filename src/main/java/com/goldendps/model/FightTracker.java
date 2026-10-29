@@ -6,17 +6,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Starts and ends fights and puts every number in the right place.
- * No RuneLite code in here: the plugin calls these methods on the client thread,
- * and the unit tests call them with a fake clock.
- *
- * <p>Order rule for the plugin: for one of your own hitsplats call
- * {@link #playerHit} first and then {@link #seenHit}, so the first hit of a
- * fight is also in the "seen" total.</p>
+ * Starts and ends fights and records every hit and heal. Free of RuneLite types, so it can be
+ * tested with a fake clock. For your own hitsplats call {@link #playerHit} before
+ * {@link #seenHit}, so the first hit of a fight is also seen.
  */
 public class FightTracker
 {
-	/** Party reports that arrive this long after the fight ended still go into it (network delay). */
+	/** Party reports arriving this long after a fight ended still count for it. */
 	public static final long LATE_REPORT_MS = 5000;
 
 	public interface Listener
@@ -29,9 +25,9 @@ public class FightTracker
 	private int maxHistory = 50;
 	private String sessionId = newId();
 	private Fight current;
-	/** In a raid: the name, and the running fight is the whole raid. Null outside raids. */
+	/** The raid you are in; the running fight then covers the whole raid. */
 	private String raid;
-	/** In a raid: the boss that is being fought now (its own fight for the boss meter and PBs). */
+	/** Inside a raid: the fight for the boss being fought now. */
 	private Fight bossPart;
 	/** Ended fights, newest first. */
 	private final List<Fight> history = new ArrayList<>();
@@ -52,7 +48,6 @@ public class FightTracker
 		this.idleTimeoutMs = Math.max(1000, idleTimeoutMs);
 	}
 
-	/** Active time: the clock stops when nobody hits for this long. 0 = never stop. */
 	public void setPauseAfterMs(long pauseAfterMs)
 	{
 		this.pauseAfterMs = Math.max(0, pauseAfterMs);
@@ -70,14 +65,14 @@ public class FightTracker
 
 	// ---- damage ----
 
-	/** A hit by you (LOCAL) or a party member (PARTY). Starts a fight if none is running. */
+	/** A hit by you or a party member. Starts a fight if none is running. */
 	public void playerHit(long now, String player, PlayerKind kind, String targetKey, int npcId,
 		String npcName, boolean boss, int amount, boolean miss)
 	{
 		playerHit(now, player, kind, targetKey, npcId, npcName, boss, amount, miss, null);
 	}
 
-	/** Same, with the source of the hit (weapon or spell name, null = unknown). */
+	/** @param source weapon or spell name, or null */
 	public void playerHit(long now, String player, PlayerKind kind, String targetKey, int npcId,
 		String npcName, boolean boss, int amount, boolean miss, String source)
 	{
@@ -116,10 +111,7 @@ public class FightTracker
 		}
 	}
 
-	/**
-	 * Any damage hitsplat this client saw on an NPC (yours and other people's).
-	 * Only starts a fight on a boss; otherwise it only counts while a fight runs.
-	 */
+	/** Any damage hitsplat seen on an NPC. Starts a fight only on a boss. */
 	public void seenHit(long now, String targetKey, int npcId, String npcName, boolean boss, int amount)
 	{
 		if (current == null)
@@ -148,7 +140,7 @@ public class FightTracker
 		}
 	}
 
-	/** Poison / venom / burn / bleed on an NPC. Only counts while a fight runs. */
+	/** Poison, venom, burn or bleed damage on an NPC. */
 	public void effectHit(long now, String targetKey, int npcId, String npcName, boolean boss, int amount)
 	{
 		if (current == null || amount <= 0)
@@ -162,10 +154,7 @@ public class FightTracker
 		}
 	}
 
-	/**
-	 * A guess: this player (without GoldenDPS) probably did this hit.
-	 * Call after {@link #seenHit}. Only counts while a fight runs.
-	 */
+	/** An estimated hit by a player without GoldenDPS. Call after {@link #seenHit}. */
 	public void estimateHit(long now, String player, String targetKey, int amount, boolean miss)
 	{
 		if (current == null || player == null)
@@ -182,7 +171,7 @@ public class FightTracker
 		}
 	}
 
-	/** A damage hitsplat you saw on another player. Only counts while a fight runs. */
+	/** A damage hitsplat seen on a player without GoldenDPS. */
 	public void seenDamageTaken(long now, String player, int amount)
 	{
 		if (current == null || player == null || amount <= 0)
@@ -215,7 +204,6 @@ public class FightTracker
 		heal(now, player, kind, type, amount, 0);
 	}
 
-	/** A heal with its overhealing (the part that was wasted). */
 	public void heal(long now, String player, PlayerKind kind, HealType type, int amount, int overheal)
 	{
 		Fight f = fightForReport(now, kind);
@@ -259,10 +247,10 @@ public class FightTracker
 		t.diedMs = now;
 		if (!(boss || t.boss) || !t.engaged || raid != null)
 		{
-			// in a raid the fight goes on until the raid is done
+			// a raid fight lasts until the raid is left
 			return;
 		}
-		// End when every boss we fought in this fight is dead (for example Dagannoth Kings)
+		// end once every engaged boss is dead (e.g. all three Dagannoth Kings)
 		for (TargetStats other : current.targets.values())
 		{
 			if (other.boss && other.engaged && !other.died)
@@ -273,7 +261,7 @@ public class FightTracker
 		end(now, "Boss died");
 	}
 
-	/** Call every game tick: ends the fight when nobody hit anything for the idle time. */
+	/** Ends the fight after the idle timeout. Call every game tick. */
 	public void tick(long now)
 	{
 		if (bossPart != null && now - bossPart.lastActivityMs >= idleTimeoutMs)
@@ -283,12 +271,11 @@ public class FightTracker
 		}
 		if (raid != null)
 		{
-			// a raid only ends when you leave it
 			return;
 		}
 		if (current != null && now - current.lastActivityMs >= idleTimeoutMs)
 		{
-			// the clock ran on for the pause time after the last hit (same as the live clock)
+			// the live clock ran on for the pause time after the last hit
 			long endAt = current.lastActivityMs + Math.min(pauseAfterMs, idleTimeoutMs);
 			end(Math.min(now, endAt), "No hits for " + Format.duration(idleTimeoutMs));
 		}
@@ -313,7 +300,7 @@ public class FightTracker
 		f.finish(endMs, reason);
 		if (f.knownDamage() == 0)
 		{
-			// Only other people's hits (for example strangers at a boss): not our fight
+			// only strangers' hits: not our fight
 			return;
 		}
 		history.add(0, f);
@@ -327,9 +314,8 @@ public class FightTracker
 	// ---- raids ----
 
 	/**
-	 * You entered a raid: the fight that runs now ends, and the next fight is the whole raid.
-	 * It only ends with {@link #endRaid} (not on a boss death or the idle time).
-	 * Every boss in the raid also gets its own fight (boss meter, PBs).
+	 * Ends the running fight; the next fight covers the whole raid and only ends with
+	 * {@link #endRaid}. Each boss in the raid also gets a fight of its own.
 	 */
 	public void startRaid(long now, String name)
 	{
@@ -341,7 +327,6 @@ public class FightTracker
 		raid = name;
 	}
 
-	/** You left the raid (or logged out): the raid fight ends. */
 	public void endRaid(long now, String reason)
 	{
 		if (raid == null)
@@ -352,22 +337,17 @@ public class FightTracker
 		raid = null;
 	}
 
-	/** The raid you are in, or null. */
 	public String getRaid()
 	{
 		return raid;
 	}
 
-	/** The boss being fought now in a raid, or null. */
 	public Fight getBossPart()
 	{
 		return bossPart;
 	}
 
-	/**
-	 * The fight for the boss meter: in a raid the boss you fight now (or the last one of this raid),
-	 * otherwise the running / last fight.
-	 */
+	/** In a raid the current or last boss of this raid, otherwise the running or last fight. */
 	public Fight getBossDisplayFight()
 	{
 		if (raid == null)
@@ -391,7 +371,7 @@ public class FightTracker
 		return null;
 	}
 
-	/** In a raid: the boss fight to add to (a boss hit starts a new one). Null outside raids. */
+	/** Inside a raid: the boss fight to record into; a boss hit starts one. */
 	private Fight bossPartFor(long now, boolean boss)
 	{
 		if (raid == null || current == null)
@@ -437,7 +417,6 @@ public class FightTracker
 		}
 	}
 
-	/** The fights that get the numbers now: the running fight and the raid boss. */
 	private List<Fight> live()
 	{
 		List<Fight> out = new ArrayList<>(2);
@@ -506,13 +485,12 @@ public class FightTracker
 
 	// ---- reading ----
 
-	/** The running fight, or null. */
 	public Fight getCurrent()
 	{
 		return current;
 	}
 
-	/** The running fight, or else the last fight. Can be null. */
+	/** The running fight, or else the last one (raid boss fights excluded). */
 	public Fight getDisplayFight()
 	{
 		if (current != null)
@@ -550,14 +528,14 @@ public class FightTracker
 		return null;
 	}
 
-	/** All fights of this session (incl. the running one) added together. Null if none. */
+	/** All fights of this session added together, or null. */
 	public Fight getSessionTotal(long now)
 	{
 		Fight total = new Fight("session", sessionId, 0);
 		for (int i = history.size() - 1; i >= 0; i--)
 		{
 			Fight f = history.get(i);
-			// a raid boss is also in its raid fight: count it once
+			// raid boss fights are part of their raid fight
 			if (sessionId.equals(f.sessionId) && f.partOf == null)
 			{
 				total.merge(f, now);
@@ -570,12 +548,7 @@ public class FightTracker
 		return total.mergedFights == 0 ? null : total;
 	}
 
-	public String getSessionId()
-	{
-		return sessionId;
-	}
-
-	/** Start a new session total. The running fight is ended first; history is kept. */
+	/** Ends the running fight and starts a new session; the history is kept. */
 	public void resetSession(long now)
 	{
 		endNow(now, "Reset");
@@ -589,7 +562,7 @@ public class FightTracker
 		history.clear();
 	}
 
-	/** Load saved fights (newest first). Keeps the running fight. */
+	/** Replaces the history with saved fights (newest first); keeps the running fight. */
 	public void setHistory(List<Fight> fights)
 	{
 		history.clear();
