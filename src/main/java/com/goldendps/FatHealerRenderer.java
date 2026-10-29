@@ -7,6 +7,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Renderable;
 import net.runelite.api.RuneLiteObjectController;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.callback.RenderCallback;
 
 /**
@@ -54,6 +55,9 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	private int draws;
 	private int hides;
 	private int lastDraws = -1;
+	/** The copy was drawn since the last frame: only then the real character may be hidden. */
+	private boolean drawnSinceUpdate;
+	private boolean copyVisible;
 	private int lastHides = -1;
 	private String lastStatus = "";
 
@@ -70,6 +74,11 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 
 	void update(Player player, int widthPercent, int heightPercent, long nowMs)
 	{
+		// Safety: if the game did not draw the copy last frame (some areas), never hide the real one,
+		// else the character would be invisible.
+		copyVisible = drawnSinceUpdate;
+		drawnSinceUpdate = false;
+
 		double dt = lastMs == 0 ? 0 : Math.max(0, Math.min(100, nowMs - lastMs));
 		lastMs = nowMs;
 		double step = dt / GROW_MS;
@@ -110,8 +119,11 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			}
 			else
 			{
-				setLocation(lp, target.getWorldView().getPlane());
-				setZ(net.runelite.api.Perspective.getTileHeight(client, lp, target.getWorldView().getPlane()));
+				// the character's own floor, not the camera's
+				WorldPoint wp = target.getWorldLocation();
+				int plane = wp != null ? wp.getPlane() : target.getWorldView().getPlane();
+				setLocation(lp, plane);
+				setZ(net.runelite.api.Perspective.getTileHeight(client, lp, plane));
 				setOrientation(target.getCurrentOrientation());
 			}
 		}
@@ -173,7 +185,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	/** True while a fat copy is drawn for this player (so the real one is hidden). */
 	private boolean isFat(Player p)
 	{
-		return p != null && p == target && client.isRuneLiteObjectRegistered(this);
+		return p != null && p == target && copyVisible && client.isRuneLiteObjectRegistered(this);
 	}
 
 	// ---- RenderCallback: hide the real character while the fat copy is drawn ----
@@ -203,14 +215,14 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		}
 		if (lastDraws == 0)
 		{
-			return "added, but not drawn";
+			return "not drawn here (normal look)";
 		}
 		if (lastDraws < 0)
 		{
 			return "starting...";
 		}
 		return "drawn +" + Math.round(width) + "%/+" + Math.round(height) + "%"
-			+ (lastHides > 0 ? ", real hidden" : ", real NOT hidden");
+			+ (lastHides > 0 ? ", real hidden" : ", real shown");
 	}
 
 	// ---- RuneLiteObjectController: the fat copy ----
@@ -230,6 +242,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			return null;
 		}
 		draws++;
+		drawnSinceUpdate = true;
 		Model m;
 		int real = -1;
 		java.util.function.IntPredicate smoothing = null;

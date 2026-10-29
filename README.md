@@ -114,6 +114,8 @@ top healer (a new top healer starts growing after the old one has shrunk).
   Scaling uses exact decimal numbers (the game's own scale cuts off fractions, which made capes sink
   into the body and cape logos disappear).
 - Right-click / clicking the fat healer may not work while the effect is on.
+- Safety: the real character is only hidden while the fat copy was really drawn in the last frame.
+  Where the game does not draw the copy, you just see the normal character (never invisible).
 - **Slow walk:** the fat healer's walk and run animation plays slower (70% speed). They still move at normal speed, only the legs move slower. Only the fat copy is drawn
   with the slower frame; the real character's animation is never changed. RuneLite's Animation
   Smoothing is switched off for that one draw (it blends with the real timing and made the walk stutter).

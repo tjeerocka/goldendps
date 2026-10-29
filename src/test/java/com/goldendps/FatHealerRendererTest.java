@@ -1,6 +1,7 @@
 package com.goldendps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -432,6 +433,37 @@ public class FatHealerRendererTest
 		new FatHealerRenderer(fakeClient()).pushLayers(m);
 		assertEquals(sharedBefore, out(vx, vz, 2), 0.001);
 		assertTrue("own small points are lifted", out(vx, vz, 4) > 20.5f);
+	}
+
+	@Test
+	public void realCharacterIsOnlyHiddenWhenTheCopyWasDrawn()
+	{
+		// a client where the copy counts as added to the game
+		Client client = (Client) Proxy.newProxyInstance(Client.class.getClassLoader(), new Class<?>[]{Client.class},
+			(px, m, a) ->
+			{
+				if (m.getName().equals("isRuneLiteObjectRegistered"))
+				{
+					return Boolean.TRUE;
+				}
+				return m.getReturnType() == boolean.class ? (Object) Boolean.FALSE : null;
+			});
+		Player p = fakePlayer(() -> fakeModel(new float[]{1f}, new float[]{1f}, new ArrayList<>()));
+		FatHealerRenderer r = grown(new FatHealerRenderer(client), p, 35, 6);
+
+		// the game did not draw the copy: the real character stays visible (never invisible)
+		frames(r, p, 35, 6, 1);
+		assertTrue(r.addEntity(p, false));
+
+		// the copy was drawn: from the next frame the real one is hidden
+		r.getModel();
+		frames(r, p, 35, 6, 1);
+		assertFalse(r.addEntity(p, false));
+		assertTrue("overhead text / HP bar stay", r.addEntity(p, true));
+
+		// not drawn again: shown again
+		frames(r, p, 35, 6, 1);
+		assertTrue(r.addEntity(p, false));
 	}
 
 	@Test
