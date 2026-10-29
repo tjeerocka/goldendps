@@ -71,7 +71,7 @@ import net.runelite.client.util.Text;
 @Slf4j
 @PluginDescriptor(
 	name = "GoldenDPS",
-	description = "Damage, DPS and healing meter for groups, shared through RuneLite Party",
+	description = "DPS, damage and healing meter for groups and individuals",
 	tags = {"dps", "damage", "meter", "party", "healing", "boss", "pvm", "raid"}
 )
 public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
