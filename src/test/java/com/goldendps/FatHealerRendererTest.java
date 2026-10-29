@@ -259,6 +259,28 @@ public class FatHealerRendererTest
 	}
 
 	@Test
+	public void boundsAreWorkedOutAgainAfterScaling()
+	{
+		int[] bounds = {0};
+		float[] vx = {0f, 10f, -20f};
+		float[] vy = {0f, -100f, -200f};
+		Model base = fakeModel(vx, vy, new ArrayList<>());
+		Model counting = (Model) Proxy.newProxyInstance(Model.class.getClassLoader(), new Class<?>[]{Model.class}, (p, m, a) ->
+		{
+			if (m.getName().equals("calculateBoundsCylinder"))
+			{
+				bounds[0]++;
+				return null;
+			}
+			return m.invoke(base, a);
+		});
+		Player p = fakePlayer(() -> counting);
+		FatHealerRenderer r = grown(p, 35, 6);
+		r.getModel();
+		assertEquals(1, bounds[0]);
+	}
+
+	@Test
 	public void nobodyFatDrawsNothing()
 	{
 		FatHealerRenderer r = new FatHealerRenderer(fakeClient());

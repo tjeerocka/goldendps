@@ -275,6 +275,10 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			m.scale(sx, sy, sx);
 		}
+		// The game sorts the faces of a model by depth using its size (bounds). The bounds were
+		// worked out for the normal size, so faces of the bigger model were sorted wrong: the cape
+		// showed through the body and the cape logo (drawn just in front of the cape) went missing.
+		m.calculateBoundsCylinder();
 		remember(m, vx, vy, sx, sy);
 		return m;
 	}
@@ -331,6 +335,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			m.scale(FatHealer.UNIT * FatHealer.UNIT / lastSx, FatHealer.UNIT * FatHealer.UNIT / lastSy,
 				FatHealer.UNIT * FatHealer.UNIT / lastSx);
+			m.calculateBoundsCylinder();
 		}
 		lastModel = null;
 		lastVx = null;
