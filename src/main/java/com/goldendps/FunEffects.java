@@ -15,7 +15,6 @@ class FunEffects
 {
 	/** Icons stay this long after the fight ended. */
 	private static final long SHOW_AFTER_FIGHT_MS = 30_000;
-	private static final long TEST_MS = 15_000;
 	private static final long SAY_MS = 5000;
 
 	/** Something a player "says" over their head for a while (drawn by the overlay only). */
@@ -37,9 +36,6 @@ class FunEffects
 	private String mvp;
 	private String burger;
 	private String fries;
-	private String testPlayer;
-	private long testCrownUntil;
-	private long testSnackUntil;
 	private final Map<String, Speech> speech = new HashMap<>();
 	private String lastBossFightId;
 
@@ -103,23 +99,22 @@ class FunEffects
 
 	boolean hasCrown(String player, long now)
 	{
-		return player.equals(now < testCrownUntil ? testPlayer : mvp);
+		return player.equals(mvp);
 	}
 
 	boolean hasBurger(String player, long now)
 	{
-		return player.equals(now < testSnackUntil ? testPlayer : burger);
+		return player.equals(burger);
 	}
 
 	boolean hasFries(String player, long now)
 	{
-		return player.equals(now < testSnackUntil ? testPlayer : fries);
+		return player.equals(fries);
 	}
 
 	boolean anyone(long now)
 	{
-		return now < testCrownUntil || now < testSnackUntil || mvp != null || burger != null || fries != null
-			|| !speech.isEmpty();
+		return mvp != null || burger != null || fries != null || !speech.isEmpty();
 	}
 
 	/** What the player says now: the heal after a boss first, otherwise a hungry line. Null when silent. */
@@ -140,18 +135,5 @@ class FunEffects
 			return burgerTalk.line(now);
 		}
 		return hasFries(player, now) ? friesTalk.line(now) : null;
-	}
-
-	void testCrown(String player, long now)
-	{
-		testPlayer = player;
-		testCrownUntil = now + TEST_MS;
-	}
-
-	void testSnacks(String player, long now)
-	{
-		testPlayer = player;
-		testSnackUntil = now + TEST_MS;
-		say(player, healedLine(1234, 5678), now);
 	}
 }

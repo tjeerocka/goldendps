@@ -142,12 +142,6 @@ class GoldenDpsPanel extends PluginPanel
 		top.add(button("Report to party", "Send the top 5 of the shown fight to your RuneLite party chat",
 			plugin::reportPanelToParty));
 
-		JPanel tests = new JPanel(new GridLayout(1, 2, 4, 0));
-		tests.setBackground(ColorScheme.DARK_GRAY_COLOR);
-		tests.add(button("Test crown", "Show the MVP crown on you for 15 seconds", plugin::testCrown));
-		tests.add(button("Test snacks", "Show the burger, fries and hungry lines on you for 15 seconds", plugin::testSnacks));
-		top.add(tests);
-
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 		content.setBackground(ColorScheme.DARK_GRAY_COLOR);
 

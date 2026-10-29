@@ -978,16 +978,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		});
 	}
 
-	void testCrown()
-	{
-		clientThread.invoke(() -> fun.testCrown(localName(), System.currentTimeMillis()));
-	}
-
-	void testSnacks()
-	{
-		clientThread.invoke(() -> fun.testSnacks(localName(), System.currentTimeMillis()));
-	}
-
 	void requestPanelUpdate()
 	{
 		clientThread.invoke(this::updatePanel);
