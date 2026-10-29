@@ -17,16 +17,19 @@ import net.runelite.client.callback.RenderCallback;
  */
 class FatHealerRenderer extends RuneLiteObjectController implements RenderCallback
 {
-	/** How fast the size changes per frame (in %), so the healer "grows". */
-	private static final double GROW_STEP = 1.5;
+	/** How long growing fat (and shrinking back, the same in reverse) takes. */
+	static final double GROW_MS = 800;
+	/** Animation smoothing off (only while the fat copy is drawn with a slow frame). */
+	private static final java.util.function.IntPredicate NO_SMOOTHING = id -> false;
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FatHealerRenderer.class);
 
 	private final Client client;
 	private Player target;
 	private double width;
 	private double height;
-	private double targetWidth;
-	private double targetHeight;
+	/** 0 = normal size, 1 = full fat. Grows and shrinks over GROW_MS. */
+	private double progress;
+	private long lastMs;
 	/**
 	 * The last model we made bigger. The game sometimes gives the same animated model again
 	 * for a few frames; then it is still bigger from us and must not be scaled twice.
@@ -58,21 +61,42 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	/** Who should be fat (null = nobody) and how fat, in % bigger. Call every frame. */
 	void update(Player player, int widthPercent, int heightPercent)
 	{
-		if (player != target)
-		{
-			// new healer: start at normal size and grow
-			undoIfStillScaled();
-			target = player;
-			slowFrame = -1;
-			width = 0;
-			height = 0;
-		}
-		targetWidth = player == null ? 0 : widthPercent;
-		targetHeight = player == null ? 0 : heightPercent;
-		width = FatHealer.approach(width, targetWidth, GROW_STEP);
-		height = FatHealer.approach(height, targetHeight, GROW_STEP / 4);
+		update(player, widthPercent, heightPercent, System.nanoTime() / 1_000_000L);
+	}
 
-		boolean show = target != null && (width > 0 || height > 0);
+	void update(Player player, int widthPercent, int heightPercent, long nowMs)
+	{
+		double dt = lastMs == 0 ? 0 : Math.max(0, Math.min(100, nowMs - lastMs));
+		lastMs = nowMs;
+		double step = dt / GROW_MS;
+
+		if (target != null && player != target)
+		{
+			// stop (or someone else heals more): first shrink back, the reverse of growing
+			progress = FatHealer.approach(progress, 0, step);
+			if (progress <= 0)
+			{
+				undoIfStillScaled();
+				target = player;
+				slowFrame = -1;
+			}
+		}
+		else if (target == null)
+		{
+			// new fat healer: start at normal size
+			target = player;
+			progress = 0;
+		}
+		else
+		{
+			progress = FatHealer.approach(progress, 1, step);
+		}
+		// same curve both ways, and width and height finish together
+		double eased = progress * progress * (3 - 2 * progress);
+		width = eased * widthPercent;
+		height = eased * heightPercent;
+
+		boolean show = target != null && progress > 0;
 		if (show)
 		{
 			LocalPoint lp = target.getLocalLocation();
@@ -121,12 +145,19 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		undoIfStillScaled();
 		target = null;
 		slowFrame = -1;
+		progress = 0;
 		width = 0;
 		height = 0;
 		if (client.isRuneLiteObjectRegistered(this))
 		{
 			client.removeRuneLiteObject(this);
 		}
+	}
+
+	/** 0 = normal, 1 = full fat (for tests). */
+	double getProgress()
+	{
+		return progress;
 	}
 
 	/** The player that looks fat right now, or null. */
@@ -197,10 +228,15 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		draws++;
 		Model m;
 		int real = -1;
+		java.util.function.IntPredicate smoothing = null;
 		if (slowFrame >= 0)
 		{
-			// draw the copy with the slow frame, then give the real player its own frame back
+			// draw the copy with the slow frame, then give the real player its own frame back.
+			// Animation smoothing blends frames with the REAL timing, which makes a slow frame
+			// jump: switch it off for this one draw only.
 			real = p.getPoseAnimationFrame();
+			smoothing = client.getAnimationInterpolationFilter();
+			client.setAnimationInterpolationFilter(NO_SMOOTHING);
 			p.setPoseAnimationFrame(slowFrame);
 		}
 		try
@@ -212,6 +248,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			if (real >= 0)
 			{
 				p.setPoseAnimationFrame(real);
+				client.setAnimationInterpolationFilter(smoothing);
 			}
 		}
 		if (m == null)

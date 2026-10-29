@@ -3,6 +3,7 @@ package com.goldendps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,17 +77,49 @@ public class FatHealerRendererTest
 
 	private static Client fakeClient()
 	{
-		return (Client) Proxy.newProxyInstance(Client.class.getClassLoader(), new Class<?>[]{Client.class},
-			(p, m, a) -> m.getReturnType() == boolean.class ? false : null);
+		return fakeClient(new ArrayList<>());
+	}
+
+	/** filters records every setAnimationInterpolationFilter call. */
+	private static Client fakeClient(List<Object> filters)
+	{
+		Object[] current = {null};
+		return (Client) Proxy.newProxyInstance(Client.class.getClassLoader(), new Class<?>[]{Client.class}, (p, m, a) ->
+		{
+			switch (m.getName())
+			{
+				case "getAnimationInterpolationFilter":
+					return current[0];
+				case "setAnimationInterpolationFilter":
+					current[0] = a[0];
+					filters.add(a[0]);
+					return null;
+				default:
+					return m.getReturnType() == boolean.class ? false : null;
+			}
+		});
+	}
+
+	private static long clock = 1000;
+
+	/** One frame every 20 ms. */
+	private static void frames(FatHealerRenderer r, Player player, int width, int height, int n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			clock += 20;
+			r.update(player, width, height, clock);
+		}
 	}
 
 	private static FatHealerRenderer grown(Player player, int width, int height)
 	{
-		FatHealerRenderer r = new FatHealerRenderer(fakeClient());
-		for (int i = 0; i < 100; i++)
-		{
-			r.update(player, width, height);
-		}
+		return grown(new FatHealerRenderer(fakeClient()), player, width, height);
+	}
+
+	private static FatHealerRenderer grown(FatHealerRenderer r, Player player, int width, int height)
+	{
+		frames(r, player, width, height, 100);
 		return r;
 	}
 
@@ -137,10 +170,7 @@ public class FatHealerRendererTest
 		FatHealerRenderer r = grown(p, 35, 6);
 		r.getModel();
 		// settings changed: 50% wider, 10% taller
-		for (int i = 0; i < 100; i++)
-		{
-			r.update(p, 50, 10);
-		}
+		frames(r, p, 50, 10, 1);
 		r.getModel();
 		assertEquals(-128f * 192 / 128f, vx[2], 1.5);
 		assertEquals(-256f * 141 / 128f, vy[2], 3);
@@ -175,6 +205,57 @@ public class FatHealerRendererTest
 		assertEquals(4, (int) frames.get(0));
 		assertEquals(7, (int) frames.get(1));
 		assertEquals(7, real[0]);
+	}
+
+	@Test
+	public void smoothingIsOffOnlyWhileTheSlowCopyIsDrawn()
+	{
+		List<Object> filters = new ArrayList<>();
+		Player p = fakePlayer(() -> fakeModel(new float[]{1f}, new float[]{1f}, new ArrayList<>()));
+		FatHealerRenderer r = grown(new FatHealerRenderer(fakeClient(filters)), p, 35, 6);
+		r.getModel();
+		assertEquals("no slow frame: smoothing untouched", 0, filters.size());
+		r.setSlowFrame(2);
+		r.getModel();
+		assertEquals(2, filters.size());
+		assertEquals(false, ((java.util.function.IntPredicate) filters.get(0)).test(819));
+		assertNull("put back the way it was", filters.get(1));
+	}
+
+	@Test
+	public void growingAndShrinkingTakeTheSameTime()
+	{
+		Player p = fakePlayer(() -> fakeModel(new float[]{1f}, new float[]{1f}, new ArrayList<>()));
+		FatHealerRenderer r = new FatHealerRenderer(fakeClient());
+		frames(r, p, 35, 6, 1);                 // first frame: start
+		frames(r, p, 35, 6, 20);                // 400 ms: half way
+		assertEquals(0.5, r.getProgress(), 0.01);
+		frames(r, p, 35, 6, 20);                // 800 ms: full
+		assertEquals(1.0, r.getProgress(), 0.0001);
+
+		// stop: shrink back over the same 800 ms, still the same player
+		frames(r, null, 35, 6, 20);
+		assertEquals(0.5, r.getProgress(), 0.01);
+		frames(r, null, 35, 6, 20);
+		assertEquals(0.0, r.getProgress(), 0.0001);
+		assertNull(r.getModel());
+	}
+
+	@Test
+	public void newHealerWaitsUntilTheOldOneShrank()
+	{
+		List<int[]> calls = new ArrayList<>();
+		Player a = fakePlayer(() -> fakeModel(new float[]{1f}, new float[]{1f}, calls));
+		Player b = fakePlayer(() -> fakeModel(new float[]{2f}, new float[]{2f}, new ArrayList<>()));
+		FatHealerRenderer r = grown(a, 35, 6);
+		frames(r, b, 35, 6, 10);                // 200 ms: A is shrinking, B not yet
+		assertTrue(r.getProgress() < 1 && r.getProgress() > 0);
+		calls.clear();
+		r.getModel();
+		assertEquals("still drawing A", 1, calls.size());
+		frames(r, b, 35, 6, 40);                // A gone, B growing
+		frames(r, b, 35, 6, 60);
+		assertEquals(1.0, r.getProgress(), 0.0001);
 	}
 
 	@Test
