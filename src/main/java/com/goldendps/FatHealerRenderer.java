@@ -206,7 +206,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			return "starting...";
 		}
 		return "drawn +" + Math.round(width) + "%/+" + Math.round(height) + "%"
-			+ (lastHides > 0 ? ", real hidden" : ", real NOT hidden") + ", mode " + getRenderMode();
+			+ (lastHides > 0 ? ", real hidden" : ", real NOT hidden");
 	}
 
 	// ---- RuneLiteObjectController: the fat copy ----
@@ -268,12 +268,12 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			// same model as last frame, already bigger: only fix the difference
 			if (sx != lastSx || sy != lastSy)
 			{
-				m.scale(sx * FatHealer.UNIT / lastSx, sy * FatHealer.UNIT / lastSy, sx * FatHealer.UNIT / lastSx);
+				scaleVertices(m, (float) sx / lastSx, (float) sy / lastSy);
 			}
 		}
 		else
 		{
-			m.scale(sx, sy, sx);
+			scaleVertices(m, sx / (float) FatHealer.UNIT, sy / (float) FatHealer.UNIT);
 		}
 		// The game sorts the faces of a model by depth using its size (bounds). The bounds were
 		// worked out for the normal size, so faces of the bigger model were sorted wrong: the cape
@@ -281,6 +281,31 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		m.calculateBoundsCylinder();
 		remember(m, vx, vy, sx, sy);
 		return m;
+	}
+
+	/**
+	 * Make the model wider (x and z) and taller (y), with exact decimal numbers.
+	 * The game's own Model.scale() works in whole numbers and cuts off the fraction: every point
+	 * moved a little toward the middle, so the cape sank into the body and the cape logo (a hair
+	 * in front of the cape) fell behind it.
+	 */
+	static void scaleVertices(Model m, float wide, float tall)
+	{
+		float[] vx = m.getVerticesX();
+		float[] vy = m.getVerticesY();
+		float[] vz = m.getVerticesZ();
+		int n = m.getVerticesCount();
+		if (vx == null || vy == null || vz == null)
+		{
+			return;
+		}
+		n = Math.min(n, Math.min(vx.length, Math.min(vy.length, vz.length)));
+		for (int i = 0; i < n; i++)
+		{
+			vx[i] *= wide;
+			vy[i] *= tall;
+			vz[i] *= wide;
+		}
 	}
 
 	/** Is this the model we scaled last time, and is it still scaled (not refilled by the game)? */
@@ -333,8 +358,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		Model m = lastModel;
 		if (m != null && isStillScaled(m))
 		{
-			m.scale(FatHealer.UNIT * FatHealer.UNIT / lastSx, FatHealer.UNIT * FatHealer.UNIT / lastSy,
-				FatHealer.UNIT * FatHealer.UNIT / lastSx);
+			scaleVertices(m, (float) FatHealer.UNIT / lastSx, (float) FatHealer.UNIT / lastSy);
 			m.calculateBoundsCylinder();
 		}
 		lastModel = null;

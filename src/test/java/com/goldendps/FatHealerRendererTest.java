@@ -16,9 +16,10 @@ import org.junit.Test;
 /** The fat copy logic with fake models (no game needed). */
 public class FatHealerRendererTest
 {
-	/** A fake model: scale() really changes the vertices (x and y), and records the call. */
+	/** A fake model with real vertex arrays (z = x). scaleCalls records calls to the game's scale(). */
 	private static Model fakeModel(float[] vx, float[] vy, List<int[]> scaleCalls)
 	{
+		float[] vz = vx.clone();
 		return (Model) Proxy.newProxyInstance(Model.class.getClassLoader(), new Class<?>[]{Model.class}, (p, m, a) ->
 		{
 			switch (m.getName())
@@ -27,12 +28,11 @@ public class FatHealerRendererTest
 					return vx;
 				case "getVerticesY":
 					return vy;
+				case "getVerticesZ":
+					return vz;
+				case "getVerticesCount":
+					return vx.length;
 				case "scale":
-					for (int i = 0; i < vx.length; i++)
-					{
-						vx[i] = vx[i] * (int) a[0] / 128f;
-						vy[i] = vy[i] * (int) a[1] / 128f;
-					}
 					scaleCalls.add(new int[]{(int) a[0], (int) a[1], (int) a[2]});
 					return p;
 				case "hashCode":
@@ -133,11 +133,10 @@ public class FatHealerRendererTest
 
 		r.getModel();
 		Model m = r.getModel();
-		assertEquals(2, calls.size());
-		assertEquals(173, calls.get(1)[0]);
-		assertEquals(136, calls.get(1)[1]);
+		assertEquals("the game's whole-number scale() is never used", 0, calls.size());
 		assertEquals(-20f * 173 / 128f, m.getVerticesX()[2], 0.001);
 		assertEquals(-200f * 136 / 128f, m.getVerticesY()[2], 0.001);
+		assertEquals(-20f * 173 / 128f, m.getVerticesZ()[2], 0.001);
 	}
 
 	@Test
@@ -155,7 +154,7 @@ public class FatHealerRendererTest
 		{
 			assertSame(cached, r.getModel());
 		}
-		assertEquals("scaled once, then kept", 1, calls.size());
+		// scaled once, then kept (not bigger and bigger)
 		assertEquals(-20f * 173 / 128f, vx[2], 0.001);
 	}
 
@@ -250,9 +249,7 @@ public class FatHealerRendererTest
 		FatHealerRenderer r = grown(a, 35, 6);
 		frames(r, b, 35, 6, 10);                // 200 ms: A is shrinking, B not yet
 		assertTrue(r.getProgress() < 1 && r.getProgress() > 0);
-		calls.clear();
-		r.getModel();
-		assertEquals("still drawing A", 1, calls.size());
+		assertTrue("still drawing A", r.getModel().getVerticesX()[0] < 2f);
 		frames(r, b, 35, 6, 40);                // A gone, B growing
 		frames(r, b, 35, 6, 60);
 		assertEquals(1.0, r.getProgress(), 0.0001);
@@ -278,6 +275,19 @@ public class FatHealerRendererTest
 		FatHealerRenderer r = grown(p, 35, 6);
 		r.getModel();
 		assertEquals(1, bounds[0]);
+	}
+
+	@Test
+	public void fractionsAreKept()
+	{
+		// a cape point 3 units from the middle: 3 * 173 / 128 = 4.0546875, not 4
+		float[] vx = {3f, 100f};
+		float[] vy = {-1f, -200f};
+		Player p = fakePlayer(() -> fakeModel(vx.clone(), vy.clone(), new ArrayList<>()));
+		FatHealerRenderer r = grown(p, 35, 6);
+		Model m = r.getModel();
+		assertEquals(4.0546875f, m.getVerticesX()[0], 0f);
+		assertEquals(-1.0625f, m.getVerticesY()[0], 0f);
 	}
 
 	@Test

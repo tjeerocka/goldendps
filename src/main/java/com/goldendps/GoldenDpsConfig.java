@@ -325,45 +325,4 @@ public interface GoldenDpsConfig extends Config
 	{
 		return 70;
 	}
-
-	/** How the fat copy is drawn. Test which one shows capes and logos right. */
-	enum FatDrawMode
-	{
-		NORMAL("Normal", 0),
-		SORTED("Sorted", 1),
-		UNSORTED("Unsorted", 3);
-
-		private final String label;
-		private final int renderMode;
-
-		FatDrawMode(String label, int renderMode)
-		{
-			this.label = label;
-			this.renderMode = renderMode;
-		}
-
-		/** Renderable.RENDERMODE_* value. */
-		public int getRenderMode()
-		{
-			return renderMode;
-		}
-
-		@Override
-		public String toString()
-		{
-			return label;
-		}
-	}
-
-	@ConfigItem(
-		keyName = "fatDrawMode",
-		name = "Draw mode (test)",
-		description = "How the fat copy is drawn. If the cape shows through the body or a cape logo is missing, try another one.",
-		position = 4,
-		section = funSection
-	)
-	default FatDrawMode fatDrawMode()
-	{
-		return FatDrawMode.NORMAL;
-	}
 }
