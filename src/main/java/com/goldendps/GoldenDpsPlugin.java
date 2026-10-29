@@ -232,6 +232,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private void applyConfig()
 	{
 		tracker.setIdleTimeoutMs(config.idleSeconds() * 1000L);
+		tracker.setPauseAfterMs(config.pauseSeconds() * 1000L);
 		tracker.setMaxHistory(config.maxHistory());
 		bosses.setExtraNames(config.extraBosses());
 	}
@@ -820,6 +821,13 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		return tracker.getCurrent() != null;
 	}
 
+	/** Fight runs, but nobody hit for a while: the clock is stopped (AFK). */
+	boolean isFightPaused()
+	{
+		Fight f = tracker.getCurrent();
+		return f != null && f.isPaused(System.currentTimeMillis());
+	}
+
 	/** Builds the panel data on the client thread and hands it to Swing. */
 	void updatePanel()
 	{
@@ -861,6 +869,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			data.report = FightReport.of(fight, config.bossOnly(), config.countRegen(), now);
 			data.running = fight.isActive();
+			data.paused = fight.isPaused(now);
 			data.endReason = fight.endReason;
 			data.fights = fight.mergedFights;
 			data.startMs = fight.startMs;

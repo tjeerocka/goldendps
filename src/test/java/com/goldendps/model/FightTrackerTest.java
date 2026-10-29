@@ -204,16 +204,18 @@ public class FightTrackerTest
 	}
 
 	@Test
-	public void idleTimeoutEndsAtTheLastHit()
+	public void idleTimeoutEndsWhenTheClockStopped()
 	{
-		myHit(0, RAT, false, 5);
+		myHit(1000, RAT, false, 5);
 		myHit(3000, RAT, false, 5);
 		tracker.tick(12_999);
 		assertNotNull(tracker.getCurrent());
 		tracker.tick(13_000);
 		assertNull(tracker.getCurrent());
 		Fight f = tracker.getHistory().get(0);
-		assertEquals(3000, f.endMs);
+		// last hit + pause time (10 s): the same time the live clock showed
+		assertEquals(13_000, f.endMs);
+		assertEquals(12_000, f.durationMs(99_999));
 		assertTrue(f.endReason.startsWith("No hits"));
 	}
 
@@ -505,10 +507,10 @@ public class FightTrackerTest
 	public void bossMeterHidesAfterEscapeWithoutKill()
 	{
 		myHit(1000, BOSS, true, 10);
-		tracker.tick(11_000); // idle: fight ends at the last hit (1000)
+		tracker.tick(11_000); // idle: fight ends when the clock stopped (1000 + 10 s)
 		Fight f = tracker.getDisplayFight();
-		assertTrue(f.bossMeterVisible(20_999, 20_000));
-		assertFalse(f.bossMeterVisible(21_000, 20_000));
+		assertTrue(f.bossMeterVisible(30_999, 20_000));
+		assertFalse(f.bossMeterVisible(31_000, 20_000));
 	}
 
 	@Test
@@ -537,6 +539,78 @@ public class FightTrackerTest
 		assertFalse(total.bossMeterVisible(70_000, 20_000));
 		FightReport boss = FightReport.of(total, true, false, 70_000);
 		assertEquals(100.0 / 15, boss.row("Me").dps, D);
+	}
+
+	// ---- active time (like Details!) ----
+
+	@Test
+	public void afkGapIsNotCounted()
+	{
+		tracker.setIdleTimeoutMs(300_000);
+		tracker.setPauseAfterMs(10_000);
+		myHit(1_000, RAT, false, 50);
+		myHit(9_000, RAT, false, 40);     // 8 s: active
+		myHit(129_000, RAT, false, 60);   // 2 min AFK: only 10 s of it count
+		Fight f = tracker.getCurrent();
+		// 8 s + 10 s (until the clock stopped) = 18 s
+		assertEquals(18_000, f.durationMs(129_000));
+		assertEquals(150 / 18.0, report(f, 129_000).row("Me").dps, D);
+	}
+
+	@Test
+	public void clockStopsLiveWhileAfk()
+	{
+		tracker.setIdleTimeoutMs(300_000);
+		tracker.setPauseAfterMs(10_000);
+		myHit(1_000, RAT, false, 10);
+		Fight f = tracker.getCurrent();
+		assertFalse(f.isPaused(10_000));
+		assertEquals(9_000, f.durationMs(10_000));
+		assertTrue(f.isPaused(60_000));
+		assertEquals(10_000, f.durationMs(60_000));
+		assertEquals(10_000, f.durationMs(200_000));
+		tracker.tick(300_999);
+		assertNotNull("fight stays open while AFK", tracker.getCurrent());
+		tracker.tick(301_000);
+		assertNull(tracker.getCurrent());
+		// same time as the live clock showed: no jump when the fight ends
+		assertEquals(10_000, tracker.getHistory().get(0).durationMs(999_999));
+	}
+
+	@Test
+	public void bossTimeAlsoSkipsAfk()
+	{
+		tracker.setIdleTimeoutMs(300_000);
+		tracker.setPauseAfterMs(10_000);
+		myHit(1_000, BOSS, true, 100);
+		myHit(6_000, BOSS, true, 100);
+		myHit(66_000, BOSS, true, 100);   // 60 s gap: 50 s paused
+		tracker.npcDied(67_000, BOSS, true);
+		Fight f = tracker.getHistory().get(0);
+		assertEquals(16_000, f.bossDurationMs(70_000));
+		assertEquals(16_000, f.durationMs(70_000));
+	}
+
+	@Test
+	public void zeroMeansNeverPause()
+	{
+		tracker.setIdleTimeoutMs(300_000);
+		tracker.setPauseAfterMs(0);
+		myHit(1_000, RAT, false, 10);
+		myHit(101_000, RAT, false, 10);
+		assertEquals(100_000, tracker.getCurrent().durationMs(101_000));
+	}
+
+	@Test
+	public void pausesSurviveCopyAndSessionTotal()
+	{
+		tracker.setIdleTimeoutMs(300_000);
+		tracker.setPauseAfterMs(10_000);
+		myHit(1_000, RAT, false, 10);
+		myHit(101_000, RAT, false, 10);
+		tracker.endNow(101_000, "test");
+		assertEquals(10_000, tracker.getHistory().get(0).copy().durationMs(0));
+		assertEquals(10_000, tracker.getSessionTotal(0).durationMs(0));
 	}
 
 	@Test

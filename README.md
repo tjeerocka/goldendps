@@ -48,7 +48,10 @@ Solo: works without a party, only your numbers.
 ## Fights
 
 - A fight starts on the first hit.
-- It ends when the boss dies, or when nobody hit anything for X seconds (setting, default 10).
+- It ends when the boss dies, or when nobody hit anything for X seconds (setting, default 5 min).
+- **Active time** (like Details!): when nobody hits for 10 s (setting **Pause clock after**), the clock
+  stops ("paused" in the overlay) until the next hit. AFK time does not lower DPS.
+  Each gap counts at most 10 s. Fight, boss and session timers all use active time.
 - Party hits that arrive up to 5 s after a boss died still go into that fight (network delay).
 - The panel keeps the last fights (setting, default 50) and a **session total**.
 

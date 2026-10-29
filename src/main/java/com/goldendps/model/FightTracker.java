@@ -24,7 +24,8 @@ public class FightTracker
 		void fightEnded(Fight fight);
 	}
 
-	private long idleTimeoutMs = 10_000;
+	private long idleTimeoutMs = 300_000;
+	private long pauseAfterMs = 10_000;
 	private int maxHistory = 50;
 	private String sessionId = newId();
 	private Fight current;
@@ -45,6 +46,16 @@ public class FightTracker
 	public void setIdleTimeoutMs(long idleTimeoutMs)
 	{
 		this.idleTimeoutMs = Math.max(1000, idleTimeoutMs);
+	}
+
+	/** Active time: the clock stops when nobody hits for this long. 0 = never stop. */
+	public void setPauseAfterMs(long pauseAfterMs)
+	{
+		this.pauseAfterMs = Math.max(0, pauseAfterMs);
+		if (current != null)
+		{
+			current.pauseAfterMs = this.pauseAfterMs;
+		}
 	}
 
 	public void setMaxHistory(int maxHistory)
@@ -77,7 +88,7 @@ public class FightTracker
 		}
 		t.lastMs = Math.max(t.lastMs, now);
 		f.player(player, kind).addHit(targetKey, amount, miss);
-		f.lastActivityMs = now;
+		f.activity(now);
 	}
 
 	/**
@@ -98,7 +109,7 @@ public class FightTracker
 		t.seenDamage += Math.max(0, amount);
 		if (t.engaged || t.boss)
 		{
-			current.lastActivityMs = now;
+			current.activity(now);
 		}
 	}
 
@@ -200,7 +211,9 @@ public class FightTracker
 	{
 		if (current != null && now - current.lastActivityMs >= idleTimeoutMs)
 		{
-			end(current.lastActivityMs, "No hits for " + (idleTimeoutMs / 1000) + "s");
+			// the clock ran on for the pause time after the last hit (same as the live clock)
+			long endAt = current.lastActivityMs + Math.min(pauseAfterMs, idleTimeoutMs);
+			end(Math.min(now, endAt), "No hits for " + Format.duration(idleTimeoutMs));
 		}
 	}
 
@@ -216,8 +229,7 @@ public class FightTracker
 	{
 		Fight f = current;
 		current = null;
-		f.endMs = Math.max(endMs, f.startMs);
-		f.endReason = reason;
+		f.finish(endMs, reason);
 		if (f.knownDamage() == 0)
 		{
 			// Only other people's hits (for example strangers at a boss): not our fight
@@ -238,6 +250,7 @@ public class FightTracker
 		if (current == null)
 		{
 			current = new Fight(newId(), sessionId, now);
+			current.pauseAfterMs = pauseAfterMs;
 		}
 		return current;
 	}

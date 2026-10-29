@@ -57,6 +57,7 @@ class GoldenDpsPanel extends PluginPanel
 		List<Choice> choices = new ArrayList<>();
 		FightReport report;
 		boolean running;
+		boolean paused;
 		boolean bossOnly;
 		String endReason;
 		int fights;
@@ -203,7 +204,7 @@ class GoldenDpsPanel extends PluginPanel
 		// summary
 		JPanel sum = section();
 		sum.add(bold(r.getTitle(), GOLD));
-		sum.add(line("Time", Format.duration(r.getDurationMs()) + (d.running ? " (live)" : "")));
+		sum.add(line("Time", Format.duration(r.getDurationMs()) + (d.paused ? " (paused)" : d.running ? " (live)" : "")));
 		if (d.fights > 0)
 		{
 			sum.add(line("Fights", String.valueOf(d.fights)));

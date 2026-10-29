@@ -45,13 +45,27 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "idleSeconds",
 		name = "End fight after",
-		description = "The fight ends when nobody hit anything for this long (or when the boss dies)",
+		description = "The fight ends when nobody hit anything for this long (or when the boss dies). AFK time is not counted in DPS (see Pause clock after).",
 		position = 0,
 		section = fightSection
 	)
-	@Range(min = 3, max = 120)
+	@Range(min = 3, max = 3600)
 	@Units(Units.SECONDS)
 	default int idleSeconds()
+	{
+		return 300;
+	}
+
+	@ConfigItem(
+		keyName = "pauseSeconds",
+		name = "Pause clock after",
+		description = "Active time, like Details!: when nobody hits for this long, the fight clock stops until the next hit, so AFK time does not lower DPS. 0 = never pause.",
+		position = 0,
+		section = fightSection
+	)
+	@Range(min = 0, max = 120)
+	@Units(Units.SECONDS)
+	default int pauseSeconds()
 	{
 		return 10;
 	}

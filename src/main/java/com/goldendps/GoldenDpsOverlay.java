@@ -91,8 +91,9 @@ class GoldenDpsOverlay extends Overlay
 		{
 			title += "  OH " + Format.percent(report.groupOverhealPercent());
 		}
-		String right = report == null ? "" : Format.duration(report.getDurationMs());
-		Color rightColor = plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
+		boolean paused = plugin.isFightPaused();
+		String right = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
+		Color rightColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
 		int y = drawMeter(g, fm, 0, width, title, right, rightColor, HEADER_BG, report, rows, mode);
 
 		// boss meter: only damage on the boss, DPS over the boss time

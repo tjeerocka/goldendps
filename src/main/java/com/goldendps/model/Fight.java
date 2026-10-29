@@ -1,7 +1,9 @@
 package com.goldendps.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /** One fight (or a merged total of several fights). Plain fields so Gson can save it. */
@@ -22,6 +24,13 @@ public class Fight
 	public int mergedFights;
 	/** Only used for merged totals: sum of the boss times. */
 	public long mergedBossMs;
+	/**
+	 * Active time, like Details!: when nobody hits for this long, the clock stops
+	 * until the next hit. 0 = the clock never stops.
+	 */
+	public long pauseAfterMs;
+	/** Time that is not counted (AFK gaps): [from, to] in ms. */
+	public List<long[]> pauses = new ArrayList<>();
 
 	public Map<String, PlayerStats> players = new LinkedHashMap<>();
 	public Map<String, TargetStats> targets = new LinkedHashMap<>();
@@ -43,6 +52,74 @@ public class Fight
 		return endMs == 0 && mergedFights == 0;
 	}
 
+	/** A hit happened: if nobody hit for longer than the pause time, that gap is not counted. */
+	public void activity(long nowMs)
+	{
+		addPause(nowMs);
+		lastActivityMs = Math.max(lastActivityMs, nowMs);
+	}
+
+	private void addPause(long nowMs)
+	{
+		if (pauseAfterMs <= 0)
+		{
+			return;
+		}
+		long from = lastActivityMs + pauseAfterMs;
+		if (nowMs > from)
+		{
+			if (pauses == null)
+			{
+				pauses = new ArrayList<>();
+			}
+			pauses.add(new long[]{from, nowMs});
+		}
+	}
+
+	/** Called when the fight ends at this time. */
+	public void finish(long endAtMs, String reason)
+	{
+		endMs = Math.max(endAtMs, startMs);
+		addPause(endMs);
+		endReason = reason;
+	}
+
+	/** True while the fight runs but nobody hit for the pause time (clock stopped). */
+	public boolean isPaused(long nowMs)
+	{
+		return isActive() && pauseAfterMs > 0 && nowMs > lastActivityMs + pauseAfterMs;
+	}
+
+	/** "Now" for the clock: it stops pauseAfterMs after the last hit. */
+	private long clockNow(long nowMs)
+	{
+		return isPaused(nowMs) ? lastActivityMs + pauseAfterMs : nowMs;
+	}
+
+	/** Time from a to b without the pauses. */
+	long activeBetween(long a, long b)
+	{
+		if (b <= a)
+		{
+			return 0;
+		}
+		long d = b - a;
+		if (pauses != null)
+		{
+			for (long[] p : pauses)
+			{
+				long from = Math.max(a, p[0]);
+				long to = Math.min(b, p[1]);
+				if (to > from)
+				{
+					d -= to - from;
+				}
+			}
+		}
+		return d;
+	}
+
+	/** Active fight time (AFK gaps not counted). */
 	public long durationMs(long nowMs)
 	{
 		long d;
@@ -52,11 +129,11 @@ public class Fight
 		}
 		else if (endMs > 0)
 		{
-			d = endMs - startMs;
+			d = activeBetween(startMs, endMs);
 		}
 		else
 		{
-			d = nowMs - startMs;
+			d = activeBetween(startMs, clockNow(nowMs));
 		}
 		return Math.max(MIN_DURATION_MS, d);
 	}
@@ -97,9 +174,9 @@ public class Fight
 		}
 		if (alive && isActive())
 		{
-			end = Math.max(end, nowMs);
+			end = Math.max(end, clockNow(nowMs));
 		}
-		return Math.max(MIN_DURATION_MS, end - start);
+		return Math.max(MIN_DURATION_MS, activeBetween(start, end));
 	}
 
 	/** When the last boss died, if every boss we fought is dead. Else 0. */
@@ -308,6 +385,14 @@ public class Fight
 		c.mergedDurationMs = mergedDurationMs;
 		c.mergedFights = mergedFights;
 		c.mergedBossMs = mergedBossMs;
+		c.pauseAfterMs = pauseAfterMs;
+		if (pauses != null)
+		{
+			for (long[] p : pauses)
+			{
+				c.pauses.add(new long[]{p[0], p[1]});
+			}
+		}
 		for (PlayerStats p : players.values())
 		{
 			c.players.put(p.name, p.copy());
