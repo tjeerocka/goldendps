@@ -2,31 +2,28 @@ package com.goldendps.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
-/** Everything one player did in one fight. */
+/** Everything one player did in one fight. Plain fields for Gson. */
 public class PlayerStats
 {
 	public String name;
 	public PlayerKind kind;
 	/** Damage per target key. */
 	public Map<String, TargetDamage> byTarget = new LinkedHashMap<>();
-	public long damageTaken;
-	/** Guessed damage per target (only used for ESTIMATE players). */
+	/** Guessed damage per target, used for {@link PlayerKind#ESTIMATE} players. */
 	public Map<String, TargetDamage> estByTarget = new LinkedHashMap<>();
-	/** Hitsplats you saw on this player (only used for ESTIMATE players). */
+	/** Damage per source (weapon, special attack or spell), then per target key. */
+	public Map<String, Map<String, TargetDamage>> bySource = new LinkedHashMap<>();
+	public long damageTaken;
+	/** Hitsplats seen on this player, used for {@link PlayerKind#ESTIMATE} players. */
 	public long seenTaken;
 	public long healFood;
 	public long healLifesteal;
 	public long healRegen;
 	public long healOther;
-	/** Wasted healing (full heal minus what really healed). */
 	public long overFood;
 	public long overLifesteal;
-	/**
-	 * Damage per source (weapon / spell, like the Details! spell breakdown), then per target key.
-	 * Only for your own hits and party members with GoldenDPS.
-	 */
-	public Map<String, Map<String, TargetDamage>> bySource = new LinkedHashMap<>();
 
 	public PlayerStats()
 	{
@@ -40,13 +37,12 @@ public class PlayerStats
 
 	public void addHit(String targetKey, int amount, boolean miss)
 	{
-		byTarget.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
+		addHit(targetKey, amount, miss, null);
 	}
 
-	/** A hit with a known source (weapon or spell). Source null = only the normal hit. */
 	public void addHit(String targetKey, int amount, boolean miss, String source)
 	{
-		addHit(targetKey, amount, miss);
+		byTarget.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
 		if (source != null && !source.isEmpty())
 		{
 			sources().computeIfAbsent(source, k -> new LinkedHashMap<>())
@@ -54,7 +50,7 @@ public class PlayerStats
 		}
 	}
 
-	/** Never null (old save files have no sources). */
+	/** Never null; files saved by older versions have no sources. */
 	public Map<String, Map<String, TargetDamage>> sources()
 	{
 		if (bySource == null)
@@ -69,13 +65,11 @@ public class PlayerStats
 		estByTarget.computeIfAbsent(targetKey, k -> new TargetDamage()).add(amount, miss);
 	}
 
-	/** Damage per target that counts for this player: own reports, or the guess. */
 	public Map<String, TargetDamage> damageByTarget()
 	{
 		return kind == PlayerKind.ESTIMATE ? estByTarget : byTarget;
 	}
 
-	/** Damage taken that counts: own reports, or what we saw. */
 	public long takenTotal()
 	{
 		return kind == PlayerKind.ESTIMATE ? seenTaken : damageTaken;
@@ -118,7 +112,6 @@ public class PlayerStats
 				healOther += amount;
 				break;
 			default:
-				// RECEIVED: not this player's healing
 				break;
 		}
 	}
@@ -128,7 +121,6 @@ public class PlayerStats
 		return overFood + overLifesteal;
 	}
 
-	/** Healing this player did: on themselves (food, lifesteal, optional regen) and on others. */
 	public long healing(boolean includeRegen)
 	{
 		return healFood + healLifesteal + healOther + (includeRegen ? healRegen : 0);
@@ -136,25 +128,21 @@ public class PlayerStats
 
 	public void merge(PlayerStats o)
 	{
+		merge(o, UnaryOperator.identity());
+	}
+
+	/** Adds {@code o} to this player, renaming target keys with {@code keyMap}. */
+	public void merge(PlayerStats o, UnaryOperator<String> keyMap)
+	{
 		if (o.kind == PlayerKind.LOCAL || (o.kind == PlayerKind.PARTY && kind == PlayerKind.ESTIMATE))
 		{
 			kind = o.kind;
 		}
-		for (Map.Entry<String, TargetDamage> e : o.byTarget.entrySet())
-		{
-			byTarget.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
-		}
-		for (Map.Entry<String, TargetDamage> e : o.estByTarget.entrySet())
-		{
-			estByTarget.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
-		}
+		mergeTargets(byTarget, o.byTarget, keyMap);
+		mergeTargets(estByTarget, o.estByTarget, keyMap);
 		for (Map.Entry<String, Map<String, TargetDamage>> s : o.sources().entrySet())
 		{
-			Map<String, TargetDamage> mine = sources().computeIfAbsent(s.getKey(), k -> new LinkedHashMap<>());
-			for (Map.Entry<String, TargetDamage> e : s.getValue().entrySet())
-			{
-				mine.computeIfAbsent(e.getKey(), k -> new TargetDamage()).merge(e.getValue());
-			}
+			mergeTargets(sources().computeIfAbsent(s.getKey(), k -> new LinkedHashMap<>()), s.getValue(), keyMap);
 		}
 		damageTaken += o.damageTaken;
 		seenTaken += o.seenTaken;
@@ -164,6 +152,15 @@ public class PlayerStats
 		healOther += o.healOther;
 		overFood += o.overFood;
 		overLifesteal += o.overLifesteal;
+	}
+
+	private static void mergeTargets(Map<String, TargetDamage> into, Map<String, TargetDamage> from,
+		UnaryOperator<String> keyMap)
+	{
+		for (Map.Entry<String, TargetDamage> e : from.entrySet())
+		{
+			into.computeIfAbsent(keyMap.apply(e.getKey()), k -> new TargetDamage()).merge(e.getValue());
+		}
 	}
 
 	public PlayerStats copy()

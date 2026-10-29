@@ -15,12 +15,21 @@ public class RaidPartyTest
 	private static final String P1 = RaidParty.PREFIX + "tob 111";
 	private static final String P2 = RaidParty.PREFIX + "tob 222";
 
+	private static String tickUntilStable(RaidParty r, String name, String current)
+	{
+		String join = null;
+		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
+		{
+			join = r.tick(name, current);
+		}
+		return join;
+	}
+
 	@Test
 	public void everyoneGetsTheSameName()
 	{
-		// each client sees the names in its own order, with odd spaces / case
 		String a = RaidParty.partyName(TOB, 302, Arrays.asList("Kurt Yoghurt", "Zezima", "", null));
-		String b = RaidParty.partyName(TOB, 302, Arrays.asList("zezima", "Kurt Yoghurt"));
+		String b = RaidParty.partyName(TOB, 302, Arrays.asList("zezima", "Kurt Yoghurt"));
 		assertEquals(a, b);
 		assertTrue(a.startsWith("goldendps tob "));
 	}
@@ -45,85 +54,43 @@ public class RaidPartyTest
 	public void joinsAfterTheNamesAreStable()
 	{
 		RaidParty r = new RaidParty();
-		String name = "goldendps tob abc";
 		for (int i = 1; i < RaidParty.STABLE_TICKS; i++)
 		{
-			assertNull(r.tick(name, null).join);
+			assertNull(r.tick(P1, null));
 		}
-		assertEquals(name, r.tick(name, null).join);
-		// joined: nothing more to do while it stays the same
-		assertNull(r.tick(name, name).join);
+		assertEquals(P1, r.tick(P1, null));
+		assertNull(r.tick(P1, P1));
 	}
 
 	@Test
-	public void someoneJoinsTheRaidPartyMovesToTheNewName()
+	public void movesWhenTheRaidPartyChanges()
 	{
 		RaidParty r = new RaidParty();
-		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
-		{
-			r.tick(P1, null);
-		}
-		RaidParty.Action a = RaidParty.Action.NONE;
-		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
-		{
-			a = r.tick(P2, P1);
-		}
-		assertEquals(P2, a.join);
+		tickUntilStable(r, P1, null);
+		assertEquals(P2, tickUntilStable(r, P2, P1));
 	}
 
 	@Test
-	public void neverTouchesAPartyYouJoinedYourself()
+	public void neverTouchesAManualParty()
 	{
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < 20; i++)
 		{
-			RaidParty.Action a = r.tick("goldendps tob abc", "my friends");
-			assertNull(a.join);
-			assertFalse(a.leave);
+			assertNull(r.tick(P1, "my friends"));
 		}
 	}
 
 	@Test
-	public void staysInThePartyAfterTheRaidAndAfterARelog()
+	public void staysInThePartyAfterTheRaid()
 	{
 		RaidParty r = new RaidParty();
-		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
-		{
-			r.tick(P1, null);
-		}
+		tickUntilStable(r, P1, null);
 		for (int i = 0; i < 50; i++)
 		{
-			RaidParty.Action a = r.tick(null, P1);
-			assertFalse(a.leave);
-			assertNull(a.join);
+			assertNull(r.tick(null, P1));
 		}
-		// after a client restart the plugin forgot, but the name shows it is an auto party
-		RaidParty fresh = new RaidParty();
-		RaidParty.Action a = RaidParty.Action.NONE;
-		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
-		{
-			a = fresh.tick(P2, P1);
-		}
-		assertEquals("a new raid group moves you on", P2, a.join);
 		assertTrue(RaidParty.isAuto(P1));
 		assertFalse(RaidParty.isAuto("my friends"));
-	}
-
-	@Test
-	public void switchingToYourOwnPartyStopsTheAutoParty()
-	{
-		RaidParty r = new RaidParty();
-		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
-		{
-			r.tick(P1, null);
-		}
-		// you joined "my friends" yourself during the raid
-		assertNull(r.tick(P1, "my friends").join);
-		assertNull(r.getJoined());
-		for (int i = 0; i < 20; i++)
-		{
-			assertFalse("never leaves your own party", r.tick(null, "my friends").leave);
-		}
 	}
 
 	@Test
@@ -134,16 +101,7 @@ public class RaidPartyTest
 		assertTrue(a.startsWith(RaidParty.PREFIX + "cox "));
 		assertNotEquals(a, RaidParty.coxPartyName(303, 12345, 3));
 		assertNotEquals(a, RaidParty.coxPartyName(302, 999, 3));
-		assertNull("no party", RaidParty.coxPartyName(302, -1, 0));
-		assertNull("alone", RaidParty.coxPartyName(302, 12345, 1));
-	}
-
-	@Test
-	public void testSettingAlsoWorksAlone()
-	{
-		assertNull(RaidParty.coxPartyName(302, 12345, 1, false));
-		assertTrue(RaidParty.coxPartyName(302, 12345, 1, true).startsWith(RaidParty.PREFIX + "cox "));
-		assertNull(RaidParty.partyName(TOB, 302, Collections.singletonList("Kurt")));
-		assertTrue(RaidParty.partyName(TOB, 302, Collections.singletonList("Kurt"), 1).startsWith(RaidParty.PREFIX));
+		assertNull(RaidParty.coxPartyName(302, -1, 0));
+		assertNull(RaidParty.coxPartyName(302, 12345, 1));
 	}
 }

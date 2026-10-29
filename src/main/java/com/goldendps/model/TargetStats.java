@@ -1,23 +1,19 @@
 package com.goldendps.model;
 
-/**
- * One NPC in a fight. The key is "world:npcIndex", which is the same on every
- * client in the same world/instance, so party reports land on the same target.
- */
+/** One NPC in a fight, keyed by "world:npcIndex" (the same on every client in that world). */
 public class TargetStats
 {
 	public String key;
 	public int npcId;
 	public String name;
 	public boolean boss;
-	/** All damage hitsplats this client saw on the NPC (mine and others'). */
+	/** All damage hitsplats seen on the NPC. */
 	public long seenDamage;
-	/** Poison / venom / burn / bleed hitsplats this client saw. */
+	/** Poison, venom, burn and bleed damage. */
 	public long effectDamage;
-	/** Someone in the party (or you) hit it. Only these targets count for "Others (unknown)". */
+	/** Hit by you or a party member; only these count towards unknown damage. */
 	public boolean engaged;
 	public boolean died;
-	/** First and last hit by you / your party, and when it died (ms, 0 = not yet). */
 	public long firstMs;
 	public long lastMs;
 	public long diedMs;

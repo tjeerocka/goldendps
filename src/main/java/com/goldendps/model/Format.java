@@ -2,7 +2,6 @@ package com.goldendps.model;
 
 import java.util.Locale;
 
-/** Short number and time text for the overlay and panel. */
 public final class Format
 {
 	private Format()

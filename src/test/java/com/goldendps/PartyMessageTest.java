@@ -40,7 +40,7 @@ public class PartyMessageTest
 	@Test
 	public void targetKeyUsesWorldAndIndex()
 	{
-		assertEquals("302:1234", GoldenDpsPlugin.targetKey(302, 1234));
+		assertEquals("302:1234", com.goldendps.model.TargetMatcher.key(302, 1234));
 	}
 
 	@Test

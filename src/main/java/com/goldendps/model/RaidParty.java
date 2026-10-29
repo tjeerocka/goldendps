@@ -8,51 +8,21 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Auto party in raids. Everyone with GoldenDPS in the same raid party works out the SAME party
- * name from the raid (raid, world and the sorted member names), so they all join the same RuneLite
- * party without typing anything.
- * <ul>
- * <li>Only when you are not in a party you joined yourself (auto parties start with {@link #PREFIX}).</li>
- * <li>The names must stay the same for {@link #STABLE_TICKS} ticks first (people join the lobby one by one).</li>
- * <li>After the raid you stay in the party (also after a relog), until you leave it yourself
- * or start a raid with other people.</li>
- * </ul>
+ * Automatic party for raids. Every member derives the same party name from data the game gives
+ * all of them (the member names, or the CoX raid party id), so they meet in one RuneLite party
+ * without exchanging anything. A party the player joined by hand is never changed.
  */
 public class RaidParty
 {
+	/** The raid party must stay the same this long before joining (people join one by one). */
 	public static final int STABLE_TICKS = 5;
 	public static final String PREFIX = "goldendps ";
 
-	/** What the plugin should do this tick. */
-	public static final class Action
-	{
-		public static final Action NONE = new Action(null, false);
-
-		/** Party name to join, or null. */
-		public final String join;
-		public final boolean leave;
-
-		Action(String join, boolean leave)
-		{
-			this.join = join;
-			this.leave = leave;
-		}
-	}
-
 	private String candidate;
 	private int stableTicks;
-	private String joined;
 
-	/**
-	 * The party name for this raid party, or null when there is no group (alone or no names).
-	 */
+	/** Party name for a raid with a member list, or null when fewer than two names are known. */
 	public static String partyName(String raid, int world, List<String> names)
-	{
-		return partyName(raid, world, names, 2);
-	}
-
-	/** Same, with the smallest group that counts (1 = also alone, for testing). */
-	public static String partyName(String raid, int world, List<String> names, int minPeople)
 	{
 		List<String> clean = new ArrayList<>();
 		for (String n : names)
@@ -67,35 +37,59 @@ public class RaidParty
 				clean.add(c);
 			}
 		}
-		if (clean.size() < Math.max(1, minPeople))
+		if (clean.size() < 2)
 		{
 			return null;
 		}
 		clean.sort(null);
-		String key = raid + "|" + world + "|" + String.join(",", clean);
-		return PREFIX + raid.toLowerCase(Locale.ROOT) + " " + hash(key);
+		return PREFIX + raid.toLowerCase(Locale.ROOT) + " " + hash(raid + "|" + world + "|" + String.join(",", clean));
 	}
 
 	/**
-	 * Chambers of Xeric: the game gives every member of a raid party (made on the recruiting board)
-	 * the same party id. Null when you are in no CoX party, or alone in it.
-	 *
-	 * @param partyId   varp RAIDS_PARTY_GROUPHOLDER (-1 = no party)
-	 * @param partySize varbit RAIDS_CLIENT_PARTYSIZE (0 = not known yet)
+	 * Party name for Chambers of Xeric, from the raid party id (varp RAIDS_PARTY_GROUPHOLDER).
+	 * Null without a party or when you are alone in it.
 	 */
 	public static String coxPartyName(int world, int partyId, int partySize)
 	{
-		return coxPartyName(world, partyId, partySize, false);
-	}
-
-	/** Same; alone = true also gives a name when you are alone (for testing). */
-	public static String coxPartyName(int world, int partyId, int partySize, boolean alone)
-	{
-		if (partyId <= 0 || (partySize == 1 && !alone))
+		if (partyId <= 0 || partySize == 1)
 		{
 			return null;
 		}
 		return PREFIX + "cox " + hash("CoX|" + world + "|" + partyId);
+	}
+
+	public static boolean isAuto(String party)
+	{
+		return party != null && party.startsWith(PREFIX);
+	}
+
+	/**
+	 * Call every game tick.
+	 *
+	 * @param name         party name for the raid party you are in, or null
+	 * @param currentParty the RuneLite party you are in, or null
+	 * @return the party to join, or null
+	 */
+	public String tick(String name, String currentParty)
+	{
+		if (name == null)
+		{
+			candidate = null;
+			stableTicks = 0;
+			return null;
+		}
+		if (!name.equals(candidate))
+		{
+			candidate = name;
+			stableTicks = 0;
+		}
+		stableTicks++;
+		boolean manual = currentParty != null && !isAuto(currentParty);
+		if (manual || name.equals(currentParty) || stableTicks < STABLE_TICKS)
+		{
+			return null;
+		}
+		return name;
 	}
 
 	private static String hash(String s)
@@ -114,54 +108,5 @@ public class RaidParty
 		{
 			return Integer.toHexString(s.hashCode());
 		}
-	}
-
-	/** A party that GoldenDPS made for a raid. */
-	public static boolean isAuto(String party)
-	{
-		return party != null && party.startsWith(PREFIX);
-	}
-
-	/**
-	 * Call every game tick.
-	 *
-	 * @param name         {@link #partyName} for the raid you are in now, or null (no raid party)
-	 * @param currentParty the RuneLite party you are in now (null = none)
-	 */
-	public Action tick(String name, String currentParty)
-	{
-		joined = isAuto(currentParty) ? currentParty : null;
-		boolean manual = currentParty != null && !isAuto(currentParty);
-		if (name == null)
-		{
-			candidate = null;
-			stableTicks = 0;
-			return Action.NONE;
-		}
-		if (!name.equals(candidate))
-		{
-			candidate = name;
-			stableTicks = 0;
-		}
-		stableTicks++;
-		if (manual || name.equals(currentParty) || stableTicks < STABLE_TICKS)
-		{
-			return Action.NONE;
-		}
-		joined = name;
-		return new Action(name, false);
-	}
-
-	/** The auto party you are in, or null. */
-	public String getJoined()
-	{
-		return joined;
-	}
-
-	public void reset()
-	{
-		candidate = null;
-		stableTicks = 0;
-		joined = null;
 	}
 }

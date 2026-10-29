@@ -6,10 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** One fight (or a merged total of several fights). Plain fields so Gson can save it. */
+/** One fight, or a merged total of several fights. Plain fields for Gson. */
 public class Fight
 {
-	/** A fight shorter than one game tick still counts as one tick for DPS. */
+	/** Shortest duration used for DPS: one game tick. */
 	public static final long MIN_DURATION_MS = 600;
 
 	public String id;
@@ -24,16 +24,13 @@ public class Fight
 	public int mergedFights;
 	/** Only used for merged totals: sum of the boss times. */
 	public long mergedBossMs;
-	/**
-	 * Active time, like Details!: when nobody hits for this long, the clock stops
-	 * until the next hit. 0 = the clock never stops.
-	 */
+	/** Gaps without hits longer than this are not counted (active time). 0 disables it. */
 	public long pauseAfterMs;
-	/** Time that is not counted (AFK gaps): [from, to] in ms. */
+	/** Uncounted gaps as [from, to]. */
 	public List<long[]> pauses = new ArrayList<>();
-	/** Raid name when this fight is a whole raid (or a boss in a raid). Null outside raids. */
+	/** Raid name for a raid fight and its boss fights. */
 	public String raid;
-	/** Id of the raid fight this boss fight is part of. Null for normal fights and the raid itself. */
+	/** For a boss fight inside a raid: the id of the raid fight. */
 	public String partOf;
 
 	public Map<String, PlayerStats> players = new LinkedHashMap<>();
@@ -56,7 +53,6 @@ public class Fight
 		return endMs == 0 && mergedFights == 0;
 	}
 
-	/** A hit happened: if nobody hit for longer than the pause time, that gap is not counted. */
 	public void activity(long nowMs)
 	{
 		addPause(nowMs);
@@ -80,7 +76,6 @@ public class Fight
 		}
 	}
 
-	/** Called when the fight ends at this time. */
 	public void finish(long endAtMs, String reason)
 	{
 		endMs = Math.max(endAtMs, startMs);
@@ -88,19 +83,17 @@ public class Fight
 		endReason = reason;
 	}
 
-	/** True while the fight runs but nobody hit for the pause time (clock stopped). */
+	/** The fight is running but the clock is stopped (no hits for the pause time). */
 	public boolean isPaused(long nowMs)
 	{
 		return isActive() && pauseAfterMs > 0 && nowMs > lastActivityMs + pauseAfterMs;
 	}
 
-	/** "Now" for the clock: it stops pauseAfterMs after the last hit. */
 	private long clockNow(long nowMs)
 	{
 		return isPaused(nowMs) ? lastActivityMs + pauseAfterMs : nowMs;
 	}
 
-	/** Time from a to b without the pauses. */
 	long activeBetween(long a, long b)
 	{
 		if (b <= a)
@@ -123,7 +116,6 @@ public class Fight
 		return d;
 	}
 
-	/** Active fight time (AFK gaps not counted). */
 	public long durationMs(long nowMs)
 	{
 		long d;
@@ -142,10 +134,7 @@ public class Fight
 		return Math.max(MIN_DURATION_MS, d);
 	}
 
-	/**
-	 * Time spent on bosses: from the first hit on a boss to the last boss death
-	 * (or the last hit / now while a boss is alive). 0 when no boss was fought.
-	 */
+	/** Active time from the first boss hit to the last boss death (or now). 0 without bosses. */
 	public long bossDurationMs(long nowMs)
 	{
 		if (mergedFights > 0)
@@ -183,7 +172,7 @@ public class Fight
 		return Math.max(MIN_DURATION_MS, activeBetween(start, end));
 	}
 
-	/** When the last boss died, if every boss we fought is dead. Else 0. */
+	/** Time of the last boss death once every engaged boss is dead, else 0. */
 	public long bossDiedMs()
 	{
 		long died = 0;
@@ -201,10 +190,7 @@ public class Fight
 		return died;
 	}
 
-	/**
-	 * Show the boss meter? Yes while a boss fight runs, and for hideAfterMs after
-	 * the boss died (or after the fight ended without a kill).
-	 */
+	/** The boss meter stays visible during the fight and for {@code hideAfterMs} after it. */
 	public boolean bossMeterVisible(long nowMs, long hideAfterMs)
 	{
 		if (mergedFights > 0 || !hasBossTarget())
@@ -228,7 +214,6 @@ public class Fight
 		}
 		else if (kind == PlayerKind.PARTY && p.kind == PlayerKind.ESTIMATE)
 		{
-			// they run GoldenDPS after all: their own reports win
 			p.kind = PlayerKind.PARTY;
 		}
 		return p;
@@ -237,7 +222,7 @@ public class Fight
 	public TargetStats target(String key, int npcId, String name, boolean boss)
 	{
 		TargetStats t = targets.computeIfAbsent(key, k -> new TargetStats(k, npcId, name, boss));
-		// NPCs change id/name between phases (Verzik, Nightmare...): keep the latest
+		// phase changes alter the id and name; keep the latest
 		if (name != null && !name.isEmpty())
 		{
 			t.name = name;
@@ -259,7 +244,7 @@ public class Fight
 		return false;
 	}
 
-	/** Damage done by players (you + party), not unknown or effects. */
+	/** Damage reported by players (excludes unknown and effect damage). */
 	public long knownDamage()
 	{
 		long sum = 0;
@@ -273,13 +258,12 @@ public class Fight
 		return sum;
 	}
 
-	/** Name for lists: the boss (or target) that took the most damage. */
 	public String title()
 	{
 		return title(false);
 	}
 
-	/** Name for lists. bossOnly: only boss targets count. */
+	/** The raid, or the boss or target that took the most damage. */
 	public String title(boolean bossOnly)
 	{
 		if (raid != null && partOf == null && !bossOnly)
@@ -335,8 +319,7 @@ public class Fight
 			startMs = o.startMs;
 		}
 		lastActivityMs = Math.max(lastActivityMs, o.lastActivityMs);
-		// Target keys (world:index) get reused by other NPCs in other fights,
-		// so in a merged total the key also holds the NPC name.
+		// NPC indexes are reused across fights, so merged keys include the NPC name.
 		Map<String, String> keyMap = new HashMap<>();
 		for (TargetStats t : o.targets.values())
 		{
@@ -356,40 +339,8 @@ public class Fight
 		}
 		for (PlayerStats p : o.players.values())
 		{
-			PlayerStats mine = players.computeIfAbsent(p.name, n -> new PlayerStats(n, p.kind));
-			if (p.kind == PlayerKind.LOCAL)
-			{
-				mine.kind = PlayerKind.LOCAL;
-			}
-			PlayerStats remapped = new PlayerStats(p.name, p.kind);
-			remapped.damageTaken = p.damageTaken;
-			remapped.seenTaken = p.seenTaken;
-			remapped.healFood = p.healFood;
-			remapped.healLifesteal = p.healLifesteal;
-			remapped.healRegen = p.healRegen;
-			remapped.healOther = p.healOther;
-			remapped.overFood = p.overFood;
-			remapped.overLifesteal = p.overLifesteal;
-			for (Map.Entry<String, TargetDamage> e : p.byTarget.entrySet())
-			{
-				String k = keyMap.getOrDefault(e.getKey(), e.getKey());
-				remapped.byTarget.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
-			}
-			for (Map.Entry<String, TargetDamage> e : p.estByTarget.entrySet())
-			{
-				String k = keyMap.getOrDefault(e.getKey(), e.getKey());
-				remapped.estByTarget.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
-			}
-			for (Map.Entry<String, Map<String, TargetDamage>> s : p.sources().entrySet())
-			{
-				Map<String, TargetDamage> to = remapped.sources().computeIfAbsent(s.getKey(), x -> new LinkedHashMap<>());
-				for (Map.Entry<String, TargetDamage> e : s.getValue().entrySet())
-				{
-					String k = keyMap.getOrDefault(e.getKey(), e.getKey());
-					to.computeIfAbsent(k, x -> new TargetDamage()).merge(e.getValue());
-				}
-			}
-			mine.merge(remapped);
+			players.computeIfAbsent(p.name, n -> new PlayerStats(n, p.kind))
+				.merge(p, k -> keyMap.getOrDefault(k, k));
 		}
 	}
 

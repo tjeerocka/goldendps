@@ -4,9 +4,7 @@ package com.goldendps.model;
 public class TargetDamage
 {
 	public long damage;
-	/** Hitsplats with damage above 0. */
 	public int hits;
-	/** Blue 0 hitsplats (and 0 damage hits). */
 	public int misses;
 	public int biggestHit;
 

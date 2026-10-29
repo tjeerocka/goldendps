@@ -16,8 +16,6 @@ public interface GoldenDpsConfig extends Config
 	String MODE_KEY = "overlayMode";
 	String BOSS_ONLY_KEY = "bossOnly";
 	String SCOPE_KEY = "overlayScope";
-	/** Hidden: the party you were in, to join it again after a relog or a client restart. */
-	String LAST_PARTY_KEY = "lastParty";
 
 	enum Scope
 	{
@@ -43,9 +41,6 @@ public interface GoldenDpsConfig extends Config
 
 	@ConfigSection(name = "Overlay", description = "The bars on the game screen", position = 1)
 	String overlaySection = "overlay";
-
-	@ConfigSection(name = "Testing", description = "Only for testing the plugin", position = 2, closedByDefault = true)
-	String testSection = "testing";
 
 	@ConfigItem(
 		keyName = "idleSeconds",
@@ -310,18 +305,5 @@ public interface GoldenDpsConfig extends Config
 	default int bossHideSeconds()
 	{
 		return 20;
-	}
-
-	@ConfigItem(
-		keyName = "testRaidPartyAlone",
-		name = "Auto party when alone",
-		description = "Test only: the raid auto party also works when you are alone in the raid party "
-			+ "(as if more people were in it). Turn off after testing.",
-		position = 0,
-		section = testSection
-	)
-	default boolean testRaidPartyAlone()
-	{
-		return false;
 	}
 }
