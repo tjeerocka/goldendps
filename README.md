@@ -40,7 +40,7 @@ Per target: damage split by NPC name, and a **Boss only** mode.
 
 The game only tells your client which hitsplats are **yours** (`Hitsplat.isMine()`).
 So every group member must run GoldenDPS and be in the same **RuneLite Party**
-(Party plugin → join with the same passphrase). Each client sends its own numbers once
+(GoldenDPS side panel → Party, or the Party plugin, with the same code). Each client sends its own numbers once
 per game tick (`GoldenDpsUpdate` message), like RuneLite's DPS Counter does.
 
 Solo: works without a party, only your numbers.
@@ -98,6 +98,15 @@ Party members send their overhealing too (they need this version).
 - The panel shows Boss time / Boss damage / Boss DPS for the fight and per player.
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.
+
+## Party (in the side panel)
+
+GoldenDPS uses RuneLite's own party (the same one as the Party plugin), so you can join it from here:
+
+- Type a code and click **Join** (or press Enter). Everyone with the same code is in the same party.
+- **Create**: a new party with a random code. **Copy code**: copy it to send to your friends.
+- **Leave**: leave the party.
+- The status shows how many members are in the party; the box shows the party code.
 
 ## Report to party (like Details! "Report")
 

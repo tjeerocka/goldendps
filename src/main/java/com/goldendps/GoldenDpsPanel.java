@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
@@ -63,6 +64,9 @@ class GoldenDpsPanel extends PluginPanel
 		int fights;
 		long startMs;
 		String localName;
+		/** RuneLite party code, or null when not in a party. */
+		String partyCode;
+		int partyMembers;
 		/** Only boss damage over the boss time. Null when no boss was fought (or boss only is on). */
 		FightReport bossReport;
 	}
@@ -71,6 +75,9 @@ class GoldenDpsPanel extends PluginPanel
 
 	private final GoldenDpsPlugin plugin;
 	private final JComboBox<Choice> fightBox = new JComboBox<>();
+	private final JLabel partyStatus = new JLabel("Not in a party - type a code");
+	private final JTextField partyCodeField = new JTextField();
+	private volatile String currentPartyCode;
 	private final JCheckBox bossOnlyBox = new JCheckBox("Boss only");
 	private final JPanel content = new JPanel();
 	private volatile String selectedId = GoldenDpsPlugin.LIVE;
@@ -133,6 +140,25 @@ class GoldenDpsPanel extends PluginPanel
 		top.add(button("Report to party", "Send the top 5 of the shown fight to your RuneLite party chat",
 			plugin::reportPanelToParty));
 
+		// party: the same RuneLite party as the Party plugin, joined from here
+		JLabel partyTitle = new JLabel("Party");
+		partyTitle.setFont(FontManager.getRunescapeBoldFont());
+		partyTitle.setForeground(GOLD);
+		top.add(partyTitle);
+		partyStatus.setFont(FontManager.getRunescapeSmallFont());
+		partyStatus.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+		top.add(partyStatus);
+		partyCodeField.setToolTipText("Party code: the same code joins the same party (also works with the Party plugin)");
+		partyCodeField.addActionListener(e -> joinTypedParty());
+		top.add(partyCodeField);
+		JPanel partyButtons = new JPanel(new GridLayout(1, 3, 4, 0));
+		partyButtons.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		partyButtons.add(button("Join", "Join the party with the code above", this::joinTypedParty));
+		partyButtons.add(button("Create", "Make a new party with a random code", plugin::createParty));
+		partyButtons.add(button("Leave", "Leave the party", plugin::leaveParty));
+		top.add(partyButtons);
+		top.add(button("Copy code", "Copy the party code, to send it to your friends", this::copyPartyCode));
+
 		add(top, BorderLayout.NORTH);
 
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -140,6 +166,25 @@ class GoldenDpsPanel extends PluginPanel
 		add(content, BorderLayout.CENTER);
 
 		showEmpty("No fights yet. Hit something!");
+	}
+
+	private void joinTypedParty()
+	{
+		String code = partyCodeField.getText() == null ? "" : partyCodeField.getText().trim();
+		if (!code.isEmpty())
+		{
+			plugin.joinParty(code);
+		}
+	}
+
+	private void copyPartyCode()
+	{
+		String code = currentPartyCode;
+		if (code != null)
+		{
+			java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
+				.setContents(new java.awt.datatransfer.StringSelection(code), null);
+		}
 	}
 
 	private static JButton button(String text, String tip, Runnable r)
@@ -190,6 +235,14 @@ class GoldenDpsPanel extends PluginPanel
 		{
 			updateChoices(d.choices);
 			bossOnlyBox.setSelected(d.bossOnly);
+			// show the party code in the box (unless you are typing in it)
+			if (d.partyCode != null && !d.partyCode.equals(currentPartyCode) && !partyCodeField.isFocusOwner())
+			{
+				partyCodeField.setText(d.partyCode);
+			}
+			currentPartyCode = d.partyCode;
+			partyStatus.setText(d.partyCode == null ? "Not in a party - type a code"
+				: "In a party: " + d.partyMembers + (d.partyMembers == 1 ? " member" : " members"));
 		}
 		finally
 		{

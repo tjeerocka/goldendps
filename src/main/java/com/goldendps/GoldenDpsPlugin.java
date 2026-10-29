@@ -875,6 +875,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 		}
 		data.localName = localName();
+		data.partyCode = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		data.partyMembers = partyService.isInParty() ? partyService.getMembers().size() : 0;
 		SwingUtilities.invokeLater(() -> p.update(data));
 	}
 
@@ -890,6 +892,44 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			return tracker.getDisplayFight();
 		}
 		return tracker.findFight(selected);
+	}
+
+	// ---- party (the same RuneLite party as the Party plugin) ----
+
+	/** Join the party with this code (Swing thread). */
+	void joinParty(String code)
+	{
+		clientThread.invoke(() ->
+		{
+			partyService.changeParty(code);
+			localMessage("GoldenDPS: joined party " + code + ".");
+			updatePanel();
+		});
+	}
+
+	/** Make a new party with a random code. */
+	void createParty()
+	{
+		clientThread.invoke(() ->
+		{
+			String code = partyService.generatePassphrase();
+			partyService.changeParty(code);
+			localMessage("GoldenDPS: new party " + code + " - share this code with your group.");
+			updatePanel();
+		});
+	}
+
+	void leaveParty()
+	{
+		clientThread.invoke(() ->
+		{
+			if (partyService.isInParty())
+			{
+				partyService.changeParty(null);
+				localMessage("GoldenDPS: left the party.");
+			}
+			updatePanel();
+		});
 	}
 
 	/** Overlay right-click "Report to party": what the overlay shows. */
