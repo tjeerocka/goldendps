@@ -146,7 +146,7 @@ class GoldenDpsPanel extends PluginPanel
 		tests.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		tests.add(button("Test crown", "Show the MVP crown on you for 15 seconds", plugin::testCrown));
 		tests.add(button("Test snacks", "Show the burger, fries and hungry lines on you for 15 seconds", plugin::testSnacks));
-		tests.add(button("Test max hit", "Show the max hit popup", plugin::testMaxHit));
+		tests.add(button("Test max hit", "Show the max hit line over your head", plugin::testMaxHit));
 		top.add(tests);
 
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

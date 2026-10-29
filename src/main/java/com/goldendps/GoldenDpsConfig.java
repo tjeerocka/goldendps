@@ -340,8 +340,8 @@ public interface GoldenDpsConfig extends Config
 
 	@ConfigItem(
 		keyName = "maxHitPopup",
-		name = "Max hit popup",
-		description = "A banner and a chat line when someone beats their biggest hit of the session",
+		name = "Max hit announcement",
+		description = "A line over the head and in the chat when someone beats their biggest hit of the session",
 		position = 2,
 		section = funSection
 	)

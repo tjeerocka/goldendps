@@ -11,13 +11,12 @@ import java.util.Random;
 /**
  * The fun extras for group fights: a crown over the MVP, a burger over the top healer of the
  * whole fight (or raid), fries over the top healer on the current boss, hungry lines from both,
- * and a popup for new max hits. Updated on the client thread, read by the overlays.
+ * and a line for new max hits. Updated on the client thread, read by the overlays.
  */
 class FunEffects
 {
 	/** Icons stay this long after the fight ended. */
 	private static final long SHOW_AFTER_FIGHT_MS = 30_000;
-	private static final long POPUP_MS = 5000;
 	private static final long TEST_MS = 15_000;
 	private static final long SAY_MS = 5000;
 
@@ -43,8 +42,6 @@ class FunEffects
 	private String mvp;
 	private String burger;
 	private String fries;
-	private String popup;
-	private long popupUntil;
 	private String testPlayer;
 	private long testCrownUntil;
 	private long testSnackUntil;
@@ -115,7 +112,6 @@ class FunEffects
 		MaxHits.NewMax max = maxHits.hit(player, amount);
 		if (max != null)
 		{
-			showPopup(max.player + " - NEW MAX HIT! " + max.amount, now);
 			say(max.player, "NEW MAX HIT! " + max.amount, now, true);
 		}
 		return max;
@@ -170,11 +166,6 @@ class FunEffects
 		return hasFries(player, now) ? friesTalk.line(now) : null;
 	}
 
-	String popup(long now)
-	{
-		return now < popupUntil ? popup : null;
-	}
-
 	void testCrown(String player, long now)
 	{
 		testPlayer = player;
@@ -190,13 +181,6 @@ class FunEffects
 
 	void testMaxHit(String player, long now)
 	{
-		showPopup(player + " - NEW MAX HIT! 99", now);
 		say(player, "NEW MAX HIT! 99", now, true);
-	}
-
-	private void showPopup(String text, long now)
-	{
-		popup = text;
-		popupUntil = now + POPUP_MS;
 	}
 }

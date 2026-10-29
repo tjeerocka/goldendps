@@ -107,9 +107,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private HeadIconOverlay headIconOverlay;
 
 	@Inject
-	private MaxHitPopupOverlay maxHitPopupOverlay;
-
-	@Inject
 	private ClientToolbar clientToolbar;
 
 	@Inject
@@ -189,7 +186,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 		overlayManager.add(overlay);
 		overlayManager.add(headIconOverlay);
-		overlayManager.add(maxHitPopupOverlay);
 		wsClient.registerMessage(GoldenDpsUpdate.class);
 		wsClient.registerMessage(GoldenDpsPartyMessage.class);
 
@@ -229,7 +225,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		wsClient.unregisterMessage(GoldenDpsPartyMessage.class);
 		overlayManager.remove(overlay);
 		overlayManager.remove(headIconOverlay);
-		overlayManager.remove(maxHitPopupOverlay);
 		clientToolbar.removeNavigation(navButton);
 		panel = null;
 		navButton = null;
