@@ -27,14 +27,21 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	private double height;
 	private double targetWidth;
 	private double targetHeight;
-	/** Safety check data (see getModel). */
+	/**
+	 * The last model we made bigger. The game sometimes gives the same animated model again
+	 * for a few frames; then it is still bigger from us and must not be scaled twice.
+	 */
 	private Model lastModel;
 	private float[] lastVx;
-	private float lastMark;
-	private int lastMarkIdx;
-	private int lastSx;
-	private int lastSy;
-	private boolean unsafe;
+	private float[] lastVy;
+	private int markX;
+	private int markY;
+	private float markXValue;
+	private float markYValue;
+	private int lastSx = FatHealer.UNIT;
+	private int lastSy = FatHealer.UNIT;
+	/** Slow walk: the frame to draw the copy with, or -1 for the real frame. */
+	private int slowFrame = -1;
 	/** For the status line: how often the copy was drawn / the real one hidden. */
 	private int frames;
 	private int draws;
@@ -54,7 +61,9 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		if (player != target)
 		{
 			// new healer: start at normal size and grow
+			undoIfStillScaled();
 			target = player;
+			slowFrame = -1;
 			width = 0;
 			height = 0;
 		}
@@ -109,9 +118,9 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 
 	void clear()
 	{
+		undoIfStillScaled();
 		target = null;
-		lastModel = null;
-		lastVx = null;
+		slowFrame = -1;
 		width = 0;
 		height = 0;
 		if (client.isRuneLiteObjectRegistered(this))
@@ -153,10 +162,6 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			return "nobody is fat";
 		}
-		if (unsafe)
-		{
-			return "stopped (safety check)";
-		}
 		if (!client.isRuneLiteObjectRegistered(this))
 		{
 			return "copy not added";
@@ -175,6 +180,12 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 
 	// ---- RuneLiteObjectController: the fat copy ----
 
+	/** Slow walk frame for the copy (-1 = the real frame). */
+	void setSlowFrame(int frame)
+	{
+		slowFrame = frame;
+	}
+
 	@Override
 	public Model getModel()
 	{
@@ -184,46 +195,110 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			return null;
 		}
 		draws++;
-		Model m = p.getModel();
-		if (m == null || unsafe)
+		Model m;
+		int real = -1;
+		if (slowFrame >= 0)
 		{
-			return m;
+			// draw the copy with the slow frame, then give the real player its own frame back
+			real = p.getPoseAnimationFrame();
+			p.setPoseAnimationFrame(slowFrame);
+		}
+		try
+		{
+			m = p.getModel();
+		}
+		finally
+		{
+			if (real >= 0)
+			{
+				p.setPoseAnimationFrame(real);
+			}
+		}
+		if (m == null)
+		{
+			return null;
 		}
 		float[] vx = m.getVerticesX();
-		if (vx == null || vx.length == 0)
+		float[] vy = m.getVerticesY();
+		if (vx == null || vy == null || vx.length == 0 || vy.length != vx.length)
 		{
-			return m;
-		}
-		// Safety: players are animated every frame, so the client gives a fresh copy of the
-		// model each time. If we get the same copy back still scaled from last frame, it is
-		// the real cached model: undo once and stop, so nobody stays fat by mistake.
-		if (m == lastModel && vx == lastVx && lastSx != FatHealer.UNIT && lastMarkIdx < vx.length
-			&& lastMark != 0 && vx[lastMarkIdx] == lastMark)
-		{
-			m.scale(FatHealer.UNIT * FatHealer.UNIT / lastSx, FatHealer.UNIT * FatHealer.UNIT / lastSy,
-				FatHealer.UNIT * FatHealer.UNIT / lastSx);
-			unsafe = true;
-			log.warn("GoldenDPS: fat healer turned off (player model is not a per-frame copy)");
 			return m;
 		}
 		int sx = FatHealer.scale(width);
 		int sy = FatHealer.scale(height);
-		m.scale(sx, sy, sx);
-		// remember the vertex furthest from the middle (it always changes when scaled)
-		int idx = 0;
+		if (isStillScaled(m))
+		{
+			// same model as last frame, already bigger: only fix the difference
+			if (sx != lastSx || sy != lastSy)
+			{
+				m.scale(sx * FatHealer.UNIT / lastSx, sy * FatHealer.UNIT / lastSy, sx * FatHealer.UNIT / lastSx);
+			}
+		}
+		else
+		{
+			m.scale(sx, sy, sx);
+		}
+		remember(m, vx, vy, sx, sy);
+		return m;
+	}
+
+	/** Is this the model we scaled last time, and is it still scaled (not refilled by the game)? */
+	private boolean isStillScaled(Model m)
+	{
+		if (m != lastModel || (lastSx == FatHealer.UNIT && lastSy == FatHealer.UNIT))
+		{
+			return false;
+		}
+		float[] vx = m.getVerticesX();
+		float[] vy = m.getVerticesY();
+		if (vx != lastVx || vy != lastVy || markX >= vx.length || markY >= vy.length)
+		{
+			return false;
+		}
+		return (lastSx == FatHealer.UNIT || vx[markX] == markXValue)
+			&& (lastSy == FatHealer.UNIT || vy[markY] == markYValue);
+	}
+
+	/** Remember the vertices furthest from the middle: they always change when the game refills the model. */
+	private void remember(Model m, float[] vx, float[] vy, int sx, int sy)
+	{
+		int ix = 0;
+		int iy = 0;
 		for (int i = 1; i < vx.length; i++)
 		{
-			if (Math.abs(vx[i]) > Math.abs(vx[idx]))
+			if (Math.abs(vx[i]) > Math.abs(vx[ix]))
 			{
-				idx = i;
+				ix = i;
+			}
+			if (Math.abs(vy[i]) > Math.abs(vy[iy]))
+			{
+				iy = i;
 			}
 		}
 		lastModel = m;
 		lastVx = vx;
-		lastMarkIdx = idx;
-		lastMark = vx[idx];
+		lastVy = vy;
+		markX = ix;
+		markY = iy;
+		markXValue = vx[ix];
+		markYValue = vy[iy];
 		lastSx = sx;
 		lastSy = sy;
-		return m;
+	}
+
+	/** When the effect ends: if the game still holds our bigger model, make it normal again. */
+	private void undoIfStillScaled()
+	{
+		Model m = lastModel;
+		if (m != null && isStillScaled(m))
+		{
+			m.scale(FatHealer.UNIT * FatHealer.UNIT / lastSx, FatHealer.UNIT * FatHealer.UNIT / lastSy,
+				FatHealer.UNIT * FatHealer.UNIT / lastSx);
+		}
+		lastModel = null;
+		lastVx = null;
+		lastVy = null;
+		lastSx = FatHealer.UNIT;
+		lastSy = FatHealer.UNIT;
 	}
 }

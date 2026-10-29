@@ -402,17 +402,18 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (p == null)
 		{
 			fatWalk.reset();
+			if (fatHealer != null)
+			{
+				fatHealer.setSlowFrame(-1);
+			}
 			return;
 		}
 		int pose = p.getPoseAnimation();
 		boolean moving = pose != -1 && pose != p.getIdlePoseAnimation()
 			&& (pose == p.getWalkAnimation() || pose == p.getRunAnimation() || pose == p.getWalkRotate180()
 			|| pose == p.getWalkRotateLeft() || pose == p.getWalkRotateRight());
-		int back = fatWalk.step(pose, p.getPoseAnimationFrame(), moving, config.fatWalkSpeed() / 100.0);
-		if (back >= 0)
-		{
-			p.setPoseAnimationFrame(back);
-		}
+		// only the fat copy uses the slow frame; the real player is never changed
+		fatHealer.setSlowFrame(fatWalk.update(pose, p.getPoseAnimationFrame(), moving, config.fatWalkSpeed() / 100.0));
 	}
 
 	/** The player with the most healing in the current / last fight (group mode only). */

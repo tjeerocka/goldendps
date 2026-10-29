@@ -108,11 +108,13 @@ They "grow" into it over about a second.
 - Only on your screen. Nothing changes in the game or for other players.
 - Only in a RuneLite party, raid or boss instance.
 - How: the real character is hidden for you and a scaled copy of its model is drawn in the same place
-  every frame, so all animations stay. If the client ever hands back its real cached model instead
-  of a per-frame copy, the plugin undoes the change and turns the effect off (safety check).
+  every frame, so all animations stay. When the game gives the same animated model for a few frames,
+  it is not made bigger twice; when the effect ends, a model that is still bigger is made normal again.
 - Right-click / clicking the fat healer may not work while the effect is on.
 - **Slow walk:** the fat healer's walk and run animation plays slower (setting **Walk animation speed**,
-  default 70%). They still move at normal speed, only the legs move slower.
+  default 70%). They still move at normal speed, only the legs move slower. Only the fat copy is drawn
+  with the slower frame; the real character's animation is never changed.
+- **Status:** under the test button, `Fat: drawn +35%/+6%, real hidden` (or what is wrong).
 - **Test:** side panel → **Test fat healer (me)** makes your own character fat anywhere
   (no party or healing needed). Click again to stop.
 
