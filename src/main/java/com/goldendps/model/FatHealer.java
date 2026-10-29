@@ -8,6 +8,10 @@ public final class FatHealer
 {
 	/** Model scale unit: 128 = 100%. */
 	public static final int UNIT = 128;
+	/** The fat look: this much wider, this much taller (in %), and the walk animation at this speed. */
+	public static final int WIDTH_PERCENT = 35;
+	public static final int HEIGHT_PERCENT = 6;
+	public static final double WALK_SPEED = 0.70;
 
 	private FatHealer()
 	{

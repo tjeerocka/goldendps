@@ -391,7 +391,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			who = findPlayer(fatName);
 		}
-		fatHealer.update(who, config.fatWidth(), config.fatHeight());
+		fatHealer.update(who, FatHealer.WIDTH_PERCENT, FatHealer.HEIGHT_PERCENT);
 	}
 
 	/** Every client tick (20 ms): play the fat healer's walk / run animation slower. */
@@ -413,7 +413,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			&& (pose == p.getWalkAnimation() || pose == p.getRunAnimation() || pose == p.getWalkRotate180()
 			|| pose == p.getWalkRotateLeft() || pose == p.getWalkRotateRight());
 		// only the fat copy uses the slow frame; the real player is never changed
-		fatHealer.setSlowFrame(fatWalk.update(pose, p.getPoseAnimationFrame(), moving, config.fatWalkSpeed() / 100.0));
+		fatHealer.setSlowFrame(fatWalk.update(pose, p.getPoseAnimationFrame(), moving, FatHealer.WALK_SPEED));
 	}
 
 	/** The player with the most healing in the current / last fight (group mode only). */
@@ -426,7 +426,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			return;
 		}
 		Fight f = tracker.getDisplayFight();
-		if (!config.fatHealer() || !isGroupMode() || f == null)
+		if (!isGroupMode() || f == null)
 		{
 			fatName = null;
 			return;

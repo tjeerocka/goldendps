@@ -102,7 +102,7 @@ Party members send their overhealing too (they need this version).
 ## Fun: Fat healer
 
 The player with the most healing in the current / last fight (you, or a party member with GoldenDPS)
-looks **wider and a bit taller** (default +35% width, +6% height; settings under **Fun**).
+looks **wider and a bit taller**: 35% wider and 6% taller. It is always on (no settings).
 They grow into it over 0.8 s, and shrink back the same way in reverse when they stop being the
 top healer (a new top healer starts growing after the old one has shrunk).
 
@@ -114,8 +114,7 @@ top healer (a new top healer starts growing after the old one has shrunk).
   Scaling uses exact decimal numbers (the game's own scale cuts off fractions, which made capes sink
   into the body and cape logos disappear).
 - Right-click / clicking the fat healer may not work while the effect is on.
-- **Slow walk:** the fat healer's walk and run animation plays slower (setting **Walk animation speed**,
-  default 70%). They still move at normal speed, only the legs move slower. Only the fat copy is drawn
+- **Slow walk:** the fat healer's walk and run animation plays slower (70% speed). They still move at normal speed, only the legs move slower. Only the fat copy is drawn
   with the slower frame; the real character's animation is never changed. RuneLite's Animation
   Smoothing is switched off for that one draw (it blends with the real timing and made the walk stutter).
 - **117 HD / GPU and capes:** renderers draw real players with their faces sorted in layers and without
