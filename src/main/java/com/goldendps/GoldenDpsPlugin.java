@@ -10,6 +10,7 @@ import com.goldendps.model.HistoryStore;
 import com.goldendps.model.HitAttributor;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.ReportFormatter;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Hitsplat;
@@ -50,6 +52,8 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ClientShutdown;
@@ -57,6 +61,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.party.WSClient;
+import net.runelite.client.party.messages.PartyChatMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -129,6 +134,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	@Inject
 	private ScheduledExecutorService executor;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
 
 	private final FightTracker tracker = new FightTracker();
 	private final HealthWatcher health = new HealthWatcher();
@@ -848,19 +856,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			choices.add(new GoldenDpsPanel.Choice(f.id, GoldenDpsPanel.label(f, now)));
 		}
 
-		Fight fight;
-		if (SESSION.equals(selected))
-		{
-			fight = tracker.getSessionTotal(now);
-		}
-		else if (LIVE.equals(selected) || selected == null)
-		{
-			fight = tracker.getDisplayFight();
-		}
-		else
-		{
-			fight = tracker.findFight(selected);
-		}
+		Fight fight = panelFight(selected, now);
 
 		GoldenDpsPanel.Data data = new GoldenDpsPanel.Data();
 		data.choices = choices;
@@ -880,6 +876,77 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		data.localName = localName();
 		SwingUtilities.invokeLater(() -> p.update(data));
+	}
+
+	/** The fight picked in the panel's list. Client thread. */
+	private Fight panelFight(String selected, long now)
+	{
+		if (SESSION.equals(selected))
+		{
+			return tracker.getSessionTotal(now);
+		}
+		if (LIVE.equals(selected) || selected == null)
+		{
+			return tracker.getDisplayFight();
+		}
+		return tracker.findFight(selected);
+	}
+
+	/** Overlay right-click "Report to party": what the overlay shows. */
+	void reportOverlayToParty()
+	{
+		clientThread.invoke(() ->
+		{
+			long now = System.currentTimeMillis();
+			boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
+			Fight f = session ? tracker.getSessionTotal(now) : tracker.getDisplayFight();
+			report(f, session ? "Session" : null, now);
+		});
+	}
+
+	/** Panel button "Report to party": the fight picked in the panel. */
+	void reportPanelToParty()
+	{
+		GoldenDpsPanel p = panel;
+		final String selected = p == null ? null : p.getSelectedId();
+		clientThread.invoke(() ->
+		{
+			long now = System.currentTimeMillis();
+			report(panelFight(selected, now), SESSION.equals(selected) ? "Session" : null, now);
+		});
+	}
+
+	/**
+	 * Send the top 5 to the RuneLite party chat (like Details! "Report"). OSRS does not allow plugins
+	 * to send messages in the game chat, so this only goes to the RuneLite party. Client thread.
+	 */
+	private void report(Fight f, String title, long now)
+	{
+		if (f == null)
+		{
+			localMessage("GoldenDPS: nothing to report yet.");
+			return;
+		}
+		if (!partyService.isInParty() || partyService.getLocalMember() == null)
+		{
+			localMessage("GoldenDPS: join a RuneLite party (Party plugin) to report to your party.");
+			return;
+		}
+		FightReport r = FightReport.of(f, config.bossOnly(), config.countRegen(), now);
+		MeterMode mode = config.overlayMode();
+		String name = title != null ? title : r.getTitle();
+		for (String line : ReportFormatter.lines(r, mode, name, ReportFormatter.DEFAULT_TOP))
+		{
+			partyService.send(new PartyChatMessage(line));
+		}
+	}
+
+	private void localMessage(String text)
+	{
+		chatMessageManager.queue(QueuedMessage.builder()
+			.type(ChatMessageType.CONSOLE)
+			.runeLiteFormattedMessage(text)
+			.build());
 	}
 
 	void setMode(MeterMode mode)

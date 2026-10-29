@@ -130,6 +130,8 @@ class GoldenDpsPanel extends PluginPanel
 			}
 		}));
 		top.add(buttons);
+		top.add(button("Report to party", "Send the top 5 of the shown fight to your RuneLite party chat",
+			plugin::reportPanelToParty));
 
 		add(top, BorderLayout.NORTH);
 

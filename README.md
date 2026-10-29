@@ -99,6 +99,23 @@ Party members send their overhealing too (they need this version).
 - Side panel (gold bars icon): pick the current fight, the session total or an old fight;
   full details per player and per target. Buttons: End fight, New session, Clear.
 
+## Report to party (like Details! "Report")
+
+- Overlay right-click **Report to party**: what the overlay shows (fight or session).
+- Side panel button **Report to party**: the fight picked in the panel.
+- Sends the top 5 for the mode the overlay is in (Damage / DPS / Healing / Damage taken) to your
+  **RuneLite party chat**; everyone in the RuneLite party sees it (they don't need GoldenDPS):
+
+```
+GoldenDPS Damage - Vorkath 1:23 - total 27.4k (330.1/s)
+1. Kurt Yoghurt 12.3k 148.2/s 45%
+2. Zezima 9.1k 109.6/s 33%
+```
+
+- Not in a party: a message tells you to join one.
+- The game chats (public, private, clan, friends, group) are not possible: Jagex does not allow
+  plugins to send messages in the game chat.
+
 ## Saving
 
 Fight history is saved per account in
