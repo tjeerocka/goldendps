@@ -12,6 +12,8 @@ import org.junit.Test;
 public class RaidPartyTest
 {
 	private static final String TOB = "ToB";
+	private static final String P1 = RaidParty.PREFIX + "tob 111";
+	private static final String P2 = RaidParty.PREFIX + "tob 222";
 
 	@Test
 	public void everyoneGetsTheSameName()
@@ -59,14 +61,14 @@ public class RaidPartyTest
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
 		{
-			r.tick("p1", null);
+			r.tick(P1, null);
 		}
 		RaidParty.Action a = RaidParty.Action.NONE;
 		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
 		{
-			a = r.tick("p2", "p1");
+			a = r.tick(P2, P1);
 		}
-		assertEquals("p2", a.join);
+		assertEquals(P2, a.join);
 	}
 
 	@Test
@@ -82,19 +84,29 @@ public class RaidPartyTest
 	}
 
 	@Test
-	public void leavesAfterTheRaid()
+	public void staysInThePartyAfterTheRaidAndAfterARelog()
 	{
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
 		{
-			r.tick("p1", null);
+			r.tick(P1, null);
 		}
-		for (int i = 1; i < RaidParty.LEAVE_TICKS; i++)
+		for (int i = 0; i < 50; i++)
 		{
-			assertFalse(r.tick(null, "p1").leave);
+			RaidParty.Action a = r.tick(null, P1);
+			assertFalse(a.leave);
+			assertNull(a.join);
 		}
-		assertTrue(r.tick(null, "p1").leave);
-		assertNull(r.getJoined());
+		// after a client restart the plugin forgot, but the name shows it is an auto party
+		RaidParty fresh = new RaidParty();
+		RaidParty.Action a = RaidParty.Action.NONE;
+		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
+		{
+			a = fresh.tick(P2, P1);
+		}
+		assertEquals("a new raid group moves you on", P2, a.join);
+		assertTrue(RaidParty.isAuto(P1));
+		assertFalse(RaidParty.isAuto("my friends"));
 	}
 
 	@Test
@@ -103,10 +115,10 @@ public class RaidPartyTest
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
 		{
-			r.tick("p1", null);
+			r.tick(P1, null);
 		}
 		// you joined "my friends" yourself during the raid
-		assertNull(r.tick("p1", "my friends").join);
+		assertNull(r.tick(P1, "my friends").join);
 		assertNull(r.getJoined());
 		for (int i = 0; i < 20; i++)
 		{

@@ -12,15 +12,16 @@ import java.util.Locale;
  * name from the raid (raid, world and the sorted member names), so they all join the same RuneLite
  * party without typing anything.
  * <ul>
- * <li>Only when you are not in a party you joined yourself.</li>
+ * <li>Only when you are not in a party you joined yourself (auto parties start with {@link #PREFIX}).</li>
  * <li>The names must stay the same for {@link #STABLE_TICKS} ticks first (people join the lobby one by one).</li>
- * <li>After the raid (no raid party for {@link #LEAVE_TICKS} ticks) you leave that party again.</li>
+ * <li>After the raid you stay in the party (also after a relog), until you leave it yourself
+ * or start a raid with other people.</li>
  * </ul>
  */
 public class RaidParty
 {
 	public static final int STABLE_TICKS = 5;
-	public static final int LEAVE_TICKS = 10;
+	public static final String PREFIX = "goldendps ";
 
 	/** What the plugin should do this tick. */
 	public static final class Action
@@ -41,7 +42,6 @@ public class RaidParty
 	private String candidate;
 	private int stableTicks;
 	private String joined;
-	private int goneTicks;
 
 	/**
 	 * The party name for this raid party, or null when there is no group (alone or no names).
@@ -67,7 +67,7 @@ public class RaidParty
 		}
 		clean.sort(null);
 		String key = raid + "|" + world + "|" + String.join(",", clean);
-		return "goldendps " + raid.toLowerCase(Locale.ROOT) + " " + hash(key);
+		return PREFIX + raid.toLowerCase(Locale.ROOT) + " " + hash(key);
 	}
 
 	private static String hash(String s)
@@ -88,6 +88,12 @@ public class RaidParty
 		}
 	}
 
+	/** A party that GoldenDPS made for a raid. */
+	public static boolean isAuto(String party)
+	{
+		return party != null && party.startsWith(PREFIX);
+	}
+
 	/**
 	 * Call every game tick.
 	 *
@@ -96,34 +102,21 @@ public class RaidParty
 	 */
 	public Action tick(String name, String currentParty)
 	{
-		// you joined another party yourself: hands off
-		if (joined != null && !joined.equals(currentParty))
-		{
-			joined = null;
-		}
-		boolean manual = currentParty != null && !currentParty.equals(joined);
-
+		joined = isAuto(currentParty) ? currentParty : null;
+		boolean manual = currentParty != null && !isAuto(currentParty);
 		if (name == null)
 		{
 			candidate = null;
 			stableTicks = 0;
-			if (joined != null && ++goneTicks >= LEAVE_TICKS)
-			{
-				joined = null;
-				goneTicks = 0;
-				return new Action(null, true);
-			}
 			return Action.NONE;
 		}
-		goneTicks = 0;
-
 		if (!name.equals(candidate))
 		{
 			candidate = name;
 			stableTicks = 0;
 		}
 		stableTicks++;
-		if (manual || name.equals(joined) || stableTicks < STABLE_TICKS)
+		if (manual || name.equals(currentParty) || stableTicks < STABLE_TICKS)
 		{
 			return Action.NONE;
 		}
@@ -142,6 +135,5 @@ public class RaidParty
 		candidate = null;
 		stableTicks = 0;
 		joined = null;
-		goneTicks = 0;
 	}
 }

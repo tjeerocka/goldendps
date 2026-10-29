@@ -55,6 +55,22 @@ Solo: works without a party, only your numbers.
 - Party hits that arrive up to 5 s after a boss died still go into that fight (network delay).
 - The panel keeps the last fights (setting, default 50) and a **session total**.
 
+### One fight per raid
+
+In **CoX, ToB, ToA and The Fractured Archive** (setting **One fight per raid**, on by default):
+
+- When you enter the raid instance, the meter starts fresh: the old fight ends and a new fight counts the
+  **whole raid**. It does not end when a boss dies or when you AFK; it ends when you leave the raid
+  (or log out).
+- Every boss in the raid still gets its **own fight**: the boss meter shows only the boss you fight now
+  and starts again at the next boss. In the panel list the bosses show as `> Maiden ...` under the raid.
+- PBs come from these boss fights. The session total counts each raid once.
+
+### Stay in your party
+
+GoldenDPS remembers your party. After a relog or a client restart you join it again by yourself.
+It only forgets the party when you leave it yourself (Leave button or the Party plugin) or are kicked.
+
 ## Healing and overhealing
 
 Effective healing = how much your HP really went up. Overhealing = what was wasted.
@@ -123,7 +139,8 @@ same party name from the raid, the world and the sorted names, so nobody has to 
 - Only when you are not in a party you joined yourself (it never changes your own party).
 - Waits until the names stay the same for 5 ticks (people join the lobby one by one); when someone
   joins or leaves the raid party, everyone moves to the new party name.
-- After the raid (no raid party for 10 ticks) you leave the raid party again.
+- After the raid you **stay** in the party, until you leave it yourself or make a raid party with
+  other people (then you move to the new one).
 - Setting: **Auto party in raids** (on by default). Chambers of Xeric is not supported (it does not show
   the member names the same way).
 

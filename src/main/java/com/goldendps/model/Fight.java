@@ -31,6 +31,10 @@ public class Fight
 	public long pauseAfterMs;
 	/** Time that is not counted (AFK gaps): [from, to] in ms. */
 	public List<long[]> pauses = new ArrayList<>();
+	/** Raid name when this fight is a whole raid (or a boss in a raid). Null outside raids. */
+	public String raid;
+	/** Id of the raid fight this boss fight is part of. Null for normal fights and the raid itself. */
+	public String partOf;
 
 	public Map<String, PlayerStats> players = new LinkedHashMap<>();
 	public Map<String, TargetStats> targets = new LinkedHashMap<>();
@@ -278,6 +282,10 @@ public class Fight
 	/** Name for lists. bossOnly: only boss targets count. */
 	public String title(boolean bossOnly)
 	{
+		if (raid != null && partOf == null && !bossOnly)
+		{
+			return raid;
+		}
 		Map<String, Long> byName = new HashMap<>();
 		Map<String, Boolean> bossByName = new HashMap<>();
 		for (PlayerStats p : players.values())
@@ -395,6 +403,8 @@ public class Fight
 		c.mergedFights = mergedFights;
 		c.mergedBossMs = mergedBossMs;
 		c.pauseAfterMs = pauseAfterMs;
+		c.raid = raid;
+		c.partOf = partOf;
 		if (pauses != null)
 		{
 			for (long[] p : pauses)

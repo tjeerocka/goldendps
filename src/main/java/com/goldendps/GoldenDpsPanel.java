@@ -203,7 +203,8 @@ class GoldenDpsPanel extends PluginPanel
 	static String label(Fight f, long now)
 	{
 		String time = new SimpleDateFormat("HH:mm").format(new Date(f.startMs));
-		return time + "  " + f.title() + "  " + Format.duration(f.durationMs(now));
+		// a boss inside a raid: indented under its raid
+		return time + "  " + (f.partOf != null ? "> " : "") + f.title() + "  " + Format.duration(f.durationMs(now));
 	}
 
 	/** Title and the two tabs. */

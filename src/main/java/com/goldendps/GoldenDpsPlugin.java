@@ -14,6 +14,7 @@ import com.goldendps.model.MeterMode;
 import com.goldendps.model.PartyLeader;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.RaidParty;
+import com.goldendps.model.RaidZone;
 import com.goldendps.model.ReportFormatter;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
@@ -178,6 +179,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	/** Which weapon / spec / spell made your hits (for the breakdown). Client thread. */
 	private final AttackSource attackSource = new AttackSource();
 	private int lastSpecEnergy = -1;
+	/** Knows when you are inside a raid instance (one fight per raid). */
+	private final RaidZone raidZone = new RaidZone();
+	/** After login: join the party you were in before (once). */
+	private boolean rejoinPending = true;
 	/** Personal bests of the account. Client thread. */
 	private BossRecords records = new BossRecords();
 	private boolean recordsLoaded;
@@ -552,6 +557,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		refreshOverlay();
+		rememberParty();
+		raidFightTick(now);
 		raidPartyTick();
 		partyTick(now);
 		if (++ticks % PANEL_EVERY_TICKS == 0)
@@ -653,6 +660,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (state == GameState.LOGGED_IN)
 		{
 			checkAccount();
+			rejoinPending = true;
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
@@ -663,6 +671,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			eatClicks.clear();
 			lastInventory = null;
 			attackSource.reset();
+			raidZone.reset();
+			tracker.endRaid(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
 			lastSpecEnergy = -1;
 			outgoing = new GoldenDpsUpdate();
 			tracker.endNow(System.currentTimeMillis(), state == GameState.HOPPING ? "World hop" : "Logged out");
@@ -932,7 +942,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		overlayCache = f == null ? null : FightReport.of(f, config.bossOnly(), config.countRegen(), now);
 
 		// boss meter: always the current / last fight, only boss damage and boss time
-		Fight shown = tracker.getDisplayFight();
+		Fight shown = tracker.getBossDisplayFight();
 		long hideMs = config.bossHideSeconds() * 1000L;
 		if (config.bossMeter() && !config.bossOnly() && shown != null && shown.bossMeterVisible(now, hideMs))
 		{
@@ -1170,14 +1180,38 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	};
 
 	/** Every game tick: auto party in raids (see RaidParty). */
+	/** One fight per raid: start it when you enter the raid instance, end it when you leave. */
+	private void raidFightTick(long now)
+	{
+		String raidNow = null;
+		Player me = client.getLocalPlayer();
+		if (config.raidFight() && me != null && me.getLocalLocation() != null)
+		{
+			WorldPoint p = WorldPoint.fromLocalInstance(client, me.getLocalLocation());
+			WorldView wv = client.getTopLevelWorldView();
+			if (p != null && wv != null)
+			{
+				raidNow = RaidZone.raidFor(p.getRegionID(), wv.isInstance());
+			}
+		}
+		RaidZone.Change c = raidZone.tick(raidNow);
+		if (c.start != null)
+		{
+			tracker.startRaid(now, c.start);
+			localMessage("GoldenDPS: " + c.start + " started. The meter counts the whole raid until you leave.");
+			refreshOverlay();
+		}
+		else if (c.end)
+		{
+			tracker.endRaid(now, "Left the raid");
+			refreshOverlay();
+		}
+	}
+
 	private void raidPartyTick()
 	{
 		if (!config.autoRaidParty())
 		{
-			if (raidParty.getJoined() != null)
-			{
-				raidParty.reset();
-			}
 			return;
 		}
 		String name = null;
@@ -1204,11 +1238,35 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			partyLeader.left();
 			localMessage("GoldenDPS: joined the " + raid + " party automatically (everyone in your raid with GoldenDPS).");
 		}
-		else if (a.leave)
+	}
+
+	/**
+	 * Stay in your party: remember it, and join it again after a relog or a client restart.
+	 * Only leaving yourself (while logged in) forgets it.
+	 */
+	private void rememberParty()
+	{
+		String saved = configManager.getConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
+		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		if (rejoinPending)
 		{
-			partyService.changeParty(null);
-			partyLeader.left();
-			localMessage("GoldenDPS: left the raid party.");
+			rejoinPending = false;
+			if (current == null && saved != null && !saved.isEmpty())
+			{
+				partyService.changeParty(saved);
+				partyLeader.left();
+				localMessage("GoldenDPS: back in your party \"" + saved + "\".");
+				return;
+			}
+		}
+		if (current != null && !current.equals(saved))
+		{
+			configManager.setConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY, current);
+		}
+		else if (current == null && saved != null)
+		{
+			// you left while logged in (our Leave button, the Party plugin or a kick)
+			configManager.unsetConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
 		}
 	}
 
@@ -1249,7 +1307,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		v.code = partyService.getPartyPassphrase();
 		v.youLead = partyLeader.isLeader();
-		v.auto = v.code != null && v.code.equals(raidParty.getJoined());
+		v.auto = RaidParty.isAuto(v.code);
 		PartyMember local = partyService.getLocalMember();
 		for (PartyMember m : partyService.getMembers())
 		{

@@ -72,7 +72,8 @@ public class BossRecords
 	/** The boss kill in this fight, or null (no boss killed). */
 	public static Kill kill(Fight f, boolean includeRegen)
 	{
-		if (f == null || f.mergedFights > 0 || f.bossDiedMs() <= 0)
+		// a whole raid is no boss kill (its bosses have their own fights)
+		if (f == null || f.mergedFights > 0 || f.bossDiedMs() <= 0 || (f.raid != null && f.partOf == null))
 		{
 			return null;
 		}

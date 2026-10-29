@@ -16,6 +16,8 @@ public interface GoldenDpsConfig extends Config
 	String MODE_KEY = "overlayMode";
 	String BOSS_ONLY_KEY = "bossOnly";
 	String SCOPE_KEY = "overlayScope";
+	/** Hidden: the party you were in, to join it again after a relog or a client restart. */
+	String LAST_PARTY_KEY = "lastParty";
 
 	enum Scope
 	{
@@ -164,6 +166,19 @@ public interface GoldenDpsConfig extends Config
 		section = fightSection
 	)
 	default boolean autoRaidParty()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "raidFight",
+		name = "One fight per raid",
+		description = "In CoX, ToB, ToA and the Fractured Archive the meter starts fresh when you enter the raid "
+			+ "and counts the whole raid until you leave. Each boss still gets its own boss meter and fight.",
+		position = 9,
+		section = fightSection
+	)
+	default boolean raidFight()
 	{
 		return true;
 	}

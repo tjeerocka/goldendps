@@ -29,6 +29,10 @@ public class FightTracker
 	private int maxHistory = 50;
 	private String sessionId = newId();
 	private Fight current;
+	/** In a raid: the name, and the running fight is the whole raid. Null outside raids. */
+	private String raid;
+	/** In a raid: the boss that is being fought now (its own fight for the boss meter and PBs). */
+	private Fight bossPart;
 	/** Ended fights, newest first. */
 	private final List<Fight> history = new ArrayList<>();
 	private Listener listener;
@@ -96,6 +100,20 @@ public class FightTracker
 		t.lastMs = Math.max(t.lastMs, now);
 		f.player(player, kind).addHit(targetKey, amount, miss, source);
 		f.activity(now);
+
+		Fight b = bossPartFor(now, boss);
+		if (b != null)
+		{
+			TargetStats bt = b.target(targetKey, npcId, npcName, boss);
+			bt.engaged = true;
+			if (bt.firstMs == 0)
+			{
+				bt.firstMs = now;
+			}
+			bt.lastMs = Math.max(bt.lastMs, now);
+			b.player(player, kind).addHit(targetKey, amount, miss, source);
+			b.activity(now);
+		}
 	}
 
 	/**
@@ -118,6 +136,16 @@ public class FightTracker
 		{
 			current.activity(now);
 		}
+		Fight b = bossPartFor(now, boss);
+		if (b != null)
+		{
+			TargetStats bt = b.target(targetKey, npcId, npcName, boss);
+			bt.seenDamage += Math.max(0, amount);
+			if (bt.engaged || bt.boss)
+			{
+				b.activity(now);
+			}
+		}
 	}
 
 	/** Poison / venom / burn / bleed on an NPC. Only counts while a fight runs. */
@@ -128,6 +156,10 @@ public class FightTracker
 			return;
 		}
 		current.target(targetKey, npcId, npcName, boss).effectDamage += amount;
+		if (bossPart != null)
+		{
+			bossPart.target(targetKey, npcId, npcName, boss).effectDamage += amount;
+		}
 	}
 
 	/**
@@ -140,10 +172,13 @@ public class FightTracker
 		{
 			return;
 		}
-		PlayerStats p = current.player(player, PlayerKind.ESTIMATE);
-		if (p.kind == PlayerKind.ESTIMATE)
+		for (Fight f : live())
 		{
-			p.addEstimate(targetKey, amount, miss);
+			PlayerStats p = f.player(player, PlayerKind.ESTIMATE);
+			if (p.kind == PlayerKind.ESTIMATE)
+			{
+				p.addEstimate(targetKey, amount, miss);
+			}
 		}
 	}
 
@@ -154,7 +189,10 @@ public class FightTracker
 		{
 			return;
 		}
-		current.player(player, PlayerKind.ESTIMATE).seenTaken += amount;
+		for (Fight f : live())
+		{
+			f.player(player, PlayerKind.ESTIMATE).seenTaken += amount;
+		}
 	}
 
 	// ---- damage taken and healing ----
@@ -165,6 +203,10 @@ public class FightTracker
 		if (f != null && amount > 0)
 		{
 			f.player(player, kind).damageTaken += amount;
+			if (f == current && bossPart != null)
+			{
+				bossPart.player(player, kind).damageTaken += amount;
+			}
 		}
 	}
 
@@ -180,6 +222,10 @@ public class FightTracker
 		if (f != null && (amount > 0 || overheal > 0))
 		{
 			f.player(player, kind).addHeal(type, amount, overheal);
+			if (f == current && bossPart != null)
+			{
+				bossPart.player(player, kind).addHeal(type, amount, overheal);
+			}
 		}
 	}
 
@@ -191,6 +237,19 @@ public class FightTracker
 		{
 			return;
 		}
+		if (bossPart != null)
+		{
+			TargetStats bt = bossPart.targets.get(targetKey);
+			if (bt != null)
+			{
+				bt.died = true;
+				bt.diedMs = now;
+				if ((boss || bt.boss) && bt.engaged && allBossesDead(bossPart))
+				{
+					endBossPart(now, "Boss died");
+				}
+			}
+		}
 		TargetStats t = current.targets.get(targetKey);
 		if (t == null)
 		{
@@ -198,8 +257,9 @@ public class FightTracker
 		}
 		t.died = true;
 		t.diedMs = now;
-		if (!(boss || t.boss) || !t.engaged)
+		if (!(boss || t.boss) || !t.engaged || raid != null)
 		{
+			// in a raid the fight goes on until the raid is done
 			return;
 		}
 		// End when every boss we fought in this fight is dead (for example Dagannoth Kings)
@@ -216,6 +276,16 @@ public class FightTracker
 	/** Call every game tick: ends the fight when nobody hit anything for the idle time. */
 	public void tick(long now)
 	{
+		if (bossPart != null && now - bossPart.lastActivityMs >= idleTimeoutMs)
+		{
+			endBossPart(Math.min(now, bossPart.lastActivityMs + Math.min(pauseAfterMs, idleTimeoutMs)),
+				"No hits for " + Format.duration(idleTimeoutMs));
+		}
+		if (raid != null)
+		{
+			// a raid only ends when you leave it
+			return;
+		}
 		if (current != null && now - current.lastActivityMs >= idleTimeoutMs)
 		{
 			// the clock ran on for the pause time after the last hit (same as the live clock)
@@ -226,6 +296,10 @@ public class FightTracker
 
 	public void endNow(long now, String reason)
 	{
+		if (bossPart != null)
+		{
+			endBossPart(now, reason);
+		}
 		if (current != null)
 		{
 			end(now, reason);
@@ -250,6 +324,134 @@ public class FightTracker
 		}
 	}
 
+	// ---- raids ----
+
+	/**
+	 * You entered a raid: the fight that runs now ends, and the next fight is the whole raid.
+	 * It only ends with {@link #endRaid} (not on a boss death or the idle time).
+	 * Every boss in the raid also gets its own fight (boss meter, PBs).
+	 */
+	public void startRaid(long now, String name)
+	{
+		if (name == null || name.equals(raid))
+		{
+			return;
+		}
+		endNow(now, "Raid started");
+		raid = name;
+	}
+
+	/** You left the raid (or logged out): the raid fight ends. */
+	public void endRaid(long now, String reason)
+	{
+		if (raid == null)
+		{
+			return;
+		}
+		endNow(now, reason);
+		raid = null;
+	}
+
+	/** The raid you are in, or null. */
+	public String getRaid()
+	{
+		return raid;
+	}
+
+	/** The boss being fought now in a raid, or null. */
+	public Fight getBossPart()
+	{
+		return bossPart;
+	}
+
+	/**
+	 * The fight for the boss meter: in a raid the boss you fight now (or the last one of this raid),
+	 * otherwise the running / last fight.
+	 */
+	public Fight getBossDisplayFight()
+	{
+		if (raid == null)
+		{
+			return getDisplayFight();
+		}
+		if (bossPart != null)
+		{
+			return bossPart;
+		}
+		if (current != null)
+		{
+			for (Fight f : history)
+			{
+				if (current.id.equals(f.partOf))
+				{
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
+	/** In a raid: the boss fight to add to (a boss hit starts a new one). Null outside raids. */
+	private Fight bossPartFor(long now, boolean boss)
+	{
+		if (raid == null || current == null)
+		{
+			return null;
+		}
+		if (bossPart == null && boss)
+		{
+			bossPart = new Fight(newId(), sessionId, now);
+			bossPart.pauseAfterMs = pauseAfterMs;
+			bossPart.raid = raid;
+			bossPart.partOf = current.id;
+		}
+		return bossPart;
+	}
+
+	private static boolean allBossesDead(Fight f)
+	{
+		for (TargetStats other : f.targets.values())
+		{
+			if (other.boss && other.engaged && !other.died)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void endBossPart(long endMs, String reason)
+	{
+		Fight b = bossPart;
+		bossPart = null;
+		b.finish(endMs, reason);
+		if (b.knownDamage() == 0)
+		{
+			return;
+		}
+		history.add(0, b);
+		trimHistory();
+		if (listener != null)
+		{
+			listener.fightEnded(b);
+		}
+	}
+
+	/** The fights that get the numbers now: the running fight and the raid boss. */
+	private List<Fight> live()
+	{
+		List<Fight> out = new ArrayList<>(2);
+		if (current != null)
+		{
+			out.add(current);
+		}
+		if (bossPart != null)
+		{
+			out.add(bossPart);
+		}
+		return out;
+	}
+
 	// ---- helpers ----
 
 	private Fight ensureFight(long now)
@@ -258,6 +460,7 @@ public class FightTracker
 		{
 			current = new Fight(newId(), sessionId, now);
 			current.pauseAfterMs = pauseAfterMs;
+			current.raid = raid;
 		}
 		return current;
 	}
@@ -316,7 +519,14 @@ public class FightTracker
 		{
 			return current;
 		}
-		return history.isEmpty() ? null : history.get(0);
+		for (Fight f : history)
+		{
+			if (f.partOf == null)
+			{
+				return f;
+			}
+		}
+		return null;
 	}
 
 	public List<Fight> getHistory()
@@ -347,7 +557,8 @@ public class FightTracker
 		for (int i = history.size() - 1; i >= 0; i--)
 		{
 			Fight f = history.get(i);
-			if (sessionId.equals(f.sessionId))
+			// a raid boss is also in its raid fight: count it once
+			if (sessionId.equals(f.sessionId) && f.partOf == null)
 			{
 				total.merge(f, now);
 			}
@@ -374,6 +585,7 @@ public class FightTracker
 	public void clearHistory()
 	{
 		current = null;
+		bossPart = null;
 		history.clear();
 	}
 
