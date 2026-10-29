@@ -206,7 +206,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 			return "starting...";
 		}
 		return "drawn +" + Math.round(width) + "%/+" + Math.round(height) + "%"
-			+ (lastHides > 0 ? ", real hidden" : ", real NOT hidden");
+			+ (lastHides > 0 ? ", real hidden" : ", real NOT hidden") + ", mode " + getRenderMode();
 	}
 
 	// ---- RuneLiteObjectController: the fat copy ----
