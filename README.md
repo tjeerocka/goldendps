@@ -118,6 +118,11 @@ top healer (a new top healer starts growing after the old one has shrunk).
   default 70%). They still move at normal speed, only the legs move slower. Only the fat copy is drawn
   with the slower frame; the real character's animation is never changed. RuneLite's Animation
   Smoothing is switched off for that one draw (it blends with the real timing and made the walk stutter).
+- **117 HD / GPU and capes:** renderers draw real players with their faces sorted in layers and without
+  depth test (that is how a cape logo stays on the cape). A copy is drawn like a normal object, so the
+  cape logo can disappear and the body can show through the cape. **Scale real model (test)** makes the
+  real character bigger right before the game draws it instead (no copy, no slow walk); it only works
+  if the game reuses that frame's model.
 - **Status:** under the test button, `Fat: drawn +35%/+6%, real hidden` (or what is wrong).
 - **Test:** side panel → **Test fat healer (me)** makes your own character fat anywhere
   (no party or healing needed). Click again to stop.

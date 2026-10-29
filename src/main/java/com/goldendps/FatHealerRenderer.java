@@ -45,6 +45,14 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	private int lastSy = FatHealer.UNIT;
 	/** Slow walk: the frame to draw the copy with, or -1 for the real frame. */
 	private int slowFrame = -1;
+	/**
+	 * Test: make the real character's model bigger right before the game draws it (no copy).
+	 * Then renderers like 117 HD draw it as a real player (cape logo, no body through the cape),
+	 * but it only works if the game reuses the model it built for that frame.
+	 */
+	private boolean realModel;
+	private int realScaled;
+	private int lastRealScaled = -1;
 	/** For the status line: how often the copy was drawn / the real one hidden. */
 	private int frames;
 	private int draws;
@@ -96,7 +104,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		width = eased * widthPercent;
 		height = eased * heightPercent;
 
-		boolean show = target != null && progress > 0;
+		boolean show = target != null && progress > 0 && !realModel;
 		if (show)
 		{
 			LocalPoint lp = target.getLocalLocation();
@@ -117,9 +125,11 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			lastDraws = draws;
 			lastHides = hides;
+			lastRealScaled = realScaled;
 			frames = 0;
 			draws = 0;
 			hides = 0;
+			realScaled = 0;
 			String st = status();
 			if (!st.equals(lastStatus))
 			{
@@ -163,7 +173,7 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	/** The player that looks fat right now, or null. */
 	Player getFatPlayer()
 	{
-		return target != null && client.isRuneLiteObjectRegistered(this) ? target : null;
+		return target != null && !realModel && client.isRuneLiteObjectRegistered(this) ? target : null;
 	}
 
 	/** True while a fat copy is drawn for this player (so the real one is hidden). */
@@ -177,6 +187,20 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	@Override
 	public boolean addEntity(Renderable renderable, boolean ui)
 	{
+		if (realModel)
+		{
+			// test style: make the real model bigger just before the game draws it
+			if (!ui && renderable == target && target != null && progress > 0)
+			{
+				Model m = target.getModel();
+				if (m != null)
+				{
+					scaleModel(m);
+					realScaled++;
+				}
+			}
+			return true;
+		}
 		// ui = overhead text, HP bars, hitsplats: keep those
 		boolean hide = !ui && renderable instanceof Player && isFat((Player) renderable);
 		if (hide)
@@ -192,6 +216,10 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		if (target == null)
 		{
 			return "nobody is fat";
+		}
+		if (realModel)
+		{
+			return "real model +" + Math.round(width) + "%/+" + Math.round(height) + "% (" + Math.max(0, lastRealScaled) + "/s)";
 		}
 		if (!client.isRuneLiteObjectRegistered(this))
 		{
@@ -210,6 +238,17 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 	}
 
 	// ---- RuneLiteObjectController: the fat copy ----
+
+	/** Test style: scale the real model instead of drawing a copy. */
+	void setRealModel(boolean on)
+	{
+		if (on != realModel)
+		{
+			undoIfStillScaled();
+			realModel = on;
+			slowFrame = -1;
+		}
+	}
 
 	/** Slow walk frame for the copy (-1 = the real frame). */
 	void setSlowFrame(int frame)
@@ -255,6 +294,12 @@ class FatHealerRenderer extends RuneLiteObjectController implements RenderCallba
 		{
 			return null;
 		}
+		return scaleModel(m);
+	}
+
+	/** Make this model as big as it should be now (not twice), and remember it. */
+	private Model scaleModel(Model m)
+	{
 		float[] vx = m.getVerticesX();
 		float[] vy = m.getVerticesY();
 		if (vx == null || vy == null || vx.length == 0 || vy.length != vx.length)

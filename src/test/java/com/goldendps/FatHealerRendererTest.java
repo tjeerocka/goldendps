@@ -291,6 +291,28 @@ public class FatHealerRendererTest
 	}
 
 	@Test
+	public void realModelStyleScalesTheRealCharacterAndHidesNothing()
+	{
+		float[] vx = {0f, 10f, -20f};
+		float[] vy = {0f, -100f, -200f};
+		Model cached = fakeModel(vx, vy, new ArrayList<>());
+		Player p = fakePlayer(() -> cached);
+		FatHealerRenderer r = new FatHealerRenderer(fakeClient());
+		r.setRealModel(true);
+		grown(r, p, 35, 6);
+
+		assertTrue("real character is drawn, not hidden", r.addEntity(p, false));
+		assertEquals(-20f * 173 / 128f, vx[2], 0.001);
+		r.addEntity(p, false);
+		assertEquals("not scaled twice", -20f * 173 / 128f, vx[2], 0.001);
+		assertNull("no slow walk in this style", r.getFatPlayer());
+
+		// back to the copy style: the real model is made normal again
+		r.setRealModel(false);
+		assertEquals(-20f, vx[2], 0.2);
+	}
+
+	@Test
 	public void nobodyFatDrawsNothing()
 	{
 		FatHealerRenderer r = new FatHealerRenderer(fakeClient());

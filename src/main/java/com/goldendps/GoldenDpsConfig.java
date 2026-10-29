@@ -325,4 +325,17 @@ public interface GoldenDpsConfig extends Config
 	{
 		return 70;
 	}
+
+	@ConfigItem(
+		keyName = "fatRealModel",
+		name = "Scale real model (test)",
+		description = "Test: make the real character bigger instead of drawing a copy. Looks right in 117 HD "
+			+ "(cape logo, no body through the cape) if it works. No slow walk in this mode.",
+		position = 4,
+		section = funSection
+	)
+	default boolean fatRealModel()
+	{
+		return false;
+	}
 }
