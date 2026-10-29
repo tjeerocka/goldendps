@@ -1,8 +1,10 @@
 # GoldenDPS
 
-A DPS, damage and healing meter for groups and individuals. Solo it tracks your own numbers;
-in a party, members who run GoldenDPS share their numbers through RuneLite Party, so everyone sees
-the whole group.
+A DPS, damage and healing meter for groups and individuals.
+
+- **Solo**: works on its own. No party is needed and nothing is sent anywhere.
+- **Groups**: party members who run GoldenDPS share their numbers through RuneLite Party, so everyone
+  sees the whole group. Reports to the party chat are only sent when you click Report.
 
 ## Features
 
