@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
@@ -73,6 +74,7 @@ class GoldenDpsPanel extends PluginPanel
 	private final JComboBox<Choice> fightBox = new JComboBox<>();
 	private final JCheckBox bossOnlyBox = new JCheckBox("Boss only");
 	private final JPanel content = new JPanel();
+	private final JToggleButton fatTestButton = new JToggleButton("Test fat healer (me)");
 	private volatile String selectedId = GoldenDpsPlugin.LIVE;
 	private volatile boolean active;
 	private boolean updating;
@@ -130,6 +132,18 @@ class GoldenDpsPanel extends PluginPanel
 			}
 		}));
 		top.add(buttons);
+
+		// test the fat healer look on yourself (anywhere, no healing needed)
+		fatTestButton.setFocusable(false);
+		fatTestButton.setFont(FontManager.getRunescapeSmallFont());
+		fatTestButton.setToolTipText("Make your own character look like the fat healer (only on your screen)");
+		fatTestButton.addActionListener(e ->
+		{
+			boolean on = fatTestButton.isSelected();
+			fatTestButton.setText(on ? "Stop fat test" : "Test fat healer (me)");
+			plugin.setFatTest(on);
+		});
+		top.add(fatTestButton);
 		add(top, BorderLayout.NORTH);
 
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

@@ -139,6 +139,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private FatHealerRenderer fatHealer;
 	/** Name of the current fat healer (set every tick), or null. */
 	private String fatName;
+	/** Test button in the panel: make yourself the fat healer. */
+	private volatile boolean fatTest;
 
 	private final FightTracker tracker = new FightTracker();
 	private final HealthWatcher health = new HealthWatcher();
@@ -392,6 +394,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	/** The player with the most healing in the current / last fight (group mode only). */
 	private void pickFatHealer(long now)
 	{
+		if (fatTest)
+		{
+			// test button: you, anywhere, no healing needed
+			fatName = localName();
+			return;
+		}
 		Fight f = tracker.getDisplayFight();
 		if (!config.fatHealer() || !isGroupMode() || f == null)
 		{
@@ -967,6 +975,13 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	void setScope(GoldenDpsConfig.Scope scope)
 	{
 		configManager.setConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.SCOPE_KEY, scope);
+	}
+
+	/** Panel test button (Swing thread). */
+	void setFatTest(boolean on)
+	{
+		fatTest = on;
+		clientThread.invoke(() -> pickFatHealer(System.currentTimeMillis()));
 	}
 
 	void resetSession()
