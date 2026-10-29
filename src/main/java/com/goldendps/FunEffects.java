@@ -17,9 +17,9 @@ class FunEffects
 {
 	/** Icons stay this long after the fight ended. */
 	private static final long SHOW_AFTER_FIGHT_MS = 30_000;
-	private static final long POPUP_MS = 3000;
+	private static final long POPUP_MS = 5000;
 	private static final long TEST_MS = 15_000;
-	private static final long SAY_MS = 4000;
+	private static final long SAY_MS = 5000;
 
 	/** Something a player "says" over their head for a while (drawn by the overlay only). */
 	private static final class Speech

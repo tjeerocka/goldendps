@@ -5,7 +5,7 @@ import java.util.Random;
 /** Random hungry lines for the top healer: one line for a few seconds, then a pause. */
 public class HungryTalk
 {
-	static final long SHOW_MS = 3000;
+	static final long SHOW_MS = 5000;
 	static final long MIN_PAUSE_MS = 6000;
 	static final long MAX_PAUSE_MS = 14000;
 

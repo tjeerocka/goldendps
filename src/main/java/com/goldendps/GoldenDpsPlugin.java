@@ -42,6 +42,7 @@ import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.OverheadTextChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
@@ -416,6 +417,40 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 	}
 
+	/** While GoldenDPS shows a line over a player, their typed chat only shows in the chatbox. */
+	@Subscribe
+	public void onOverheadTextChanged(OverheadTextChanged e)
+	{
+		if (e.getActor() instanceof Player && hasFunLine((Player) e.getActor()))
+		{
+			e.getActor().setOverheadText("");
+		}
+	}
+
+	private boolean hasFunLine(Player p)
+	{
+		String name = Names.clean(p.getName());
+		return name != null && fun.line(name, System.currentTimeMillis(), config.healerSnack(), config.maxHitPopup()) != null;
+	}
+
+	/** Hides chat that was already over a head when a GoldenDPS line starts. */
+	private void hideOverheadChat()
+	{
+		WorldView wv = client.getTopLevelWorldView();
+		if (wv == null || !fun.anyone(System.currentTimeMillis()))
+		{
+			return;
+		}
+		for (Player p : wv.players())
+		{
+			String text = p == null ? null : p.getOverheadText();
+			if (text != null && !text.isEmpty() && hasFunLine(p))
+			{
+				p.setOverheadText("");
+			}
+		}
+	}
+
 	@Subscribe
 	public void onNpcDespawned(NpcDespawned e)
 	{
@@ -452,6 +487,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		raidTick(now);
 		party.tick(now);
 		refreshOverlay();
+		hideOverheadChat();
 		if (++ticks % PANEL_EVERY_TICKS == 0)
 		{
 			updatePanel();
