@@ -339,22 +339,10 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "maxHitPopup",
-		name = "Max hit announcement",
-		description = "A line over the head and in the chat when someone beats their biggest hit of the session",
-		position = 2,
-		section = funSection
-	)
-	default boolean maxHitPopup()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "showMaxHit",
 		name = "Max hit on the meter",
 		description = "A Max column with every player's biggest hit in the damage and DPS bars",
-		position = 3,
+		position = 2,
 		section = funSection
 	)
 	default boolean showMaxHit()

@@ -22,10 +22,9 @@ A DPS, damage and healing meter for groups and individuals.
 - **Fun extras** in group fights: a crown over the MVP, a burger over the top healer of the fight or
   raid, fries over the top healer on the current boss (one player can get both), and hungry lines from
   the snack holders. When a boss dies, the fries holder says how much they healed on the boss and the
-  burger holder the total of the fight or raid. A chat
-  line and a line over the head announce every new max hit of the session, and the
-  damage bars have a Max column with every player's biggest hit. These lines last 5 seconds; while one shows, that
-  player's typed chat only appears in the chatbox.
+  burger holder the total of the fight or raid. These lines last 5 seconds; while one shows, that
+  player's typed chat only appears in the chatbox. The damage bars also have a Max column with every
+  player's biggest hit.
 - **Party tab**: join a party by name, see who runs GoldenDPS, and (as leader) remove members who run it.
   In raids, one click puts everyone with GoldenDPS in the same party.
 

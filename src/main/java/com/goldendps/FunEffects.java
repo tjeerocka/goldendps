@@ -3,15 +3,13 @@ package com.goldendps;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
 import com.goldendps.model.HungryTalk;
-import com.goldendps.model.MaxHits;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 /**
  * The fun extras for group fights: a crown over the MVP, a burger over the top healer of the
- * whole fight (or raid), fries over the top healer on the current boss, hungry lines from both,
- * and a line for new max hits. Updated on the client thread, read by the overlays.
+ * whole fight (or raid), fries over the top healer on the current boss, and lines from both. Updated on the client thread, read by the overlays.
  */
 class FunEffects
 {
@@ -25,17 +23,14 @@ class FunEffects
 	{
 		final String text;
 		final long until;
-		final boolean maxHit;
 
-		Speech(String text, long until, boolean maxHit)
+		Speech(String text, long until)
 		{
 			this.text = text;
 			this.until = until;
-			this.maxHit = maxHit;
 		}
 	}
 
-	private final MaxHits maxHits = new MaxHits();
 	private final HungryTalk burgerTalk = new HungryTalk(new Random());
 	private final HungryTalk friesTalk = new HungryTalk(new Random());
 
@@ -77,11 +72,11 @@ class FunEffects
 		if (samePlayer)
 		{
 			long total = fightHealer == null ? bossHealer.healing : fightHealer.healing;
-			say(bossHealer.name, healedLine(bossHealer.healing, total), now, false);
+			say(bossHealer.name, healedLine(bossHealer.healing, total), now);
 			return;
 		}
-		say(bossHealer.name, healedLine(bossHealer.healing, bossHealer.healing), now, false);
-		say(fightHealer.name, "Total healed: " + Format.amount(fightHealer.healing) + " HP!", now, false);
+		say(bossHealer.name, healedLine(bossHealer.healing, bossHealer.healing), now);
+		say(fightHealer.name, "Total healed: " + Format.amount(fightHealer.healing) + " HP!", now);
 	}
 
 	/** "I healed 1,234 HP!", with the total when the whole fight healed more. */
@@ -91,9 +86,9 @@ class FunEffects
 		return total > boss ? line + " (" + Format.amount(total) + " total)" : line;
 	}
 
-	private void say(String player, String text, long now, boolean maxHit)
+	private void say(String player, String text, long now)
 	{
-		speech.put(player, new Speech(text, now + SAY_MS, maxHit));
+		speech.put(player, new Speech(text, now + SAY_MS));
 	}
 
 	private static boolean visible(FightReport report, long endedMs, long now)
@@ -104,22 +99,6 @@ class FunEffects
 	private static String name(FightReport.PlayerRow row)
 	{
 		return row == null ? null : row.name;
-	}
-
-	/** A hit landed; returns the new max hit to announce, or null. */
-	MaxHits.NewMax hit(String player, int amount, long now)
-	{
-		MaxHits.NewMax max = maxHits.hit(player, amount);
-		if (max != null)
-		{
-			say(max.player, "NEW MAX HIT! " + max.amount, now, true);
-		}
-		return max;
-	}
-
-	void resetSession()
-	{
-		maxHits.reset();
 	}
 
 	boolean hasCrown(String player, long now)
@@ -143,18 +122,15 @@ class FunEffects
 			|| !speech.isEmpty();
 	}
 
-	/**
-	 * What the player says now: a new max hit or the boss heal first, otherwise a hungry line
-	 * while they hold a snack. Null when they say nothing.
-	 */
-	String line(String player, long now, boolean snackTalk, boolean maxHitTalk)
+	/** What the player says now: the heal after a boss first, otherwise a hungry line. Null when silent. */
+	String line(String player, long now)
 	{
 		Speech s = speech.get(player);
-		if (s != null && now < s.until && (s.maxHit ? maxHitTalk : snackTalk))
+		if (s != null && now < s.until)
 		{
 			return s.text;
 		}
-		return snackTalk ? hungryLine(player, now) : null;
+		return hungryLine(player, now);
 	}
 
 	private String hungryLine(String player, long now)
@@ -176,11 +152,6 @@ class FunEffects
 	{
 		testPlayer = player;
 		testSnackUntil = now + TEST_MS;
-		say(player, healedLine(1234, 5678), now, false);
-	}
-
-	void testMaxHit(String player, long now)
-	{
-		say(player, "NEW MAX HIT! 99", now, true);
+		say(player, healedLine(1234, 5678), now);
 	}
 }

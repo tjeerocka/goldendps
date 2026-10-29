@@ -10,22 +10,6 @@ import org.junit.Test;
 public class FunModelTest
 {
 	@Test
-	public void maxHitIsAnnouncedWhenBeaten()
-	{
-		MaxHits m = new MaxHits();
-		assertNull("the first hit only sets the bar", m.hit("Kurt", 40));
-		assertNull(m.hit("Kurt", 30));
-		assertNull(m.hit("Kurt", 40));
-		MaxHits.NewMax max = m.hit("Kurt", 55);
-		assertNotNull(max);
-		assertEquals(55, max.amount);
-		assertEquals(40, max.previous);
-		assertNull("other players have their own max", m.hit("Zezima", 60));
-		m.reset();
-		assertNull(m.hit("Kurt", 90));
-	}
-
-	@Test
 	public void hungryTalkShowsALineThenPauses()
 	{
 		HungryTalk talk = new HungryTalk(new Random(1));

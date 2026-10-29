@@ -77,7 +77,7 @@ class HeadIconOverlay extends Overlay
 			drawIcon(g, p, FunIcons.CROWN, height);
 			height += ICON_STEP;
 		}
-		String line = fun.line(name, now, snacks, config.maxHitPopup());
+		String line = snacks ? fun.line(name, now) : null;
 		if (line != null)
 		{
 			drawText(g, p, line, height + 8);

@@ -12,7 +12,6 @@ class ChatNotifier
 	private static final String JOIN_COLOR = "1aa31a";
 	private static final String LEAVE_COLOR = "c27c00";
 	private static final String KICK_COLOR = "d42020";
-	private static final String HIGHLIGHT_COLOR = "ffc400";
 
 	private final ChatMessageManager chatMessageManager;
 
@@ -40,11 +39,6 @@ class ChatNotifier
 	void kicked(String text)
 	{
 		send(colored(KICK_COLOR, PREFIX + text));
-	}
-
-	void highlight(String text)
-	{
-		send(colored(HIGHLIGHT_COLOR, PREFIX + text));
 	}
 
 	private static String colored(String hex, String text)
