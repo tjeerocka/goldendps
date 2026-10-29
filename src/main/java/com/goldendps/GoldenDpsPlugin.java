@@ -1287,11 +1287,15 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (current != null && !current.equals(saved))
 		{
 			configManager.setRSProfileConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY, current);
+			// RuneLite writes settings to disk only every 5 min or on a normal close:
+			// write now, so it is also saved when the client is stopped from IntelliJ or crashes
+			executor.execute(configManager::sendConfig);
 		}
 		else if (current == null && saved != null)
 		{
 			// you left while logged in (our Leave button, the Party plugin or a kick)
 			configManager.unsetRSProfileConfiguration(GoldenDpsConfig.GROUP, GoldenDpsConfig.LAST_PARTY_KEY);
+			executor.execute(configManager::sendConfig);
 		}
 	}
 
