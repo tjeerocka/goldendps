@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Builds a short report of a fight, one chat line per player:
  * <pre>
- * GoldenDPS Damage - Vorkath 1:23 - total 27.4k (330.1/s)
+ * Boss damage - Vorkath 1:23 - total 27.4k (330.1/s)
  * 1. Kurt Yoghurt 12.3k 148.2/s 45%
  * 2. Zezima 9.1k 109.6/s 33%
  * </pre>
@@ -31,11 +31,17 @@ public final class ReportFormatter
 	 */
 	public static List<String> lines(FightReport report, MeterMode mode, String title, int top)
 	{
+		return lines(report, mode, mode.getLabel(), title, top);
+	}
+
+	/** @param label what the header calls the report ("Boss damage", "Healing") */
+	public static List<String> lines(FightReport report, MeterMode mode, String label, String title, int top)
+	{
 		List<String> out = new ArrayList<>();
 		List<FightReport.PlayerRow> rows = report.sorted(mode);
 		double total = report.total(mode);
 
-		StringBuilder header = new StringBuilder("GoldenDPS ").append(mode.getLabel());
+		StringBuilder header = new StringBuilder(label);
 		if (title != null && !title.isEmpty())
 		{
 			header.append(" - ").append(title);
@@ -46,6 +52,11 @@ public final class ReportFormatter
 			header.append(" - total ").append(totalText(report, mode, total));
 		}
 		out.add(cut(header.toString()));
+		if (rows.size() == 1 && rows.get(0).kind == PlayerKind.LOCAL)
+		{
+			// solo: the header already has your total and DPS
+			return out;
+		}
 
 		int n = Math.min(Math.max(1, top), rows.size());
 		for (int i = 0; i < n; i++)

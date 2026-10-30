@@ -96,19 +96,19 @@ public class AttackSource
 
 	private static String weaponName(String weapon)
 	{
-		String w = clean(weapon);
-		return w == null ? UNARMED : w;
+		String name = clean(weapon);
+		return name == null ? UNARMED : name;
 	}
 
 	/** "Ice Barrage -> Vorkath  (level-732)" gives "Ice Barrage". */
-	static String clean(String s)
+	static String clean(String text)
 	{
-		if (s == null)
+		if (text == null)
 		{
 			return null;
 		}
-		int arrow = s.indexOf("->");
-		String c = (arrow >= 0 ? s.substring(0, arrow) : s).replace(' ', ' ').trim();
-		return c.isEmpty() ? null : c;
+		int arrow = text.indexOf("->");
+		String name = (arrow >= 0 ? text.substring(0, arrow) : text).replace(' ', ' ').trim();
+		return name.isEmpty() ? null : name;
 	}
 }

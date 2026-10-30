@@ -17,7 +17,8 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 /** Draws the crown over the MVP and the snacks with hungry lines over the top healers. */
 class HeadIconOverlay extends Overlay
 {
-	private static final int ABOVE_HEAD = 40;
+	/** Above the head, clear of overhead prayers and skulls. */
+	private static final int ABOVE_HEAD = 90;
 	/** Height of one icon in the stack above a head. */
 	private static final int ICON_STEP = 22;
 	private static final Color TALK_COLOR = new Color(255, 255, 0);
@@ -41,7 +42,7 @@ class HeadIconOverlay extends Overlay
 	{
 		long now = System.currentTimeMillis();
 		WorldView wv = client.getTopLevelWorldView();
-		if (wv == null || !fun.anyone(now))
+		if (wv == null || !fun.anyone())
 		{
 			return null;
 		}
@@ -62,17 +63,17 @@ class HeadIconOverlay extends Overlay
 	{
 		int height = p.getLogicalHeight() + ABOVE_HEAD;
 		boolean snacks = config.healerSnack();
-		if (snacks && fun.hasBurger(name, now))
+		if (snacks && fun.hasBurger(name))
 		{
 			drawIcon(g, p, FunIcons.BURGER, height);
 			height += ICON_STEP;
 		}
-		if (snacks && fun.hasFries(name, now))
+		if (snacks && fun.hasFries(name))
 		{
 			drawIcon(g, p, FunIcons.FRIES, height);
 			height += ICON_STEP;
 		}
-		if (config.mvpCrown() && fun.hasCrown(name, now))
+		if (config.mvpCrown() && fun.hasCrown(name))
 		{
 			drawIcon(g, p, FunIcons.CROWN, height);
 			height += ICON_STEP;

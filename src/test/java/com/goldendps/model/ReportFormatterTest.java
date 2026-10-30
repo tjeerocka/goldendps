@@ -29,7 +29,7 @@ public class ReportFormatterTest
 	public void damageReport()
 	{
 		List<String> lines = ReportFormatter.lines(fight(), MeterMode.DAMAGE, "Vorkath", 5);
-		assertEquals("GoldenDPS Damage - Vorkath 0:10 - total 1,000 (100.0/s)", lines.get(0));
+		assertEquals("Damage - Vorkath 0:10 - total 1,000 (100.0/s)", lines.get(0));
 		assertEquals("1. Kurt Yoghurt 600 60.0/s 60%", lines.get(1));
 		assertEquals("2. Zezima 300 30.0/s 30%", lines.get(2));
 		assertEquals("3. Others (unknown) 100 10.0/s 10%", lines.get(3));
@@ -48,10 +48,24 @@ public class ReportFormatterTest
 	{
 		List<String> lines = ReportFormatter.lines(fight(), MeterMode.HEALING, "Vorkath", 5);
 		// group: 80 healed + 20 wasted = 20% OH
-		assertEquals("GoldenDPS Healing - Vorkath 0:10 - total 80 OH 20%", lines.get(0));
+		assertEquals("Healing - Vorkath 0:10 - total 80 OH 20%", lines.get(0));
 		assertEquals("1. Kurt Yoghurt 60 OH 25% 75%", lines.get(1));
 		assertEquals("2. Zezima 20 25%", lines.get(2));
 		assertEquals(3, lines.size());
+	}
+
+	@Test
+	public void soloIsOneLine()
+	{
+		Fight f = new Fight("s", "s", 0);
+		f.player("Me", PlayerKind.LOCAL).addHit("1:1", 100, false);
+		f.target("1:1", 1, "Vorkath", true).engaged = true;
+		f.activity(10_000);
+		f.finish(10_000, "test");
+		List<String> lines = ReportFormatter.lines(FightReport.of(f, false, false, 10_000), MeterMode.DAMAGE,
+			"Boss damage", "Vorkath", 5);
+		assertEquals(1, lines.size());
+		assertEquals("Boss damage - Vorkath 0:10 - total 100 (10.0/s)", lines.get(0));
 	}
 
 	@Test
@@ -66,7 +80,7 @@ public class ReportFormatterTest
 	{
 		List<String> lines = ReportFormatter.lines(fight(), MeterMode.DAMAGE_TAKEN, "Session", 5);
 		assertEquals(1, lines.size());
-		assertEquals("GoldenDPS Damage taken - Session 0:10", lines.get(0));
+		assertEquals("Damage taken - Session 0:10", lines.get(0));
 	}
 
 	@Test
@@ -80,5 +94,12 @@ public class ReportFormatterTest
 		{
 			assertTrue(line.length() <= ReportFormatter.MAX_LINE);
 		}
+	}
+
+	@Test
+	public void headerUsesTheReportName()
+	{
+		List<String> lines = ReportFormatter.lines(fight(), MeterMode.DAMAGE, "Boss damage", "Vorkath", 5);
+		assertEquals("Boss damage - Vorkath 0:10 - total 1,000 (100.0/s)", lines.get(0));
 	}
 }

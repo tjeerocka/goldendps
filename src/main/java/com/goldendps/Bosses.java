@@ -95,7 +95,8 @@ final class Bosses
 		"thermonuclear smoke devil", "grotesque guardians", "dusk", "dawn", "vorkath",
 		"sarachnis", "corporeal beast", "nex", "kalphite queen", "king black dragon",
 		"giant mole", "chaos elemental", "chaos fanatic", "crazy archaeologist",
-		"scorpia", "venenatis", "vet'ion", "callisto", "zalcano"
+		"scorpia", "venenatis", "vet'ion", "callisto", "zalcano",
+		"blue moon", "eclipse moon", "blood moon", "deranged archaeologist"
 	);
 
 	private final Set<String> extraNames = new HashSet<>();

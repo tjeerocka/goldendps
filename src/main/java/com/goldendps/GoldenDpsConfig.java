@@ -13,6 +13,8 @@ import net.runelite.client.config.Units;
 public interface GoldenDpsConfig extends Config
 {
 	String GROUP = "goldendps";
+	/** Saved state that is no setting (panel sections, the Barrows run): changes need no config handling. */
+	String STATE_GROUP = "goldendpsstate";
 	String MODE_KEY = "overlayMode";
 	String BOSS_ONLY_KEY = "bossOnly";
 	String SCOPE_KEY = "overlayScope";
@@ -190,14 +192,40 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = "autoRaidParty",
 		name = "Raid party",
-		description = "In CoX, ToB, ToA and the Fractured Archive, offer a one-click party with everyone in your"
-			+ " raid who runs GoldenDPS, and leave it after the raid.",
+		description = "In CoX, ToB, ToA and the Fractured Archive, join a party with everyone in your raid who"
+			+ " runs GoldenDPS automatically, and leave it after the raid. A party you joined yourself is never changed.",
 		position = 4,
 		section = partySection
 	)
 	default boolean autoRaidParty()
 	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "autoBossReport",
+		name = "Auto boss report",
+		description = "When a boss dies, the party leader sends the boss damage to the party chat by itself",
+		position = 5,
+		section = partySection
+	)
+	default boolean autoBossReport()
+	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "ownParty",
+		name = "Own party",
+		description = "When you start a boss fight (or a Barrows run) in no party, put you in a party of your own,"
+			+ " so the automatic boss and Barrows reports also work solo. Leaving it yourself turns it off until"
+			+ " you log out.",
+		position = 6,
+		section = partySection
+	)
+	default boolean ownParty()
+	{
+		return false;
 	}
 
 	@ConfigItem(
@@ -297,20 +325,6 @@ public interface GoldenDpsConfig extends Config
 	default boolean bossMeter()
 	{
 		return true;
-	}
-
-	@ConfigItem(
-		keyName = "bossHideSeconds",
-		name = "Hide boss meter after",
-		description = "How long the boss meter stays after the boss died",
-		position = 8,
-		section = overlaySection
-	)
-	@Range(min = 3, max = 600)
-	@Units(Units.SECONDS)
-	default int bossHideSeconds()
-	{
-		return 20;
 	}
 
 

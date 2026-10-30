@@ -20,9 +20,9 @@ public class RaidPartyTest
 		RaidParty.Action action = RaidParty.Action.NONE;
 		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
 		{
-			action = r.tick(name, current);
+			action = r.tick(name, current, false);
 		}
-		return action.offer;
+		return action.join;
 	}
 
 	@Test
@@ -51,15 +51,15 @@ public class RaidPartyTest
 	}
 
 	@Test
-	public void offersOnceTheNamesAreStable()
+	public void joinsOnceTheNamesAreStable()
 	{
 		RaidParty r = new RaidParty();
 		for (int i = 1; i < RaidParty.STABLE_TICKS; i++)
 		{
-			assertNull(r.tick(P1, null).offer);
+			assertNull(r.tick(P1, null, false).join);
 		}
-		assertEquals(P1, r.tick(P1, null).offer);
-		assertNull(r.tick(P1, P1).offer);
+		assertEquals(P1, r.tick(P1, null, false).join);
+		assertNull(r.tick(P1, P1, false).join);
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class RaidPartyTest
 		RaidParty r = new RaidParty();
 		for (int i = 0; i < 20; i++)
 		{
-			assertNull(r.tick(P1, "my friends").offer);
-			assertFalse(r.tick(null, "my friends").leave);
+			assertNull(r.tick(P1, "my friends", false).join);
+			assertFalse(r.tick(null, "my friends", false).leave);
 		}
 	}
 
@@ -88,10 +88,41 @@ public class RaidPartyTest
 		tickUntilStable(r, P1, null);
 		for (int i = 1; i < RaidParty.LEAVE_TICKS; i++)
 		{
-			assertFalse(r.tick(null, P1).leave);
+			assertFalse(r.tick(null, P1, false).leave);
 		}
-		assertTrue(r.tick(null, P1).leave);
-		assertFalse("only once", r.tick(null, P1).leave);
+		assertTrue(r.tick(null, P1, false).leave);
+		assertFalse("only once", r.tick(null, P1, false).leave);
+	}
+
+	@Test
+	public void staysInsideTheRaidWithoutAPartyId()
+	{
+		RaidParty r = new RaidParty();
+		tickUntilStable(r, P1, null);
+		for (int i = 0; i < 100; i++)
+		{
+			assertFalse(r.tick(null, P1, true).leave);
+		}
+		for (int i = 1; i < RaidParty.LEAVE_TICKS; i++)
+		{
+			assertFalse(r.tick(null, P1, false).leave);
+		}
+		assertTrue("leaves after the raid", r.tick(null, P1, false).leave);
+	}
+
+	@Test
+	public void yourOwnPartyIsNeverLeftButARaidPartyReplacesIt()
+	{
+		String own = RaidParty.OWN_PREFIX + "blue cat";
+		assertTrue(RaidParty.isAuto(own));
+		assertTrue(RaidParty.isOwn(own));
+		assertFalse(RaidParty.isOwn(P1));
+		RaidParty r = new RaidParty();
+		for (int i = 0; i < 3 * RaidParty.LEAVE_TICKS; i++)
+		{
+			assertFalse(r.tick(null, own, false).leave);
+		}
+		assertEquals("a raid party replaces your own party", P1, tickUntilStable(r, P1, own));
 	}
 
 	@Test
@@ -101,7 +132,7 @@ public class RaidPartyTest
 		tickUntilStable(r, P1, null);
 		for (int i = 0; i < 30; i++)
 		{
-			assertFalse(r.tick(i % 5 == 0 ? P1 : null, P1).leave);
+			assertFalse(r.tick(i % 5 == 0 ? P1 : null, P1, false).leave);
 		}
 		assertTrue(RaidParty.isAuto(P1));
 		assertFalse(RaidParty.isAuto("my friends"));

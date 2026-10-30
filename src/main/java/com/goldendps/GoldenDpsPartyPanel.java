@@ -1,5 +1,8 @@
 package com.goldendps;
 
+import static com.goldendps.PanelWidgets.GOLD;
+import static com.goldendps.PanelWidgets.bold;
+import static com.goldendps.PanelWidgets.small;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,7 +10,6 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -43,13 +45,11 @@ class GoldenDpsPartyPanel extends JPanel
 		boolean inParty;
 		String code;
 		boolean youLead;
-		boolean auto;
-		/** The raid ("ToB", "CoX"...) whose party can be joined, or null. */
-		String raidPartyOffer;
+		/** "Raid party" or "Own party" when GoldenDPS joined it, else null. */
+		String autoLabel;
 		List<Member> members = new ArrayList<>();
 	}
 
-	private static final Color GOLD = new Color(255, 196, 0);
 	private static final Color ONLINE = new Color(90, 200, 90);
 	private static final Color OFFLINE = new Color(110, 110, 110);
 	private static final Color KICK = new Color(170, 50, 50);
@@ -83,9 +83,7 @@ class GoldenDpsPartyPanel extends JPanel
 
 		JPanel header = new JPanel(new BorderLayout());
 		header.setOpaque(false);
-		JLabel title = new JLabel("Party");
-		title.setFont(FontManager.getRunescapeBoldFont());
-		title.setForeground(GOLD);
+		JLabel title = bold("Party", GOLD);
 		status.setFont(FontManager.getRunescapeSmallFont());
 		header.add(title, BorderLayout.WEST);
 		header.add(status, BorderLayout.EAST);
@@ -166,15 +164,11 @@ class GoldenDpsPartyPanel extends JPanel
 			: "Type a party name (spaces are fine), or press Random");
 
 		memberList.removeAll();
-		if (v.raidPartyOffer != null)
-		{
-			memberList.add(raidPartyButton(v.raidPartyOffer));
-		}
 		if (v.inParty)
 		{
-			if (v.auto)
+			if (v.autoLabel != null)
 			{
-				memberList.add(small("Raid party", GOLD));
+				memberList.add(small(v.autoLabel, GOLD));
 			}
 			memberList.add(small(v.youLead ? "Members - you lead" : "Members", ColorScheme.LIGHT_GRAY_COLOR));
 			for (Member m : v.members)
@@ -184,19 +178,6 @@ class GoldenDpsPartyPanel extends JPanel
 		}
 		memberList.revalidate();
 		memberList.repaint();
-	}
-
-	private JComponent raidPartyButton(String raid)
-	{
-		JButton b = button("Join raid party (" + raid + ")", "Join one party with everyone in your raid who runs GoldenDPS",
-			ColorScheme.BRAND_ORANGE, plugin::joinRaidParty);
-		JPanel wrap = new JPanel(new BorderLayout());
-		wrap.setOpaque(false);
-		wrap.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
-		wrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-		wrap.setAlignmentX(LEFT_ALIGNMENT);
-		wrap.add(b);
-		return wrap;
 	}
 
 	private JComponent memberRow(Member m, boolean youLead)
@@ -285,28 +266,15 @@ class GoldenDpsPartyPanel extends JPanel
 		}
 	}
 
-	private static JLabel small(String text, Color c)
+	/** @param background null for the default look */
+	private static JButton button(String text, String tip, Color background, Runnable action)
 	{
-		JLabel l = new JLabel(text);
-		l.setFont(FontManager.getRunescapeSmallFont());
-		l.setForeground(c);
-		l.setAlignmentX(LEFT_ALIGNMENT);
-		return l;
-	}
-
-	private static JButton button(String text, String tip, Color bg, Runnable r)
-	{
-		JButton b = new JButton(text);
-		b.setToolTipText(tip);
-		b.setFocusable(false);
-		b.setMargin(new Insets(2, 2, 2, 2));
-		b.setFont(FontManager.getRunescapeSmallFont());
-		if (bg != null)
+		JButton b = PanelWidgets.button(text, tip, action);
+		if (background != null)
 		{
-			b.setBackground(bg);
+			b.setBackground(background);
 			b.setForeground(Color.WHITE);
 		}
-		b.addActionListener(e -> r.run());
 		return b;
 	}
 

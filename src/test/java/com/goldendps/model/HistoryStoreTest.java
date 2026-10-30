@@ -106,8 +106,8 @@ public class HistoryStoreTest
 		r.add(k);
 		store.saveRecords(7, r);
 		BossRecords back = store.loadRecords(7);
-		assertEquals(61_000, back.get("Zulrah").fastestMs);
-		assertEquals(1, back.get("Zulrah").kills);
+		assertEquals(61_000, back.get("Zulrah", false).fastestMs);
+		assertEquals(1, back.get("Zulrah", false).kills);
 		assertTrue("fights file untouched", store.load(7).isEmpty());
 	}
 }

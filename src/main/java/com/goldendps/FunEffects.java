@@ -9,7 +9,8 @@ import java.util.Random;
 
 /**
  * The fun extras for group fights: a crown over the MVP, a burger over the top healer of the
- * whole fight (or raid), fries over the top healer on the current boss, and lines from both. Updated on the client thread, read by the overlays.
+ * whole fight (or raid), fries over the top healer on the current boss, and lines from both.
+ * Updated on the client thread, read by the overlays.
  */
 class FunEffects
 {
@@ -97,22 +98,22 @@ class FunEffects
 		return row == null ? null : row.name;
 	}
 
-	boolean hasCrown(String player, long now)
+	boolean hasCrown(String player)
 	{
 		return player.equals(mvp);
 	}
 
-	boolean hasBurger(String player, long now)
+	boolean hasBurger(String player)
 	{
 		return player.equals(burger);
 	}
 
-	boolean hasFries(String player, long now)
+	boolean hasFries(String player)
 	{
 		return player.equals(fries);
 	}
 
-	boolean anyone(long now)
+	boolean anyone()
 	{
 		return mvp != null || burger != null || fries != null || !speech.isEmpty();
 	}
@@ -130,10 +131,10 @@ class FunEffects
 
 	private String hungryLine(String player, long now)
 	{
-		if (hasBurger(player, now))
+		if (hasBurger(player))
 		{
 			return burgerTalk.line(now);
 		}
-		return hasFries(player, now) ? friesTalk.line(now) : null;
+		return hasFries(player) ? friesTalk.line(now) : null;
 	}
 }

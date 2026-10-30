@@ -52,6 +52,22 @@ public class FightTrackerTest
 	}
 
 	@Test
+	public void theOverallMeterGoesOnOverBossKills()
+	{
+		myHit(1000, BOSS, true, 50);
+		tracker.npcDied(2000, BOSS, true);
+		assertTrue(tracker.isOverallGoingOn(5000));
+		myHit(6000, "301:11", true, 30);
+		assertEquals("both kills", 80, report(tracker.getOverall(7000), 7000).getTotalDamage());
+		tracker.npcDied(7000, "301:11", true);
+
+		// a break longer than the idle time starts the overall meter again
+		assertFalse(tracker.isOverallGoingOn(7000 + 10_001));
+		myHit(30_000, BOSS, true, 20);
+		assertEquals(20, report(tracker.getOverall(31_000), 31_000).getTotalDamage());
+	}
+
+	@Test
 	public void soloDamageDpsAndAccuracy()
 	{
 		myHit(0, RAT, false, 10);
@@ -485,32 +501,35 @@ public class FightTrackerTest
 		myHit(0, RAT, false, 10);
 		Fight f = tracker.getCurrent();
 		assertEquals(0, f.bossDurationMs(5000));
-		assertFalse(f.bossMeterVisible(5000, 20_000));
+		assertFalse(f.hasBossMeter());
 		// boss only without a boss: normal fight time
 		assertEquals(5000, FightReport.of(f, true, false, 5000).getDurationMs());
 	}
 
 	@Test
-	public void bossMeterHidesAfterTheTimer()
+	public void bossMeterStaysUntilTheNextBoss()
 	{
 		myHit(0, BOSS, true, 10);
-		assertTrue("visible during the fight", tracker.getCurrent().bossMeterVisible(500_000, 20_000));
 		tracker.npcDied(6000, BOSS, true);
+		Fight boss = tracker.getDisplayFight();
+		assertEquals(6000, boss.bossDiedMs());
+		assertTrue(boss.hasBossMeter());
 
-		Fight f = tracker.getDisplayFight();
-		assertEquals(6000, f.bossDiedMs());
-		assertTrue(f.bossMeterVisible(25_999, 20_000));
-		assertFalse(f.bossMeterVisible(26_000, 20_000));
+		// killing normal monsters afterwards keeps the last boss on the boss meter
+		myHit(60_000, RAT, false, 5);
+		assertSame(boss, tracker.getBossDisplayFight());
+
+		myHit(90_000, "301:11", true, 30);
+		assertSame("a new boss fight replaces it", tracker.getCurrent(), tracker.getBossDisplayFight());
 	}
 
 	@Test
-	public void bossMeterHidesAfterEscapeWithoutKill()
+	public void bossClockPausesWithoutHits()
 	{
 		myHit(1000, BOSS, true, 10);
-		tracker.tick(11_000); // idle: fight ends when the clock stopped (1000 + 10 s)
-		Fight f = tracker.getDisplayFight();
-		assertTrue(f.bossMeterVisible(30_999, 20_000));
-		assertFalse(f.bossMeterVisible(31_000, 20_000));
+		Fight f = tracker.getCurrent();
+		assertFalse(f.isPaused(10_000));
+		assertTrue("no hits for 10 s", f.isPaused(11_001));
 	}
 
 	@Test
@@ -521,7 +540,7 @@ public class FightTrackerTest
 		myHit(5000, "301:11", true, 30);
 		Fight f = tracker.getDisplayFight();
 		assertTrue(f.isActive());
-		assertTrue(f.bossMeterVisible(5000, 20_000));
+		assertTrue(f.hasBossMeter());
 		assertEquals(30, FightReport.of(f, true, false, 6000).getTotalDamage());
 	}
 
@@ -536,7 +555,7 @@ public class FightTrackerTest
 
 		Fight total = tracker.getSessionTotal(70_000);
 		assertEquals(15_000, total.bossDurationMs(70_000));
-		assertFalse(total.bossMeterVisible(70_000, 20_000));
+		assertFalse(total.hasBossMeter());
 		FightReport boss = FightReport.of(total, true, false, 70_000);
 		assertEquals(100.0 / 15, boss.row("Me").dps, D);
 	}

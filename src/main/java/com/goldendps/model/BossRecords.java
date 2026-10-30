@@ -22,6 +22,10 @@ public class BossRecords
 		/** Your DPS on the boss (0 = you did no damage). */
 		public double myDps;
 		public long whenMs;
+		/** The fight of this kill, to find its comparison later. */
+		public String fightId;
+		/** Two or more players did damage. Solo and party kills have their own records. */
+		public boolean party;
 	}
 
 	/** The records for one boss. */
@@ -33,11 +37,20 @@ public class BossRecords
 		public double bestDps;
 		public double lastDps;
 		public long lastMs;
+		/** Records of party kills; false = solo (records saved before the split were solo kills). */
+		public boolean party;
+
+		/** "Vorkath (solo)" or "Vorkath (party)". */
+		public String label()
+		{
+			return boss + (party ? " (party)" : " (solo)");
+		}
 
 		Record copy()
 		{
 			Record c = new Record();
 			c.boss = boss;
+			c.party = party;
 			c.kills = kills;
 			c.fastestMs = fastestMs;
 			c.bestDps = bestDps;
@@ -83,6 +96,7 @@ public class BossRecords
 		k.boss = r.getTitle();
 		k.timeMs = f.bossDurationMs(at);
 		k.whenMs = f.bossDiedMs();
+		k.party = isParty(r);
 		for (FightReport.PlayerRow row : r.getRows())
 		{
 			if (row.kind == PlayerKind.LOCAL)
@@ -93,18 +107,63 @@ public class BossRecords
 		return k.boss == null || k.timeMs <= 0 ? null : k;
 	}
 
+	/** The boss kill or the finished raid in this fight (its record is the raid time), or null. */
+	public static Kill record(Fight f, boolean includeRegen)
+	{
+		Kill k = kill(f, includeRegen);
+		if (k != null || f == null || !f.isCompleteRaid() || (f.run && !BarrowsRun.isFullRun(f)))
+		{
+			return k;
+		}
+		Kill run = new Kill();
+		run.boss = f.raid;
+		run.timeMs = f.durationMs(f.endMs);
+		run.whenMs = f.endMs;
+		FightReport report = FightReport.of(f, false, includeRegen, f.endMs);
+		run.party = isParty(report);
+		for (FightReport.PlayerRow row : report.getRows())
+		{
+			if (row.kind == PlayerKind.LOCAL)
+			{
+				run.myDps = row.dps;
+			}
+		}
+		return run;
+	}
+
+	/** Two or more players (also guessed ones) did damage. */
+	public static boolean isParty(FightReport r)
+	{
+		int players = 0;
+		for (FightReport.PlayerRow row : r.getRows())
+		{
+			if (row.isPlayer() && row.damage > 0)
+			{
+				players++;
+			}
+		}
+		return players >= 2;
+	}
+
+	/** Map key: the boss name for solo records (as saved before the split), with "|party" for party ones. */
+	private static String key(String boss, boolean party)
+	{
+		return party ? boss + "|party" : boss;
+	}
+
 	/** Add a kill; returns how it compares with the records from before. */
 	public Compare add(Kill k)
 	{
 		Compare c = new Compare();
 		c.kill = k;
-		Record r = byBoss.get(k.boss);
+		Record r = byBoss.get(key(k.boss, k.party));
 		c.before = r == null ? null : r.copy();
 		if (r == null)
 		{
 			r = new Record();
 			r.boss = k.boss;
-			byBoss.put(k.boss, r);
+			r.party = k.party;
+			byBoss.put(key(k.boss, k.party), r);
 		}
 		r.kills++;
 		if (r.fastestMs <= 0 || k.timeMs < r.fastestMs)
@@ -125,9 +184,14 @@ public class BossRecords
 		return c;
 	}
 
-	public Record get(String boss)
+	public void remove(String boss, boolean party)
 	{
-		return boss == null ? null : byBoss.get(boss);
+		byBoss.remove(key(boss, party));
+	}
+
+	public Record get(String boss, boolean party)
+	{
+		return boss == null ? null : byBoss.get(key(boss, party));
 	}
 
 	/** First start after the update: build the records from the saved fights (newest first). */
@@ -135,7 +199,7 @@ public class BossRecords
 	{
 		for (int i = newestFirst.size() - 1; i >= 0; i--)
 		{
-			Kill k = kill(newestFirst.get(i), includeRegen);
+			Kill k = record(newestFirst.get(i), includeRegen);
 			if (k != null)
 			{
 				add(k);

@@ -1,21 +1,28 @@
 package com.goldendps;
 
+import static com.goldendps.PanelWidgets.GOLD;
+import static com.goldendps.PanelWidgets.actionRow;
+import static com.goldendps.PanelWidgets.bold;
+import static com.goldendps.PanelWidgets.button;
+import static com.goldendps.PanelWidgets.line;
+import static com.goldendps.PanelWidgets.note;
+import static com.goldendps.PanelWidgets.section;
+import static com.goldendps.PanelWidgets.small;
 import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
-import com.goldendps.model.PlayerKind;
+import com.goldendps.model.KillRates;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -35,6 +42,10 @@ import net.runelite.client.ui.PluginPanel;
 /** Side panel with the fight details and the party tab. Swing thread only. */
 class GoldenDpsPanel extends PluginPanel
 {
+	/** Ids of the two fight list choices that are not a saved fight. */
+	static final String LIVE_CHOICE = "live";
+	static final String SESSION_CHOICE = "session";
+
 	static class Choice
 	{
 		final String id;
@@ -70,9 +81,33 @@ class GoldenDpsPanel extends PluginPanel
 		/** {label, value} lines comparing a boss kill with the personal bests. */
 		List<String[]> killLines = new ArrayList<>();
 		List<BossRecords.Record> personalBests = new ArrayList<>();
+		List<KillRates.Rate> killRates = new ArrayList<>();
+		/** The live Barrows run time, or null without a run. */
+		String barrowsRunTime;
+		boolean barrowsRunPaused;
 	}
 
-	private static final Color GOLD = new Color(255, 196, 0);
+	/** Sections you can show and hide; the name is saved, the flag is the default. */
+	private enum Part
+	{
+		PER_HOUR(true),
+		CHESTS(true),
+		RAIDS(true),
+		BOSSES(true),
+		MONSTERS(false),
+		FIGHT(true),
+		PLAYERS(true),
+		TARGETS(false),
+		BESTS(false);
+
+		final boolean openByDefault;
+
+		Part(boolean openByDefault)
+		{
+			this.openByDefault = openByDefault;
+		}
+	}
+
 	private static final String TAB_METER = "Meter";
 	private static final String TAB_PARTY = "Party";
 	private static final String NO_FIGHTS = "No fights yet. Hit something!";
@@ -86,9 +121,11 @@ class GoldenDpsPanel extends PluginPanel
 	private final JButton partyTab = tabButton(TAB_PARTY);
 	private final JCheckBox bossOnlyBox = new JCheckBox("Boss only");
 	private final JPanel content = new JPanel();
-	private volatile String selectedId = GoldenDpsPlugin.LIVE;
+	private volatile String selectedId = LIVE_CHOICE;
 	private volatile boolean active;
 	private boolean updating;
+	/** Sections whose show/hide differs from the default. */
+	private final Set<Part> toggled = EnumSet.noneOf(Part.class);
 
 	GoldenDpsPanel(GoldenDpsPlugin plugin)
 	{
@@ -109,7 +146,7 @@ class GoldenDpsPanel extends PluginPanel
 				return;
 			}
 			Choice c = (Choice) fightBox.getSelectedItem();
-			selectedId = c == null ? GoldenDpsPlugin.LIVE : c.id;
+			selectedId = c == null ? LIVE_CHOICE : c.id;
 			plugin.requestPanelUpdate();
 		});
 		top.add(fightBox);
@@ -124,23 +161,8 @@ class GoldenDpsPanel extends PluginPanel
 			}
 		});
 		top.add(bossOnlyBox);
-
-		JPanel buttons = new JPanel(new GridLayout(1, 3, 4, 0));
-		buttons.setBackground(ColorScheme.DARK_GRAY_COLOR);
-		buttons.add(button("End fight", "End the running fight now", plugin::endFight));
-		buttons.add(button("New session", "Start a new session total", plugin::resetSession));
-		buttons.add(button("Clear", "Delete all saved fights", () ->
-		{
-			int ok = JOptionPane.showConfirmDialog(this, "Delete all saved fights for this account?",
-				"GoldenDPS", JOptionPane.YES_NO_OPTION);
-			if (ok == JOptionPane.YES_OPTION)
-			{
-				plugin.clearHistory();
-			}
-		}));
-		top.add(buttons);
-		top.add(button("Report to party", "Send the top 5 of the shown fight to your RuneLite party chat",
-			plugin::reportPanelToParty));
+		top.add(fightButtons());
+		top.add(reportButtons());
 
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 		content.setBackground(ColorScheme.DARK_GRAY_COLOR);
@@ -160,18 +182,56 @@ class GoldenDpsPanel extends PluginPanel
 		add(cards, BorderLayout.CENTER);
 		showTab(TAB_METER);
 
-		showEmpty(NO_FIGHTS);
+		loadToggles(plugin.panelToggles());
+		content.add(note(NO_FIGHTS));
 	}
 
-	private static JButton button(String text, String tip, Runnable r)
+	private JComponent fightButtons()
 	{
-		JButton b = new JButton(text);
-		b.setToolTipText(tip);
-		b.setFocusable(false);
-		b.setMargin(new Insets(2, 2, 2, 2));
-		b.setFont(FontManager.getRunescapeSmallFont());
-		b.addActionListener(e -> r.run());
-		return b;
+		JPanel buttons = new JPanel(new GridLayout(1, 3, 4, 0));
+		buttons.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		buttons.add(button("End fight", "End the running fight now", plugin::endFight));
+		buttons.add(button("New session", "Start a new session total", plugin::resetSession));
+		buttons.add(button("Clear", "Delete all saved fights", this::confirmClearHistory));
+		return buttons;
+	}
+
+	private void confirmResetBest(BossRecords.Record rec)
+	{
+		int answer = JOptionPane.showConfirmDialog(this, "Delete the personal best for " + rec.label() + "?",
+			"GoldenDPS", JOptionPane.YES_NO_OPTION);
+		if (answer == JOptionPane.YES_OPTION)
+		{
+			plugin.resetPersonalBest(rec.boss, rec.party);
+		}
+	}
+
+	private void confirmClearHistory()
+	{
+		int answer = JOptionPane.showConfirmDialog(this, "Delete all saved fights for this account?",
+			"GoldenDPS", JOptionPane.YES_NO_OPTION);
+		if (answer == JOptionPane.YES_OPTION)
+		{
+			plugin.clearHistory();
+		}
+	}
+
+	/** "Report to party" with a button per report kind. */
+	private JComponent reportButtons()
+	{
+		JPanel row = new JPanel(new BorderLayout(4, 0));
+		row.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		row.add(small("Report:", ColorScheme.LIGHT_GRAY_COLOR), BorderLayout.WEST);
+		JPanel buttons = new JPanel(new GridLayout(1, ReportKind.values().length, 4, 0));
+		buttons.setBackground(ColorScheme.DARK_GRAY_COLOR);
+		for (ReportKind kind : ReportKind.values())
+		{
+			String text = kind.label.replace(" damage", "");
+			buttons.add(button(text, "Send the top 5 (" + kind.label.toLowerCase() + ") of the shown fight to your party chat",
+				() -> plugin.reportPanelToParty(kind)));
+		}
+		row.add(buttons, BorderLayout.CENTER);
+		return row;
 	}
 
 	@Override
@@ -207,9 +267,7 @@ class GoldenDpsPanel extends PluginPanel
 
 	private JComponent tabBar()
 	{
-		JLabel title = new JLabel("GoldenDPS");
-		title.setFont(FontManager.getRunescapeBoldFont());
-		title.setForeground(GOLD);
+		JLabel title = bold("GoldenDPS", GOLD);
 		meterTab.addActionListener(e -> showTab(TAB_METER));
 		partyTab.addActionListener(e -> showTab(TAB_PARTY));
 		JPanel tabs = new JPanel(new GridLayout(1, 2, 0, 0));
@@ -270,103 +328,190 @@ class GoldenDpsPanel extends PluginPanel
 			updating = false;
 		}
 
-		if (d.report == null)
-		{
-			showEmpty(GoldenDpsPlugin.SESSION.equals(selectedId) ? "No fights in this session yet." : NO_FIGHTS);
-			return;
-		}
-		FightReport r = d.report;
 		content.removeAll();
-		content.add(summary(d));
-
-		List<FightReport.PlayerRow> rows = new ArrayList<>(r.getRows());
-		rows.sort((a, b) -> Long.compare(b.damage, a.damage));
-		for (FightReport.PlayerRow row : rows)
+		if (d.barrowsRunTime != null)
 		{
-			content.add(Box.createVerticalStrut(6));
-			content.add(playerCard(row, d.bossReport == null ? null : d.bossReport.row(row.name)));
+			JPanel run = section();
+			run.add(line("Barrows run", (d.barrowsRunPaused ? "paused " : "") + d.barrowsRunTime,
+				d.barrowsRunPaused ? Color.YELLOW : GOLD));
+			content.add(run);
 		}
-
-		if (!r.getTargets().isEmpty())
-		{
-			addHeading("Damage per target");
-			for (FightReport.TargetRow t : r.getTargets())
-			{
-				content.add(Box.createVerticalStrut(4));
-				content.add(targetCard(t));
-			}
-		}
-
-		if (!d.personalBests.isEmpty())
-		{
-			addHeading("Personal bests");
-			content.add(Box.createVerticalStrut(4));
-			JPanel pbs = section();
-			for (BossRecords.Record rec : d.personalBests)
-			{
-				pbs.add(bold(rec.boss + "  (" + rec.kills + " kc)", Color.WHITE));
-				pbs.add(line("Fastest", Format.duration(rec.fastestMs)));
-				if (rec.bestDps > 0)
-				{
-					pbs.add(line("Best DPS", Format.dps(rec.bestDps)));
-				}
-			}
-			content.add(pbs);
-		}
-
+		addPerHour(d.killRates);
+		addFight(d);
+		addPersonalBests(d.personalBests);
 		content.revalidate();
 		content.repaint();
 	}
 
-	private JPanel summary(Data d)
+	/** Kills per hour first, so chests and raids are always at the top. */
+	private void addPerHour(List<KillRates.Rate> rates)
 	{
-		FightReport r = d.report;
-		JPanel sum = section();
-		sum.add(bold(r.getTitle(), GOLD));
-		sum.add(line("Time", Format.duration(r.getDurationMs()) + (d.paused ? " (paused)" : d.running ? " (live)" : "")));
-		if (d.fights > 0)
+		if (rates.isEmpty() || !addHeading("Per hour (this session)", Part.PER_HOUR, 0))
 		{
-			sum.add(line("Fights", String.valueOf(d.fights)));
+			return;
 		}
-		else
-		{
-			sum.add(line("Started", new SimpleDateFormat("dd MMM HH:mm").format(new Date(d.startMs))));
-		}
-		sum.add(line("Group damage", Format.amount(r.getTotalDamage())));
-		sum.add(line("Group DPS", Format.dps(r.getGroupDps())));
-		FightReport.PlayerRow topHit = r.topHit();
-		if (topHit != null)
-		{
-			sum.add(line("Max hit", topHit.biggestHit + " (" + topHit.name + ")"));
-		}
-		if (d.bossReport != null)
-		{
-			sum.add(line("Boss time", Format.duration(d.bossReport.getDurationMs())));
-			sum.add(line("Boss damage", Format.amount(d.bossReport.getTotalDamage())));
-			sum.add(line("Boss DPS", Format.dps(d.bossReport.getGroupDps())));
-		}
-		for (String[] kl : d.killLines)
-		{
-			Color c = kl[1].contains("NEW") ? GOLD : null;
-			sum.add(line(kl[0], kl[1], c));
-		}
-		if (d.endReason != null && d.fights == 0)
-		{
-			sum.add(line("Ended", d.endReason));
-		}
-		return sum;
+		addRates("Chests", rates, KillRates.Kind.RUN, Part.CHESTS);
+		addRates("Raids", rates, KillRates.Kind.RAID, Part.RAIDS);
+		addRates("Bosses", rates, KillRates.Kind.BOSS, Part.BOSSES);
+		addRates("Monsters", rates, KillRates.Kind.MONSTER, Part.MONSTERS);
 	}
 
-	private void addHeading(String text)
+	private void addFight(Data d)
 	{
-		content.add(Box.createVerticalStrut(10));
-		JLabel h = bold(text, GOLD);
-		h.setAlignmentX(LEFT_ALIGNMENT);
-		content.add(h);
+		FightReport r = d.report;
+		if (r == null)
+		{
+			addHeading("Fight", null, 0);
+			content.add(Box.createVerticalStrut(4));
+			content.add(note(SESSION_CHOICE.equals(selectedId) ? "No fights in this session yet." : NO_FIGHTS));
+			return;
+		}
+		if (addHeading("Fight", Part.FIGHT, 0))
+		{
+			content.add(Box.createVerticalStrut(4));
+			content.add(FightCards.summary(d));
+		}
+
+		List<FightReport.PlayerRow> rows = new ArrayList<>(r.getRows());
+		rows.sort((a, b) -> Long.compare(b.damage, a.damage));
+		boolean solo = FightCards.isSolo(r);
+		if (!rows.isEmpty() && addHeading(solo ? "Details" : "Players", Part.PLAYERS, solo ? 0 : rows.size()))
+		{
+			for (FightReport.PlayerRow row : rows)
+			{
+				content.add(Box.createVerticalStrut(4));
+				content.add(FightCards.player(row, d.bossReport == null ? null : d.bossReport.row(row.name), solo));
+			}
+		}
+
+		if (!r.getTargets().isEmpty() && addHeading("Damage per target", Part.TARGETS, r.getTargets().size()))
+		{
+			for (FightReport.TargetRow t : r.getTargets())
+			{
+				content.add(Box.createVerticalStrut(4));
+				content.add(FightCards.target(t));
+			}
+		}
+	}
+
+	private void addPersonalBests(List<BossRecords.Record> bests)
+	{
+		if (bests.isEmpty() || !addHeading("Personal bests", Part.BESTS, bests.size()))
+		{
+			return;
+		}
+		content.add(Box.createVerticalStrut(4));
+		JPanel pbs = section();
+		for (BossRecords.Record rec : bests)
+		{
+			// the name gets its own line: long boss names left no room for "reset" next to them
+			pbs.add(bold(rec.label(), Color.WHITE));
+			pbs.add(actionRow(small(rec.kills + " kc", ColorScheme.LIGHT_GRAY_COLOR), "reset",
+				"Delete this personal best", () -> confirmResetBest(rec)));
+			pbs.add(line("Fastest", Format.duration(rec.fastestMs)));
+			if (rec.bestDps > 0)
+			{
+				pbs.add(line("Best DPS", Format.dps(rec.bestDps)));
+			}
+		}
+		content.add(pbs);
+	}
+
+	private boolean isOpen(Part part)
+	{
+		return part.openByDefault != toggled.contains(part);
+	}
+
+	private void toggle(Part part)
+	{
+		if (!toggled.remove(part))
+		{
+			toggled.add(part);
+		}
+		StringBuilder saved = new StringBuilder();
+		for (Part p : toggled)
+		{
+			saved.append(saved.length() > 0 ? "," : "").append(p.name());
+		}
+		plugin.savePanelToggles(saved.toString());
+		plugin.requestPanelUpdate();
+	}
+
+	/** @param saved part names, comma separated; unknown names are skipped */
+	private void loadToggles(String saved)
+	{
+		for (String name : saved.split(","))
+		{
+			for (Part part : Part.values())
+			{
+				if (part.name().equals(name))
+				{
+					toggled.add(part);
+				}
+			}
+		}
+	}
+
+	/** A click on the row shows or hides the part; "show" or "hide" on the right says which. */
+	private JComponent toggleRow(JLabel title, Part part, int count)
+	{
+		if (count > 0)
+		{
+			title.setText(title.getText() + " (" + count + ")");
+		}
+		if (part == null)
+		{
+			return actionRow(title, null, null, null);
+		}
+		boolean open = isOpen(part);
+		return actionRow(title, open ? "hide" : "show", open ? "Click to hide" : "Click to show", () -> toggle(part));
+	}
+
+	/** One card per kind: "Vorkath    12 kc  18.5/hr". */
+	private void addRates(String title, List<KillRates.Rate> rates, KillRates.Kind kind, Part part)
+	{
+		int count = (int) rates.stream().filter(r -> r.kind == kind).count();
+		if (count == 0)
+		{
+			return;
+		}
+		JPanel card = section();
+		card.add(toggleRow(bold(title, Color.WHITE), part, count));
+		for (KillRates.Rate rate : rates)
+		{
+			if (rate.kind == kind && isOpen(part))
+			{
+				card.add(rateLine(rate));
+			}
+		}
+		content.add(Box.createVerticalStrut(4));
+		content.add(card);
+	}
+
+	private static JComponent rateLine(KillRates.Rate rate)
+	{
+		String perHour = String.format("%.1f/hr", rate.perHour);
+		JComponent line = line(rate.name, rate.kills + " kc  " + perHour);
+		String counted = rate.kind == KillRates.Kind.RAID ? " completions" : rate.kind == KillRates.Kind.RUN ? " chests" : " kills";
+		line.setToolTipText(rate.name + ": " + rate.kills + counted + ", average " + Format.duration(rate.averageMs));
+		return line;
+	}
+
+	/** Adds a gold heading; returns true when its part is shown. */
+	private boolean addHeading(String text, Part part, int count)
+	{
+		content.add(Box.createVerticalStrut(content.getComponentCount() == 0 ? 0 : 10));
+		content.add(toggleRow(bold(text, GOLD), part, count));
+		return part == null || isOpen(part);
 	}
 
 	private void updateChoices(List<Choice> choices)
 	{
+		if (fightBox.isPopupVisible())
+		{
+			// a new list would close the open list under your mouse
+			return;
+		}
 		DefaultComboBoxModel<Choice> model = new DefaultComboBoxModel<>();
 		Choice select = null;
 		for (Choice c : choices)
@@ -388,148 +533,5 @@ class GoldenDpsPanel extends PluginPanel
 		{
 			fightBox.setSelectedItem(select);
 		}
-	}
-
-	private JPanel playerCard(FightReport.PlayerRow row, FightReport.PlayerRow bossRow)
-	{
-		JPanel card = section();
-		Color nameColor = row.kind == PlayerKind.LOCAL ? GOLD
-			: row.kind == PlayerKind.PARTY ? Color.WHITE : ColorScheme.LIGHT_GRAY_COLOR;
-		String name = (row.isEstimate() ? "~" : "") + row.name
-			+ (row.kind == PlayerKind.LOCAL ? " (you)" : row.isEstimate() ? " (guess)" : "");
-		card.add(bold(name, nameColor));
-		card.add(line("Damage", Format.amount(row.damage) + "  (" + Format.percent(row.percent) + ")"));
-		card.add(line("DPS", Format.dps(row.dps)));
-		if (bossRow != null && bossRow.damage > 0)
-		{
-			card.add(line("Boss damage", Format.amount(bossRow.damage) + "  (" + Format.percent(bossRow.percent) + ")"));
-			card.add(line("Boss DPS", Format.dps(bossRow.dps)));
-		}
-		if (!row.isPlayer())
-		{
-			String why = row.kind == PlayerKind.UNKNOWN
-				? "Hits nobody could be matched to"
-				: "Owner not known";
-			card.add(line("", why));
-			return card;
-		}
-		card.add(line("Biggest hit", String.valueOf(row.biggestHit)));
-		double acc = row.accuracy();
-		card.add(line("Accuracy", acc < 0 ? "-" : String.format("%.0f%% (%d/%d)", acc, row.hits, row.hits + row.misses)));
-		if (!row.sources.isEmpty())
-		{
-			card.add(line("Breakdown", ""));
-			for (FightReport.SourceRow s : row.sources)
-			{
-				JComponent l = line("  " + s.name, Format.amount(s.damage) + "  (" + Format.percent(s.percent) + ")");
-				l.setToolTipText(String.format("%s: %d hits, %d misses, biggest %d, average %.1f per attack",
-					s.name, s.hits, s.misses, s.biggestHit, s.average()));
-				card.add(l);
-			}
-		}
-		if (row.isEstimate())
-		{
-			card.add(line("", "No GoldenDPS: damage is a guess"));
-			card.add(line("Damage taken", Format.amount(row.damageTaken)));
-			return card;
-		}
-		card.add(line("Healing", Format.amount(row.healing)));
-		if (row.healing > 0 || row.healRegen > 0)
-		{
-			if (row.healFood > 0)
-			{
-				card.add(line("  Food/potions", Format.amount(row.healFood)));
-			}
-			if (row.healLifesteal > 0)
-			{
-				card.add(line("  Lifesteal", Format.amount(row.healLifesteal)));
-			}
-			if (row.healOther > 0)
-			{
-				card.add(line("  On others", Format.amount(row.healOther)));
-			}
-			if (row.healRegen > 0)
-			{
-				card.add(line("  Regen", Format.amount(row.healRegen)));
-			}
-		}
-		if (row.overheal > 0)
-		{
-			card.add(line("Overhealing", Format.percent(row.overhealPercent()) + "  (" + Format.amount(row.overheal) + ")"));
-			if (row.overFood > 0)
-			{
-				card.add(line("  Food/potions", Format.amount(row.overFood)));
-			}
-			if (row.overLifesteal > 0)
-			{
-				card.add(line("  Lifesteal", Format.amount(row.overLifesteal)));
-			}
-		}
-		card.add(line("Damage taken", Format.amount(row.damageTaken)));
-		return card;
-	}
-
-	private JPanel targetCard(FightReport.TargetRow t)
-	{
-		JPanel card = section();
-		String tags = (t.boss ? " [boss]" : "") + (t.died ? " [dead]" : "");
-		card.add(bold(t.name + tags, Color.WHITE));
-		card.add(line("Total", Format.amount(t.total)));
-		for (Map.Entry<String, Long> e : t.byPlayer.entrySet())
-		{
-			double pct = t.total == 0 ? 0 : 100.0 * e.getValue() / t.total;
-			card.add(line("  " + e.getKey(), Format.amount(e.getValue()) + " (" + Format.percent(pct) + ")"));
-		}
-		return card;
-	}
-
-	private void showEmpty(String text)
-	{
-		content.removeAll();
-		JLabel l = new JLabel(text);
-		l.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-		l.setAlignmentX(LEFT_ALIGNMENT);
-		content.add(l);
-		content.revalidate();
-		content.repaint();
-	}
-
-	private static JPanel section()
-	{
-		JPanel p = new JPanel(new GridLayout(0, 1, 0, 1));
-		p.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		p.setBorder(BorderFactory.createEmptyBorder(5, 6, 5, 6));
-		p.setAlignmentX(LEFT_ALIGNMENT);
-		return p;
-	}
-
-	private static JLabel bold(String text, Color c)
-	{
-		JLabel l = new JLabel(text);
-		l.setFont(FontManager.getRunescapeBoldFont());
-		l.setForeground(c);
-		return l;
-	}
-
-	private static JComponent line(String key, String value)
-	{
-		return line(key, value, null);
-	}
-
-	/** A key on the left and a value on the right; {@code highlight} colors both. */
-	private static JComponent line(String key, String value, Color highlight)
-	{
-		JPanel p = new JPanel(new BorderLayout());
-		p.setOpaque(false);
-		JLabel k = new JLabel(key);
-		k.setForeground(highlight != null ? highlight : ColorScheme.LIGHT_GRAY_COLOR);
-		k.setFont(FontManager.getRunescapeSmallFont());
-		JLabel v = new JLabel(value);
-		v.setForeground(highlight != null ? highlight : Color.WHITE);
-		v.setFont(FontManager.getRunescapeSmallFont());
-		p.add(k, BorderLayout.WEST);
-		p.add(v, BorderLayout.EAST);
-		p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 16));
-		return p;
 	}
 }

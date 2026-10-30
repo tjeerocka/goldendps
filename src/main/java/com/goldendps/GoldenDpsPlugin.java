@@ -1,18 +1,14 @@
 package com.goldendps;
 
-import com.goldendps.model.AttackSource;
-import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
 import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
-import com.goldendps.model.HitAttributor;
+import com.goldendps.model.KillCounts;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
-import com.goldendps.model.RaidZone;
-import com.goldendps.model.ReportFormatter;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
@@ -24,17 +20,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.Hitsplat;
-import net.runelite.api.HitsplatID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.WorldView;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -44,18 +38,15 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.OverheadTextChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.gameval.InventoryID;
-import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ClientShutdown;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.party.WSClient;
 import net.runelite.client.party.events.UserPart;
-import net.runelite.client.party.messages.PartyChatMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -77,12 +68,8 @@ import net.runelite.client.util.Text;
 )
 public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 {
-	static final String LIVE = "live";
-	static final String SESSION = "session";
-
 	private static final int PANEL_EVERY_TICKS = 2;
-	private static final int EAT_ANIMATION = 829;
-	private static final int MAX_SOURCE_LENGTH = 64;
+	private static final String PANEL_TOGGLES_KEY = "panelToggles";
 
 	@Inject
 	private Client client;
@@ -129,41 +116,32 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Inject
 	private LocalHealing healing;
 
+	@Inject
+	private BarrowsTracker barrows;
+
 	private final FightTracker tracker = new FightTracker();
 	private final Bosses bosses = new Bosses();
-	private final HitAttributor attributor = new HitAttributor();
 	private final TargetMatcher matcher = new TargetMatcher();
-	private final AttackSource attackSource = new AttackSource();
-	private final RaidZone raidZone = new RaidZone();
 	private final FunEffects fun = new FunEffects();
+	/** Kept over plugin restarts, like the game chat it is read from. */
+	private final KillCounts killCounts = new KillCounts();
 
+	// made in startUp, when the injected fields are set
 	private FightStorage storage;
+	private PartyUpdates partyUpdates;
+	private CombatEvents combat;
+	private RaidFights raids;
+	private PartyReports reports;
+	private MeterViews views;
+
 	private GoldenDpsPanel panel;
 	private NavigationButton navButton;
-	private GoldenDpsUpdate outgoing = new GoldenDpsUpdate();
-	private int lastSpecEnergy = -1;
 	private int ticks;
 	private volatile FightReport overlayCache;
 	private volatile BossMeter bossCache;
-
-	/** The boss meter as the overlay draws it, built once per tick. */
-	static class BossMeter
-	{
-		final FightReport report;
-		final boolean dead;
-		/** Seconds until it hides, or -1 while the boss lives. */
-		final int hidesIn;
-		/** "NEW PB!", "PB 1:10" or null. */
-		final String pb;
-
-		BossMeter(FightReport report, boolean dead, int hidesIn, String pb)
-		{
-			this.report = report;
-			this.dead = dead;
-			this.hidesIn = hidesIn;
-			this.pb = pb;
-		}
-	}
+	/** Worked out on the client thread: the overlay must not read the fight history. */
+	private volatile boolean overallGoingOn;
+	private volatile boolean overallPaused;
 
 	@Provides
 	GoldenDpsConfig provideConfig(ConfigManager configManager)
@@ -174,12 +152,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Override
 	protected void startUp()
 	{
-		HistoryStore store = new HistoryStore(gson, new File(RuneLite.RUNELITE_DIR, "goldendps").toPath());
-		storage = new FightStorage(tracker, store, executor, clientThread, () ->
-		{
-			refreshOverlay();
-			updatePanel();
-		});
+		createParts();
 		tracker.setListener(this);
 		applyConfig();
 
@@ -206,6 +179,22 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		});
 	}
 
+	private void createParts()
+	{
+		HistoryStore store = new HistoryStore(gson, new File(RuneLite.RUNELITE_DIR, "goldendps").toPath());
+		storage = new FightStorage(tracker, store, executor, clientThread, () ->
+		{
+			refreshOverlay();
+			updatePanel();
+		});
+		partyUpdates = new PartyUpdates(client, partyService, party, config, tracker, bosses, matcher);
+		combat = new CombatEvents(client, partyService, config, tracker, bosses, matcher, healing, barrows, party,
+			partyUpdates);
+		raids = new RaidFights(client, config, chat, tracker);
+		reports = new PartyReports(config, partyService, party, chat, storage, killCounts);
+		views = new MeterViews(config, tracker, storage, barrows, party, fun);
+	}
+
 	@Override
 	protected void shutDown()
 	{
@@ -217,8 +206,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			tracker.clearHistory();
 			overlayCache = null;
 			bossCache = null;
+			reports.clear();
 			healing.reset();
-			outgoing = new GoldenDpsUpdate();
+			partyUpdates.clear();
 		});
 		wsClient.unregisterMessage(GoldenDpsUpdate.class);
 		wsClient.unregisterMessage(GoldenDpsPartyMessage.class);
@@ -256,109 +246,13 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied e)
 	{
-		Actor actor = e.getActor();
-		Hitsplat hitsplat = e.getHitsplat();
-		long now = System.currentTimeMillis();
-		if (actor instanceof NPC)
-		{
-			npcHit((NPC) actor, hitsplat, now);
-		}
-		else if (actor == client.getLocalPlayer())
-		{
-			int amount = hitsplat.getAmount();
-			if (amount > 0 && isDamageOnPlayer(hitsplat))
-			{
-				healing.damageOnYou(amount);
-				if (tracker.getCurrent() != null)
-				{
-					tracker.damageTaken(now, localName(), PlayerKind.LOCAL, amount);
-					outgoing.taken += amount;
-				}
-			}
-		}
-		else if (actor instanceof Player && config.nearbyDamageTaken() && isGroupMode())
-		{
-			String who = Names.clean(actor.getName());
-			if (who != null && hitsplat.getAmount() > 0 && isDamageOnPlayer(hitsplat) && !party.isReporter(who, now))
-			{
-				tracker.seenDamageTaken(now, who, hitsplat.getAmount());
-			}
-		}
-	}
-
-	private void npcHit(NPC npc, Hitsplat hitsplat, long now)
-	{
-		int type = hitsplat.getHitsplatType();
-		int amount = hitsplat.getAmount();
-		String key = TargetMatcher.key(client.getWorld(), npc.getIndex());
-		String name = npc.getName();
-		boolean boss = bosses.isBoss(npc.getId(), name);
-		WorldPoint pos = npc.getWorldLocation();
-		if (pos != null)
-		{
-			matcher.seen(key, pos.getX(), pos.getY(), pos.getPlane());
-		}
-
-		if (hitsplat.isMine())
-		{
-			int tick = client.getTickCount();
-			boolean miss = type == HitsplatID.BLOCK_ME || amount <= 0;
-			String source = attackSource.sourceForHit(tick, healing.weaponName());
-			// playerHit before seenHit, so the first hit of a fight is also seen
-			tracker.playerHit(now, localName(), PlayerKind.LOCAL, key, npc.getId(), name, boss, amount, miss, source);
-			tracker.seenHit(now, key, npc.getId(), name, boss, amount);
-			if (!miss)
-			{
-				healing.youHit(npc, amount, tick);
-			}
-			GoldenDpsUpdate.Hit sent = new GoldenDpsUpdate.Hit(npc.getIndex(), npc.getId(), name, amount, miss, boss, pos);
-			sent.source = source;
-			outgoing.hits.add(sent);
-		}
-		else if (hitsplat.isOthers() && isGroupMode())
-		{
-			tracker.seenHit(now, key, npc.getId(), name, boss, amount);
-			if (config.estimateOthers())
-			{
-				String who = attributor.assign(client.getTickCount(), key);
-				if (who != null && !party.isReporter(who, now) && !who.equals(localName()))
-				{
-					tracker.estimateHit(now, who, key, amount, type == HitsplatID.BLOCK_OTHER || amount <= 0);
-				}
-			}
-		}
-		else if (isEffect(type))
-		{
-			tracker.effectHit(now, key, npc.getId(), name, boss, amount);
-		}
+		combat.hitsplatApplied(e.getActor(), e.getHitsplat());
 	}
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged e)
 	{
-		Actor actor = e.getActor();
-		if (actor == null)
-		{
-			return;
-		}
-		int anim = actor.getAnimation();
-		Actor target = actor.getInteracting();
-		if (anim == -1 || anim == EAT_ANIMATION || !(target instanceof NPC))
-		{
-			return;
-		}
-		if (actor == client.getLocalPlayer())
-		{
-			attackSource.attack(client.getTickCount(), healing.weaponName());
-		}
-		else if (actor instanceof Player && config.estimateOthers() && isGroupMode())
-		{
-			String who = Names.clean(actor.getName());
-			if (who != null)
-			{
-				attributor.attack(client.getTickCount(), who, TargetMatcher.key(client.getWorld(), ((NPC) target).getIndex()));
-			}
-		}
+		combat.animationChanged(e.getActor());
 	}
 
 	@Subscribe
@@ -396,7 +290,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 			else if (target.contains("->"))
 			{
-				attackSource.castClicked(tick, target);
+				combat.spellCastClicked(tick, target);
 			}
 		}
 	}
@@ -430,7 +324,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private void hideOverheadChat()
 	{
 		WorldView wv = client.getTopLevelWorldView();
-		if (wv == null || !fun.anyone(System.currentTimeMillis()))
+		if (wv == null || !fun.anyone())
 		{
 			return;
 		}
@@ -452,6 +346,18 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			tracker.npcDied(System.currentTimeMillis(), TargetMatcher.key(client.getWorld(), npc.getIndex()),
 				bosses.isBoss(npc.getId(), npc.getName()));
+			barrows.died(System.currentTimeMillis(), npc.getName());
+		}
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage e)
+	{
+		if (e.getType() == ChatMessageType.GAMEMESSAGE)
+		{
+			long now = System.currentTimeMillis();
+			killCounts.message(now, e.getMessage());
+			barrows.gameMessage(now, e.getMessage(), tracker);
 		}
 	}
 
@@ -461,12 +367,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		long now = System.currentTimeMillis();
 		int tick = client.getTickCount();
 
-		int spec = client.getVarpValue(VarPlayerID.SA_ENERGY);
-		if (lastSpecEnergy >= 0 && spec < lastSpecEnergy)
-		{
-			attackSource.specUsed(tick, healing.weaponName());
-		}
-		lastSpecEnergy = spec;
+		combat.tick(tick);
 
 		List<HealthWatcher.Heal> heals = healing.endTick(tick);
 		if (tracker.getCurrent() != null)
@@ -475,10 +376,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 
 		tracker.tick(now);
-		sendPartyUpdate();
+		barrows.tick(now, tick);
+		partyUpdates.send();
+		reports.sendDue(tick);
 		storage.tick(now);
-		raidTick(now);
-		party.tick(now);
+		raids.tick(now);
+		party.tick(now, raids.isInsideRaid());
 		refreshOverlay();
 		hideOverheadChat();
 		if (++ticks % PANEL_EVERY_TICKS == 0)
@@ -494,51 +397,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			return;
 		}
 		tracker.heal(now, localName(), PlayerKind.LOCAL, heal.type, heal.amount, heal.overheal);
-		switch (heal.type)
-		{
-			case FOOD:
-				outgoing.food += heal.amount;
-				outgoing.foodOverheal += heal.overheal;
-				break;
-			case LIFESTEAL:
-				outgoing.lifesteal += heal.amount;
-				outgoing.lifestealOverheal += heal.overheal;
-				break;
-			case REGEN:
-				outgoing.regen += heal.amount;
-				break;
-			case HEAL_OTHER:
-				outgoing.healOther += heal.amount;
-				break;
-			default:
-				break;
-		}
-	}
-
-	/** One fight per raid: starts when you enter the raid instance and ends when you leave it. */
-	private void raidTick(long now)
-	{
-		String raid = null;
-		Player me = client.getLocalPlayer();
-		WorldView wv = client.getTopLevelWorldView();
-		if (config.raidFight() && me != null && me.getLocalLocation() != null && wv != null)
-		{
-			WorldPoint p = WorldPoint.fromLocalInstance(client, me.getLocalLocation());
-			if (p != null)
-			{
-				raid = RaidZone.raidFor(p.getRegionID(), wv.isInstance());
-			}
-		}
-		RaidZone.Change c = raidZone.tick(raid);
-		if (c.start != null)
-		{
-			tracker.startRaid(now, c.start);
-			chat.info(c.start + " started. The meter counts the whole raid until you leave.");
-		}
-		else if (c.end)
-		{
-			tracker.endRaid(now, "Left the raid");
-		}
+		partyUpdates.addHeal(heal);
 	}
 
 	@Subscribe
@@ -548,19 +407,19 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (state == GameState.LOGGED_IN)
 		{
 			storage.loadAccount(client.getAccountHash(), config.countRegen());
+			barrows.loggedIn();
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
 			long now = System.currentTimeMillis();
 			String reason = state == GameState.HOPPING ? "World hop" : "Logged out";
 			healing.reset();
-			attributor.clear();
+			combat.reset();
 			matcher.clear();
-			attackSource.reset();
-			raidZone.reset();
-			party.loggedOut();
-			lastSpecEnergy = -1;
-			outgoing = new GoldenDpsUpdate();
+			raids.reset();
+			barrows.loggedOut(now);
+			party.loggedOut(state == GameState.LOGIN_SCREEN);
+			partyUpdates.clear();
 			tracker.endRaid(now, reason);
 			tracker.endNow(now, reason);
 			storage.save();
@@ -574,7 +433,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		// not on the client thread, but the game loop has stopped by now
 		try
 		{
-			tracker.endNow(System.currentTimeMillis(), "Client closed");
+			long now = System.currentTimeMillis();
+			barrows.clientClosed(now);
+			tracker.endNow(now, "Client closed");
 			Future<?> write = storage.saveNow();
 			if (write != null)
 			{
@@ -591,6 +452,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	public void fightEnded(Fight fight)
 	{
 		storage.fightEnded(fight, config.countRegen());
+		reports.fightEnded(fight, client.getTickCount());
 	}
 
 	// ---- party ----
@@ -598,7 +460,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Subscribe
 	public void onGoldenDpsUpdate(GoldenDpsUpdate update)
 	{
-		clientThread.invokeLater(() -> applyPartyUpdate(update));
+		clientThread.invokeLater(() -> partyUpdates.receive(update));
 	}
 
 	@Subscribe
@@ -617,117 +479,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		clientThread.invokeLater(() -> party.onMemberLeft(e.getMemberId()));
 	}
 
-	private void applyPartyUpdate(GoldenDpsUpdate u)
-	{
-		PartyMember local = partyService.getLocalMember();
-		if (local != null && u.getMemberId() == local.getMemberId())
-		{
-			return;
-		}
-		party.pluginSeen(u.getMemberId());
-		String name = Names.clean(u.name);
-		if (name == null)
-		{
-			PartyMember m = partyService.getMemberById(u.getMemberId());
-			name = m == null ? null : Names.clean(m.getDisplayName());
-		}
-		if (name == null || name.equals(localName()))
-		{
-			return;
-		}
-
-		long now = System.currentTimeMillis();
-		party.reporterSeen(name, now);
-		boolean together = !config.othersOnlyTogether() || party.isInstanceMate(name);
-		boolean counted = together;
-		if (u.hits != null)
-		{
-			for (GoldenDpsUpdate.Hit hit : u.hits)
-			{
-				boolean boss = hit.boss || bosses.isBoss(hit.npcId, hit.npcName);
-				if (!together && !(boss && isSameNpc(u.world, hit)))
-				{
-					continue;
-				}
-				counted = true;
-				String source = hit.source == null || hit.source.length() > MAX_SOURCE_LENGTH ? null : hit.source;
-				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(u.world, hit, name), hit.npcId, hit.npcName,
-					boss, hit.amount, hit.miss, source);
-			}
-		}
-		Fight current = tracker.getCurrent();
-		if (!counted && (current == null || !current.players.containsKey(name)))
-		{
-			return;
-		}
-		tracker.damageTaken(now, name, PlayerKind.PARTY, u.taken);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, u.food, u.foodOverheal);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.LIFESTEAL, u.lifesteal, u.lifestealOverheal);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.REGEN, u.regen);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.HEAL_OTHER, u.healOther);
-	}
-
-	private void sendPartyUpdate()
-	{
-		GoldenDpsUpdate u = outgoing;
-		outgoing = new GoldenDpsUpdate();
-		if (u.isEmpty() || !config.shareWithParty() || !party.inParty())
-		{
-			return;
-		}
-		u.world = client.getWorld();
-		u.name = localName();
-		partyService.send(u);
-	}
-
-	/**
-	 * Other players count in an instance, and in a party while you fight a boss
-	 * (or always in a party when "others only when together" is off).
-	 */
-	private boolean isGroupMode()
-	{
-		WorldView wv = client.getTopLevelWorldView();
-		if (wv != null && wv.isInstance())
-		{
-			return true;
-		}
-		if (!partyService.isInParty())
-		{
-			return false;
-		}
-		Fight f = tracker.getCurrent();
-		return !config.othersOnlyTogether() || (f != null && f.hasBossTarget());
-	}
-
-	/** The NPC in your scene that a party member hit, or null when you cannot see it. */
-	private NPC npcInScene(int world, GoldenDpsUpdate.Hit hit)
-	{
-		WorldView wv = client.getTopLevelWorldView();
-		if (world != client.getWorld() || wv == null)
-		{
-			return null;
-		}
-		NPC npc = wv.npcs().byIndex(hit.npcIndex);
-		return npc != null && npc.getId() == hit.npcId ? npc : null;
-	}
-
-	private boolean isSameNpc(int world, GoldenDpsUpdate.Hit hit)
-	{
-		return npcInScene(world, hit) != null;
-	}
-
-	/** Your key for the NPC when it is the same one you see, otherwise a key of its own. */
-	private String partyTargetKey(int world, GoldenDpsUpdate.Hit hit, String sender)
-	{
-		NPC npc = npcInScene(world, hit);
-		WorldPoint pos = npc == null ? null : npc.getWorldLocation();
-		if (pos != null)
-		{
-			matcher.seen(TargetMatcher.key(world, hit.npcIndex), pos.getX(), pos.getY(), pos.getPlane());
-		}
-		return matcher.partyKey(client.getWorld(), world, hit.npcIndex, hit.x, hit.y, hit.plane, sender);
-	}
-
 	// ---- overlay and panel ----
 
 	FightReport overlayReport()
@@ -742,51 +493,35 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	boolean isFightRunning()
 	{
-		return tracker.getCurrent() != null;
+		return overallGoingOn;
 	}
 
 	boolean isFightPaused()
 	{
-		Fight f = tracker.getCurrent();
-		return f != null && f.isPaused(System.currentTimeMillis());
+		return overallPaused;
 	}
 
+	String barrowsRunTime()
+	{
+		return barrows.liveTime();
+	}
+
+	boolean isBarrowsRunPaused()
+	{
+		return barrows.isPaused();
+	}
+
+	/** The overlays draw on their own thread, so what they show is built here on the client thread. */
 	private void refreshOverlay()
 	{
 		long now = System.currentTimeMillis();
-		Fight f = config.overlayScope() == GoldenDpsConfig.Scope.SESSION
-			? tracker.getSessionTotal(now)
-			: tracker.getDisplayFight();
-		overlayCache = f == null ? null : FightReport.of(f, config.bossOnly(), config.countRegen(), now);
-		updateFun(now);
-
-		Fight shown = tracker.getBossDisplayFight();
-		long hideMs = config.bossHideSeconds() * 1000L;
-		if (!config.bossMeter() || config.bossOnly() || shown == null || !shown.bossMeterVisible(now, hideMs))
-		{
-			bossCache = null;
-			return;
-		}
-		long over = shown.bossDiedMs();
-		if (over == 0 && !shown.isActive())
-		{
-			over = shown.endMs;
-		}
-		int hidesIn = over == 0 ? -1 : (int) Math.max(0, (over + hideMs - now + 999) / 1000);
-		FightReport report = FightReport.of(shown, true, config.countRegen(), now);
-		String pb = BossRecords.meterTag(storage.record(report.getTitle()), storage.compare(shown.id));
-		bossCache = new BossMeter(report, shown.bossDiedMs() > 0, hidesIn, pb);
-	}
-
-	private void updateFun(long now)
-	{
-		Fight fight = tracker.getDisplayFight();
-		Fight boss = tracker.getBossDisplayFight();
-		FightReport fightReport = fight == null ? null : FightReport.of(fight, false, config.countRegen(), now);
-		FightReport bossReport = boss == null || !boss.hasBossTarget()
-			? null : FightReport.of(boss, true, config.countRegen(), now);
-		fun.update(fightReport, fight == null ? 0 : fight.endMs, bossReport, boss == null ? 0 : boss.endMs,
-			boss == null ? "" : boss.id, now);
+		overlayCache = views.overlayReport(now);
+		overallGoingOn = tracker.isOverallGoingOn(now);
+		// between two fights of the overall meter, or no hits for a while in the running fight
+		Fight running = tracker.getCurrent();
+		overallPaused = running != null ? running.isPaused(now) : overallGoingOn;
+		views.updateFun(now);
+		bossCache = views.bossMeter(now);
 	}
 
 	FunEffects fun()
@@ -802,49 +537,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			return;
 		}
-		long now = System.currentTimeMillis();
-
-		GoldenDpsPanel.Data data = new GoldenDpsPanel.Data();
-		data.choices.add(new GoldenDpsPanel.Choice(LIVE,
-			tracker.getCurrent() != null ? "Current fight (live)" : "Current / last fight"));
-		data.choices.add(new GoldenDpsPanel.Choice(SESSION, "Session total"));
-		for (Fight f : tracker.getHistory())
-		{
-			data.choices.add(new GoldenDpsPanel.Choice(f.id, GoldenDpsPanel.label(f, now)));
-		}
-		data.bossOnly = config.bossOnly();
-
-		Fight fight = panelFight(p.getSelectedId(), now);
-		if (fight != null)
-		{
-			data.report = FightReport.of(fight, config.bossOnly(), config.countRegen(), now);
-			data.running = fight.isActive();
-			data.paused = fight.isPaused(now);
-			data.endReason = fight.endReason;
-			data.fights = fight.mergedFights;
-			data.startMs = fight.startMs;
-			if (!config.bossOnly() && fight.hasBossTarget())
-			{
-				data.bossReport = FightReport.of(fight, true, config.countRegen(), now);
-			}
-			data.killLines = BossRecords.killLines(storage.compare(fight.id));
-		}
-		data.personalBests = storage.personalBests();
-		data.party = party.view(localName());
+		GoldenDpsPanel.Data data = views.panelData(p.getSelectedId(), localName(), System.currentTimeMillis());
 		SwingUtilities.invokeLater(() -> p.update(data));
-	}
-
-	private Fight panelFight(String selected, long now)
-	{
-		if (SESSION.equals(selected))
-		{
-			return tracker.getSessionTotal(now);
-		}
-		if (selected == null || LIVE.equals(selected))
-		{
-			return tracker.getDisplayFight();
-		}
-		return tracker.findFight(selected);
 	}
 
 	// ---- actions from the overlay menu and the panel (Swing thread) ----
@@ -854,15 +548,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		clientThread.invoke(() ->
 		{
 			party.join(name);
-			updatePanel();
-		});
-	}
-
-	void joinRaidParty()
-	{
-		clientThread.invoke(() ->
-		{
-			party.joinRaidParty();
 			updatePanel();
 		});
 	}
@@ -898,46 +583,26 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		});
 	}
 
-	void reportOverlayToParty()
+	/** Reports what the overlay shows: the fight (or session), or the boss of the boss meter. */
+	void reportOverlayToParty(ReportKind kind)
 	{
 		clientThread.invoke(() ->
 		{
 			long now = System.currentTimeMillis();
-			boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
-			report(session ? tracker.getSessionTotal(now) : tracker.getDisplayFight(), session ? "Session" : null, now);
+			reports.send(views.overlayFight(kind, now), kind, views.isSessionOverlay(), now);
 		});
 	}
 
-	void reportPanelToParty()
+	/** Reports the fight picked in the panel. */
+	void reportPanelToParty(ReportKind kind)
 	{
 		GoldenDpsPanel p = panel;
 		String selected = p == null ? null : p.getSelectedId();
 		clientThread.invoke(() ->
 		{
 			long now = System.currentTimeMillis();
-			report(panelFight(selected, now), SESSION.equals(selected) ? "Session" : null, now);
+			reports.send(views.panelFight(selected, now), kind, GoldenDpsPanel.SESSION_CHOICE.equals(selected), now);
 		});
-	}
-
-	/** Sends the top players to the RuneLite party chat; plugins may not write to the game chat. */
-	private void report(Fight f, String title, long now)
-	{
-		if (f == null)
-		{
-			chat.info("nothing to report yet.");
-			return;
-		}
-		if (!party.inParty())
-		{
-			chat.info("join a party to report to it.");
-			return;
-		}
-		FightReport r = FightReport.of(f, config.bossOnly(), config.countRegen(), now);
-		MeterMode mode = config.overlayMode();
-		for (String line : ReportFormatter.lines(r, mode, title != null ? title : r.getTitle(), ReportFormatter.DEFAULT_TOP))
-		{
-			partyService.send(new PartyChatMessage(line));
-		}
 	}
 
 	void setMode(MeterMode mode)
@@ -957,7 +622,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	void resetSession()
 	{
-		onClientThread(() ->
+		runAndRefresh(() ->
 		{
 			tracker.resetSession(System.currentTimeMillis());
 			storage.save();
@@ -966,16 +631,33 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	void endFight()
 	{
-		onClientThread(() -> tracker.endNow(System.currentTimeMillis(), "Ended by you"));
+		runAndRefresh(() -> tracker.endNow(System.currentTimeMillis(), "Ended by you"));
+	}
+
+	void resetPersonalBest(String boss, boolean party)
+	{
+		runAndRefresh(() -> storage.resetRecord(boss, party));
 	}
 
 	void clearHistory()
 	{
-		onClientThread(() ->
+		runAndRefresh(() ->
 		{
 			tracker.clearHistory();
 			storage.save();
 		});
+	}
+
+	/** The panel sections that are shown or hidden against their default, comma separated. */
+	String panelToggles()
+	{
+		String toggles = configManager.getConfiguration(GoldenDpsConfig.STATE_GROUP, PANEL_TOGGLES_KEY);
+		return toggles == null ? "" : toggles;
+	}
+
+	void savePanelToggles(String toggles)
+	{
+		configManager.setConfiguration(GoldenDpsConfig.STATE_GROUP, PANEL_TOGGLES_KEY, toggles);
 	}
 
 	void requestPanelUpdate()
@@ -983,7 +665,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		clientThread.invoke(this::updatePanel);
 	}
 
-	private void onClientThread(Runnable action)
+	/** Runs a change to the fights on the client thread and shows the result. */
+	private void runAndRefresh(Runnable action)
 	{
 		clientThread.invoke(() ->
 		{
@@ -993,25 +676,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		});
 	}
 
-	// ---- helpers ----
-
 	private String localName()
 	{
-		Player p = client.getLocalPlayer();
-		String n = p == null ? null : Names.clean(p.getName());
-		return n == null ? "You" : n;
-	}
-
-	/** Damage over time; the game does not say who caused it. */
-	private static boolean isEffect(int type)
-	{
-		return type == HitsplatID.POISON || type == HitsplatID.VENOM || type == HitsplatID.DISEASE
-			|| type == HitsplatID.BURN || type == HitsplatID.BLEED;
-	}
-
-	private static boolean isDamageOnPlayer(Hitsplat h)
-	{
-		int type = h.getHitsplatType();
-		return h.isMine() || h.isOthers() || isEffect(type) || type == HitsplatID.DOOM;
+		return Names.localName(client);
 	}
 }

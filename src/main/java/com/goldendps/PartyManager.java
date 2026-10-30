@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.WorldView;
 import net.runelite.client.party.PartyMember;
@@ -46,9 +47,14 @@ class PartyManager
 	private final Map<Long, Long> firstSeen = new HashMap<>();
 	private final Set<String> instanceMates = new HashSet<>();
 	private long localMemberId;
-	/** The raid party offered in the panel, or null. */
-	private String raidPartyOffer;
-	private String raidPartyOfferRaid;
+	/** You left or were kicked: no own party until the next login. */
+	private boolean ownPartyStopped;
+	/** A boss fight (or Barrows run) started: make your own party if you are in none. */
+	private boolean ownPartyWanted;
+	/** The party at the last tick, to see you leave your own party in RuneLite's Party panel. */
+	private String lastParty;
+	/** GoldenDPS changed the party since the last tick. */
+	private boolean changedByUs;
 
 	@Inject
 	PartyManager(Client client, PartyService partyService, GoldenDpsConfig config, ChatNotifier chat,
@@ -59,6 +65,12 @@ class PartyManager
 		this.config = config;
 		this.chat = chat;
 		this.raidPartyDetector = raidPartyDetector;
+	}
+
+	/** You lead the party (as GoldenDPS sees it). */
+	boolean isLeader()
+	{
+		return inParty() && leader.isLeader();
 	}
 
 	boolean inParty()
@@ -76,19 +88,6 @@ class PartyManager
 		chat.info("joined party \"" + name + "\".");
 	}
 
-	/** Joins the offered raid party; an earlier raid party is left for it. */
-	void joinRaidParty()
-	{
-		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
-		if (raidPartyOffer == null || (current != null && !RaidParty.isAuto(current)))
-		{
-			return;
-		}
-		changeParty(raidPartyOffer);
-		chat.info("joined the " + raidPartyOfferRaid + " party.");
-		raidPartyOffer = null;
-	}
-
 	/** A random name for a new party, or null when you are in a party already. */
 	String randomName()
 	{
@@ -99,6 +98,7 @@ class PartyManager
 	{
 		if (partyService.isInParty())
 		{
+			ownPartyStopped = true;
 			changeParty(null);
 			chat.info("left the party.");
 		}
@@ -119,6 +119,7 @@ class PartyManager
 
 	private void changeParty(String passphrase)
 	{
+		changedByUs = true;
 		partyService.changeParty(passphrase);
 		leader.left();
 	}
@@ -182,6 +183,7 @@ class PartyManager
 		String bySuffix = by != null ? " by " + by + "." : ".";
 		if (leader.acceptKick(m.getMemberId(), m.target))
 		{
+			ownPartyStopped = true;
 			changeParty(null);
 			chat.kicked("you were removed from the party" + bySuffix);
 		}
@@ -201,16 +203,26 @@ class PartyManager
 		leader.memberLeft(memberId, memberIds());
 	}
 
-	/** You logged out: tell again who is in the party after the next login. */
-	void loggedOut()
+	/**
+	 * You logged out or hopped: tell again who is in the party after the next login.
+	 * @param toLoginScreen a real logout (not a world hop): your own party may be made again
+	 */
+	void loggedOut(boolean toLoginScreen)
 	{
 		notices.reset();
+		if (toLoginScreen)
+		{
+			ownPartyStopped = false;
+		}
 	}
 
-	void tick(long now)
+	/** @param inRaid you are inside a raid */
+	void tick(long now, boolean inRaid)
 	{
 		updateInstanceMates();
-		updateRaidParty();
+		watchOwnParty();
+		updateRaidParty(inRaid);
+		updateOwnParty();
 		updateMembership(now);
 	}
 
@@ -293,33 +305,62 @@ class PartyManager
 		}
 	}
 
-	private void updateRaidParty()
+	private void updateRaidParty(boolean inRaid)
 	{
 		if (!config.autoRaidParty())
 		{
-			raidPartyOffer = null;
 			return;
 		}
 		RaidPartyDetector.Detected raid = raidPartyDetector.current();
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
-		RaidParty.Action action = raidParty.tick(raid.partyName, current);
-		if (action.offer != null && !action.offer.equals(raidPartyOffer))
+		RaidParty.Action action = raidParty.tick(raid.partyName, current, inRaid);
+		if (action.join != null)
 		{
-			chat.joined("your " + raid.raid + " party can share numbers: click Join raid party in the GoldenDPS panel.");
+			changeParty(action.join);
+			chat.joined("joined the " + raid.raid + " raid party automatically.");
 		}
-		raidPartyOffer = action.offer;
-		raidPartyOfferRaid = raid.raid;
-		if (action.leave)
+		else if (action.leave)
 		{
 			changeParty(null);
 			chat.info("left the raid party.");
 		}
 	}
 
+	/** Leaving your own party anywhere (also in RuneLite's Party panel) stops it until the next login. */
+	private void watchOwnParty()
+	{
+		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		if (RaidParty.isOwn(lastParty) && !lastParty.equals(current) && !changedByUs)
+		{
+			ownPartyStopped = true;
+		}
+		lastParty = current;
+		changedByUs = false;
+	}
+
+	/** You hit a boss: the fight timer runs. */
+	void bossHit()
+	{
+		ownPartyWanted = true;
+	}
+
+	/** Setting "Own party": when a boss fight starts and you are in no party, make one just for you. */
+	private void updateOwnParty()
+	{
+		boolean wanted = ownPartyWanted;
+		ownPartyWanted = false;
+		if (!wanted || !config.ownParty() || ownPartyStopped || partyService.isInParty()
+			|| client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+		changeParty(RaidParty.OWN_PREFIX + partyService.generatePassphrase().replace('-', ' '));
+		chat.joined("you are in your own party now, so boss reports also work solo (setting: Own party).");
+	}
+
 	GoldenDpsPartyPanel.View view(String localName)
 	{
 		GoldenDpsPartyPanel.View v = new GoldenDpsPartyPanel.View();
-		v.raidPartyOffer = raidPartyOffer == null ? null : raidPartyOfferRaid;
 		v.inParty = partyService.isInParty();
 		if (!v.inParty)
 		{
@@ -327,7 +368,7 @@ class PartyManager
 		}
 		v.code = partyService.getPartyPassphrase();
 		v.youLead = leader.isLeader();
-		v.auto = RaidParty.isAuto(v.code);
+		v.autoLabel = RaidParty.isOwn(v.code) ? "Own party" : RaidParty.isAuto(v.code) ? "Raid party" : null;
 
 		long now = System.currentTimeMillis();
 		kicked.values().removeIf(t -> now - t > KICK_HIDE_MS);

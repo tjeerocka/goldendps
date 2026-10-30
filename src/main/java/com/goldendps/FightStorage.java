@@ -94,14 +94,7 @@ class FightStorage
 		recordsLoaded = true;
 		for (BossRecords.Kill k : pendingKills)
 		{
-			BossRecords.Compare c = records.add(k);
-			for (Fight f : tracker.getHistory())
-			{
-				if (f.bossDiedMs() == k.whenMs)
-				{
-					killCompares.put(f.id, c);
-				}
-			}
+			killCompares.put(k.fightId, records.add(k));
 		}
 		pendingKills.clear();
 		saveRecords();
@@ -122,17 +115,18 @@ class FightStorage
 	{
 		dirty = true;
 		save();
-		BossRecords.Kill k = BossRecords.kill(fight, includeRegen);
-		if (k == null || account == -1)
+		BossRecords.Kill kill = BossRecords.record(fight, includeRegen);
+		if (kill == null || account == -1)
 		{
 			return;
 		}
+		kill.fightId = fight.id;
 		if (!recordsLoaded)
 		{
-			pendingKills.add(k);
+			pendingKills.add(kill);
 			return;
 		}
-		killCompares.put(fight.id, records.add(k));
+		killCompares.put(fight.id, records.add(kill));
 		saveRecords();
 	}
 
@@ -174,9 +168,9 @@ class FightStorage
 		return executor.submit(() -> write(acc, snapshot));
 	}
 
-	BossRecords.Record record(String boss)
+	BossRecords.Record record(String boss, boolean party)
 	{
-		return records.get(boss);
+		return records.get(boss, party);
 	}
 
 	BossRecords.Compare compare(String fightId)
@@ -187,6 +181,12 @@ class FightStorage
 	List<BossRecords.Record> personalBests()
 	{
 		return records.list();
+	}
+
+	void resetRecord(String boss, boolean party)
+	{
+		records.remove(boss, party);
+		saveRecords();
 	}
 
 	private void saveRecords()
@@ -216,10 +216,10 @@ class FightStorage
 		Fight current = tracker.getCurrent();
 		if (current != null && current.knownDamage() > 0)
 		{
-			Fight c = current.copy();
-			c.endMs = Math.max(c.startMs, c.lastActivityMs);
-			c.endReason = "Not finished (saved)";
-			out.add(c);
+			Fight unfinished = current.copy();
+			unfinished.endMs = Math.max(unfinished.startMs, unfinished.lastActivityMs);
+			unfinished.endReason = "Not finished (saved)";
+			out.add(unfinished);
 		}
 		for (Fight f : tracker.getHistory())
 		{

@@ -9,15 +9,18 @@ import java.util.Locale;
 
 /**
  * Party for raids. Every member derives the same party name from data the game gives all of them
- * (the member names, or the CoX raid party id), so one click puts them in the same RuneLite party
- * without exchanging anything. The party is left again when the raid party is gone. Joining is
- * only offered, never done automatically, and a party joined by hand is never changed.
+ * (the member names, or the CoX raid party id), so they all join the same RuneLite party
+ * without exchanging anything. The party is left again when the raid party is gone, and a party
+ * joined by hand is never changed.
  */
 public class RaidParty
 {
-	/** The raid party must stay the same this long before it is offered (people join one by one). */
+	/** The raid party must stay the same this long before it is joined (people join one by one). */
 	public static final int STABLE_TICKS = 5;
-	/** No raid party for this long means the raid is over (short gaps happen while loading). */
+	/**
+	 * No raid party for this long outside a raid means the raid is over (short gaps happen while
+	 * loading). Inside CoX the game clears the raid party id, so the party is kept there.
+	 */
 	public static final int LEAVE_TICKS = 10;
 	public static final String PREFIX = "goldendps ";
 
@@ -27,13 +30,13 @@ public class RaidParty
 		public static final Action NONE = new Action(null, false);
 		public static final Action LEAVE = new Action(null, true);
 
-		/** The party to offer, or null. */
-		public final String offer;
+		/** The party to join, or null. */
+		public final String join;
 		public final boolean leave;
 
-		private Action(String offer, boolean leave)
+		private Action(String join, boolean leave)
 		{
-			this.offer = offer;
+			this.join = join;
 			this.leave = leave;
 		}
 	}
@@ -79,9 +82,18 @@ public class RaidParty
 		return PREFIX + "cox " + hash("CoX|" + world + "|" + partyId);
 	}
 
+	/** Your own party made outside raids (setting "Own party"). Never left here, a raid party may replace it. */
+	public static final String OWN_PREFIX = PREFIX + "own ";
+
+	/** A party GoldenDPS joined by itself: a raid party or your own party. */
 	public static boolean isAuto(String party)
 	{
 		return party != null && party.startsWith(PREFIX);
+	}
+
+	public static boolean isOwn(String party)
+	{
+		return party != null && party.startsWith(OWN_PREFIX);
 	}
 
 	/**
@@ -89,16 +101,18 @@ public class RaidParty
 	 *
 	 * @param name         party name for the raid party you are in, or null
 	 * @param currentParty the RuneLite party you are in, or null
+	 * @param inRaid       you are inside a raid
 	 */
-	public Action tick(String name, String currentParty)
+	public Action tick(String name, String currentParty, boolean inRaid)
 	{
 		boolean inAutoParty = isAuto(currentParty);
+		boolean inRaidParty = inAutoParty && !isOwn(currentParty);
 		if (name == null)
 		{
 			candidate = null;
 			stableTicks = 0;
-			ticksWithoutRaidParty++;
-			return inAutoParty && ticksWithoutRaidParty == LEAVE_TICKS ? Action.LEAVE : Action.NONE;
+			ticksWithoutRaidParty = inRaid ? 0 : ticksWithoutRaidParty + 1;
+			return inRaidParty && ticksWithoutRaidParty == LEAVE_TICKS ? Action.LEAVE : Action.NONE;
 		}
 		ticksWithoutRaidParty = 0;
 		if (!name.equals(candidate))

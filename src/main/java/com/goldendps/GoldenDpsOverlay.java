@@ -58,7 +58,10 @@ class GoldenDpsOverlay extends Overlay
 		addMenuEntry(MenuAction.RUNELITE_OVERLAY, "Toggle", "Boss only", e -> plugin.setBossOnly(!config.bossOnly()));
 		addMenuEntry(MenuAction.RUNELITE_OVERLAY, "Toggle", "Fight / Session", e -> plugin.setScope(
 			config.overlayScope() == GoldenDpsConfig.Scope.FIGHT ? GoldenDpsConfig.Scope.SESSION : GoldenDpsConfig.Scope.FIGHT));
-		addMenuEntry(MenuAction.RUNELITE_OVERLAY, "Report", "to party", e -> plugin.reportOverlayToParty());
+		for (ReportKind kind : ReportKind.values())
+		{
+			addMenuEntry(MenuAction.RUNELITE_OVERLAY, "Report to party", kind.label, e -> plugin.reportOverlayToParty(kind));
+		}
 		addMenuEntry(MenuAction.RUNELITE_OVERLAY, "Reset", "Session", e -> plugin.resetSession());
 		addMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OverlayManager.OPTION_CONFIGURE, "GoldenDPS");
 	}
@@ -73,9 +76,10 @@ class GoldenDpsOverlay extends Overlay
 		MeterMode mode = config.overlayMode();
 		FightReport report = plugin.overlayReport();
 		List<FightReport.PlayerRow> rows = report == null ? Collections.emptyList() : report.sorted(mode);
-		GoldenDpsPlugin.BossMeter boss = plugin.bossMeter();
+		BossMeter boss = plugin.bossMeter();
 		List<FightReport.PlayerRow> bossRows = boss == null ? Collections.emptyList() : boss.report.sorted(MeterMode.DAMAGE);
-		if (rows.isEmpty() && bossRows.isEmpty() && config.hideWhenEmpty())
+		String barrows = plugin.barrowsRunTime();
+		if (rows.isEmpty() && bossRows.isEmpty() && barrows == null && config.hideWhenEmpty())
 		{
 			return null;
 		}
@@ -85,6 +89,39 @@ class GoldenDpsOverlay extends Overlay
 		FontMetrics fm = g.getFontMetrics();
 		int width = config.overlayWidth();
 
+		int y = 0;
+		if (!rows.isEmpty() || !config.hideWhenEmpty())
+		{
+			y = drawMainMeter(g, fm, width, mode, report, rows);
+		}
+		if (boss != null && !bossRows.isEmpty())
+		{
+			String title = "Boss - " + boss.report.getTitle() + (boss.dead ? " (dead)" : "");
+			String time = (boss.paused ? "paused " : "") + Format.duration(boss.report.getDurationMs())
+				+ (boss.pb != null ? "  " + boss.pb : "");
+			Color timeColor = boss.pb != null && boss.pb.startsWith("NEW") ? PB_COLOR
+				: boss.paused ? Color.YELLOW : boss.dead ? Color.LIGHT_GRAY : Color.WHITE;
+			y = drawMeter(g, fm, gap(y), width, title, time, timeColor,
+				BOSS_HEADER_BG, boss.report, bossRows, MeterMode.DAMAGE);
+		}
+		if (barrows != null)
+		{
+			boolean runPaused = plugin.isBarrowsRunPaused();
+			y = drawMeter(g, fm, gap(y), width, "Barrows run", (runPaused ? "paused " : "") + barrows,
+				runPaused ? Color.YELLOW : Color.WHITE, BOSS_HEADER_BG, null, Collections.emptyList(), MeterMode.DAMAGE);
+		}
+		return new Dimension(width, y);
+	}
+
+	/** Space between two meters, none above the first one. */
+	private static int gap(int y)
+	{
+		return y > 0 ? y + 2 : 0;
+	}
+
+	private int drawMainMeter(Graphics2D g, FontMetrics fm, int width, MeterMode mode, FightReport report,
+		List<FightReport.PlayerRow> rows)
+	{
 		boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
 		String title = mode.getLabel() + (session ? " - Session" : " overall");
 		if (config.bossOnly())
@@ -98,21 +135,7 @@ class GoldenDpsOverlay extends Overlay
 		boolean paused = plugin.isFightPaused();
 		String right = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
 		Color rightColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
-		int y = drawMeter(g, fm, 0, width, title, right, rightColor, HEADER_BG, report, rows, mode);
-
-		if (boss != null && !bossRows.isEmpty())
-		{
-			y += 2;
-			String bTitle = "Boss - " + boss.report.getTitle() + (boss.dead ? " (dead)" : "");
-			String bRight = Format.duration(boss.report.getDurationMs())
-				+ (boss.pb != null ? "  " + boss.pb : "")
-				+ (boss.hidesIn >= 0 ? "  (" + boss.hidesIn + "s)" : "");
-			Color bColor = boss.pb != null && boss.pb.startsWith("NEW") ? PB_COLOR
-				: boss.dead ? Color.LIGHT_GRAY : Color.WHITE;
-			y = drawMeter(g, fm, y, width, bTitle, bRight, bColor,
-				BOSS_HEADER_BG, boss.report, bossRows, MeterMode.DAMAGE);
-		}
-		return new Dimension(width, y);
+		return drawMeter(g, fm, 0, width, title, right, rightColor, HEADER_BG, report, rows, mode);
 	}
 
 	/** Draws a header and its bars; returns the y below them. */
@@ -166,11 +189,11 @@ class GoldenDpsOverlay extends Overlay
 		}
 		int nameMaxW = x - PAD - 2;
 
-		int cy = top + rowH + textY - 1;
-		drawText(g, "Player", PAD + 2, cy, CATEGORY_COLOR);
+		int labelY = top + rowH + textY - 1;
+		drawText(g, "Player", PAD + 2, labelY, CATEGORY_COLOR);
 		for (int c = 0; c < labels.length; c++)
 		{
-			drawText(g, labels[c], colRight[c] - fm.stringWidth(labels[c]), cy, CATEGORY_COLOR);
+			drawText(g, labels[c], colRight[c] - fm.stringWidth(labels[c]), labelY, CATEGORY_COLOR);
 		}
 
 		double max = FightReport.value(rows.get(0), mode);
@@ -178,21 +201,21 @@ class GoldenDpsOverlay extends Overlay
 		{
 			FightReport.PlayerRow row = rows.get(i);
 			int y = top + rowH * (i + 2) + 1;
-			double v = FightReport.value(row, mode);
+			double value = FightReport.value(row, mode);
 
 			g.setColor(BAR_BG);
 			g.fillRect(PAD, y, width - 2 * PAD, rowH - 2);
-			int barW = max <= 0 ? 0 : (int) Math.round((width - 2 * PAD) * v / max);
-			Color col = colorFor(row);
-			g.setColor(new Color(col.getRed(), col.getGreen(), col.getBlue(), 150));
+			int barW = max <= 0 ? 0 : (int) Math.round((width - 2 * PAD) * value / max);
+			Color barColor = colorFor(row);
+			g.setColor(new Color(barColor.getRed(), barColor.getGreen(), barColor.getBlue(), 150));
 			g.fillRect(PAD, y, barW, rowH - 2);
 
-			int ty = y + textY - 1;
+			int rowTextY = y + textY - 1;
 			String left = (i + 1) + ". " + (row.isEstimate() ? "~" : "") + row.name;
-			drawText(g, fit(fm, left, nameMaxW), PAD + 2, ty, Color.WHITE);
+			drawText(g, fit(fm, left, nameMaxW), PAD + 2, rowTextY, Color.WHITE);
 			for (int c = 0; c < labels.length; c++)
 			{
-				drawText(g, cells[i][c], colRight[c] - fm.stringWidth(cells[i][c]), ty, Color.WHITE);
+				drawText(g, cells[i][c], colRight[c] - fm.stringWidth(cells[i][c]), rowTextY, Color.WHITE);
 			}
 		}
 		return top + height;
@@ -234,8 +257,8 @@ class GoldenDpsOverlay extends Overlay
 
 	static String[] columnValues(FightReport.PlayerRow row, MeterMode mode, double total, boolean maxHit)
 	{
-		double v = FightReport.value(row, mode);
-		String share = Format.percent(total <= 0 ? 0 : 100.0 * v / total);
+		double value = FightReport.value(row, mode);
+		String share = Format.percent(total <= 0 ? 0 : 100.0 * value / total);
 		String max = row.biggestHit > 0 ? String.valueOf(row.biggestHit) : "-";
 		switch (mode)
 		{
@@ -244,9 +267,9 @@ class GoldenDpsOverlay extends Overlay
 					? new String[]{Format.dps(row.dps), Format.amount(row.damage), max, Format.percent(row.percent)}
 					: new String[]{Format.dps(row.dps), Format.amount(row.damage), Format.percent(row.percent)};
 			case HEALING:
-				return new String[]{Format.amount(v), row.overheal > 0 ? Format.percent(row.overhealPercent()) : "-", share};
+				return new String[]{Format.amount(value), row.overheal > 0 ? Format.percent(row.overhealPercent()) : "-", share};
 			case DAMAGE_TAKEN:
-				return new String[]{Format.amount(v), share};
+				return new String[]{Format.amount(value), share};
 			case DAMAGE:
 			default:
 				return maxHit

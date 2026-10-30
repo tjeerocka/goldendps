@@ -32,6 +32,11 @@ public class Fight
 	public String raid;
 	/** For a boss fight inside a raid: the id of the raid fight. */
 	public String partOf;
+	/**
+	 * A finished run made of other fights (a Barrows run, from the first brother to the chest).
+	 * Its kills are already counted in those fights.
+	 */
+	public boolean run;
 
 	public Map<String, PlayerStats> players = new LinkedHashMap<>();
 	public Map<String, TargetStats> targets = new LinkedHashMap<>();
@@ -46,6 +51,12 @@ public class Fight
 		this.sessionId = sessionId;
 		this.startMs = startMs;
 		this.lastActivityMs = startMs;
+	}
+
+	/** A whole raid in which every boss died, or a finished run. */
+	public boolean isCompleteRaid()
+	{
+		return raid != null && partOf == null && endMs > 0 && (run || bossDiedMs() > 0);
 	}
 
 	public boolean isActive()
@@ -94,26 +105,26 @@ public class Fight
 		return isPaused(nowMs) ? lastActivityMs + pauseAfterMs : nowMs;
 	}
 
-	long activeBetween(long a, long b)
+	long activeBetween(long startMs, long endMs)
 	{
-		if (b <= a)
+		if (endMs <= startMs)
 		{
 			return 0;
 		}
-		long d = b - a;
+		long active = endMs - startMs;
 		if (pauses != null)
 		{
-			for (long[] p : pauses)
+			for (long[] pause : pauses)
 			{
-				long from = Math.max(a, p[0]);
-				long to = Math.min(b, p[1]);
+				long from = Math.max(startMs, pause[0]);
+				long to = Math.min(endMs, pause[1]);
 				if (to > from)
 				{
-					d -= to - from;
+					active -= to - from;
 				}
 			}
 		}
-		return d;
+		return active;
 	}
 
 	public long durationMs(long nowMs)
@@ -190,19 +201,10 @@ public class Fight
 		return died;
 	}
 
-	/** The boss meter stays visible during the fight and for {@code hideAfterMs} after it. */
-	public boolean bossMeterVisible(long nowMs, long hideAfterMs)
+	/** A single fight with a boss; its boss meter stays until the next boss fight replaces it. */
+	public boolean hasBossMeter()
 	{
-		if (mergedFights > 0 || !hasBossTarget())
-		{
-			return false;
-		}
-		long over = bossDiedMs();
-		if (over == 0 && !isActive())
-		{
-			over = endMs;
-		}
-		return over == 0 || nowMs - over < hideAfterMs;
+		return mergedFights == 0 && !run && hasBossTarget();
 	}
 
 	public PlayerStats player(String name, PlayerKind kind)
@@ -306,7 +308,8 @@ public class Fight
 		{
 			return "Fight";
 		}
-		return byName.size() > 1 ? best + " +" + (byName.size() - 1) : best;
+		// a boss names the fight on its own; "+2" only helps for fights against normal monsters
+		return byName.size() > 1 && !bestBoss ? best + " +" + (byName.size() - 1) : best;
 	}
 
 	public void merge(Fight o, long nowMs)
@@ -356,6 +359,7 @@ public class Fight
 		c.pauseAfterMs = pauseAfterMs;
 		c.raid = raid;
 		c.partOf = partOf;
+		c.run = run;
 		if (pauses != null)
 		{
 			for (long[] p : pauses)

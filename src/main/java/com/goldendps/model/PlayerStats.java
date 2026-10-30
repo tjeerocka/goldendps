@@ -2,6 +2,7 @@ package com.goldendps.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 /** Everything one player did in one fight. Plain fields for Gson. */
@@ -161,6 +162,18 @@ public class PlayerStats
 		{
 			into.computeIfAbsent(keyMap.apply(e.getKey()), k -> new TargetDamage()).merge(e.getValue());
 		}
+	}
+
+	/** Drops the damage on every target that is not in {@code keys}. */
+	public void keepTargets(Set<String> keys)
+	{
+		byTarget.keySet().retainAll(keys);
+		estByTarget.keySet().retainAll(keys);
+		for (Map<String, TargetDamage> s : sources().values())
+		{
+			s.keySet().retainAll(keys);
+		}
+		sources().values().removeIf(Map::isEmpty);
 	}
 
 	public PlayerStats copy()

@@ -31,6 +31,19 @@ public class RaidFightTest
 	}
 
 	@Test
+	public void aRaidRunsOnTheGameClockAndEndsWithItsLastHit()
+	{
+		FightTracker t = tracker();
+		t.startRaid(0, TOB);
+		hit(t, 1000, MAIDEN, "The Maiden of Sugadinti", true, 50);
+		hit(t, 121_000, BLOAT, "Pestilent Bloat", true, 50);
+		t.endRaid(300_000, "Left the raid");
+		Fight raid = ended.get(ended.size() - 1);
+		assertEquals(TOB, raid.title());
+		assertEquals("2 minutes between rooms count, looting after does not", 120_000, raid.durationMs(300_000));
+	}
+
+	@Test
 	public void raidStartEndsTheOldFight()
 	{
 		FightTracker t = tracker();
@@ -57,7 +70,7 @@ public class RaidFightTest
 		assertNull(t.getBossPart());
 		Fight maiden = t.getHistory().get(0);
 		assertEquals(raid.id, maiden.partOf);
-		assertTrue(maiden.title().startsWith("The Maiden of Sugadinti"));
+		assertEquals("a boss names the fight without +1", "The Maiden of Sugadinti", maiden.title());
 		assertEquals(60, maiden.knownDamage());
 		assertSame(maiden, ended.get(0));
 
@@ -125,6 +138,23 @@ public class RaidFightTest
 	}
 
 	@Test
+	public void bossFightWithOnlyStrangersHitsIsNotKept()
+	{
+		FightTracker t = tracker();
+		t.startRaid(0, TOB);
+		hit(t, 1000, CRAB, "Nylocas Matomenos", false, 10);
+		t.seenHit(2000, MAIDEN, 1, "The Maiden of Sugadinti", true, 30);
+		Fight bossPart = t.getBossPart();
+		assertNotNull("a hit seen on a boss starts the boss fight", bossPart);
+		assertEquals(30, bossPart.targets.get(MAIDEN).seenDamage);
+		assertEquals("the raid fight sees it too", 30, t.getCurrent().targets.get(MAIDEN).seenDamage);
+
+		t.endRaid(5000, "Left the raid");
+		assertEquals("only the raid fight is kept", 1, ended.size());
+		assertEquals(TOB, ended.get(0).title());
+	}
+
+	@Test
 	public void outsideRaidsNothingChanges()
 	{
 		FightTracker t = tracker();
@@ -133,5 +163,14 @@ public class RaidFightTest
 		t.npcDied(2000, MAIDEN, true);
 		assertNull(t.getCurrent());
 		assertEquals(1, t.getHistory().size());
+	}
+
+	@Test
+	public void monsterFightsCountTheOtherTargets()
+	{
+		FightTracker t = tracker();
+		hit(t, 1000, CRAB, "Goblin", false, 5);
+		hit(t, 2000, BLOAT, "Cow", false, 9);
+		assertEquals("Cow +1", t.getCurrent().title());
 	}
 }

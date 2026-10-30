@@ -2,8 +2,11 @@ package com.goldendps.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * Starts and ends fights and records every hit and heal. Free of RuneLite types, so it can be
@@ -51,7 +54,7 @@ public class FightTracker
 	public void setPauseAfterMs(long pauseAfterMs)
 	{
 		this.pauseAfterMs = Math.max(0, pauseAfterMs);
-		if (current != null)
+		if (current != null && current.raid == null)
 		{
 			current.pauseAfterMs = this.pauseAfterMs;
 		}
@@ -85,57 +88,34 @@ public class FightTracker
 				return;
 			}
 		}
-		Fight f = ensureFight(now);
-		TargetStats t = f.target(targetKey, npcId, npcName, boss);
-		t.engaged = true;
-		if (t.firstMs == 0)
+		for (Fight f : fightAndBossPart(now, boss))
 		{
-			t.firstMs = now;
-		}
-		t.lastMs = Math.max(t.lastMs, now);
-		f.player(player, kind).addHit(targetKey, amount, miss, source);
-		f.activity(now);
-
-		Fight b = bossPartFor(now, boss);
-		if (b != null)
-		{
-			TargetStats bt = b.target(targetKey, npcId, npcName, boss);
-			bt.engaged = true;
-			if (bt.firstMs == 0)
+			TargetStats t = f.target(targetKey, npcId, npcName, boss);
+			t.engaged = true;
+			if (t.firstMs == 0)
 			{
-				bt.firstMs = now;
+				t.firstMs = now;
 			}
-			bt.lastMs = Math.max(bt.lastMs, now);
-			b.player(player, kind).addHit(targetKey, amount, miss, source);
-			b.activity(now);
+			t.lastMs = Math.max(t.lastMs, now);
+			f.player(player, kind).addHit(targetKey, amount, miss, source);
+			f.activity(now);
 		}
 	}
 
 	/** Any damage hitsplat seen on an NPC. Starts a fight only on a boss. */
 	public void seenHit(long now, String targetKey, int npcId, String npcName, boolean boss, int amount)
 	{
-		if (current == null)
+		if (current == null && !boss)
 		{
-			if (!boss)
-			{
-				return;
-			}
-			ensureFight(now);
+			return;
 		}
-		TargetStats t = current.target(targetKey, npcId, npcName, boss);
-		t.seenDamage += Math.max(0, amount);
-		if (t.engaged || t.boss)
+		for (Fight f : fightAndBossPart(now, boss))
 		{
-			current.activity(now);
-		}
-		Fight b = bossPartFor(now, boss);
-		if (b != null)
-		{
-			TargetStats bt = b.target(targetKey, npcId, npcName, boss);
-			bt.seenDamage += Math.max(0, amount);
-			if (bt.engaged || bt.boss)
+			TargetStats t = f.target(targetKey, npcId, npcName, boss);
+			t.seenDamage += Math.max(0, amount);
+			if (t.engaged || t.boss)
 			{
-				b.activity(now);
+				f.activity(now);
 			}
 		}
 	}
@@ -251,14 +231,10 @@ public class FightTracker
 			return;
 		}
 		// end once every engaged boss is dead (e.g. all three Dagannoth Kings)
-		for (TargetStats other : current.targets.values())
+		if (allBossesDead(current))
 		{
-			if (other.boss && other.engaged && !other.died)
-			{
-				return;
-			}
+			end(now, "Boss died");
 		}
-		end(now, "Boss died");
 	}
 
 	/** Ends the fight after the idle timeout. Call every game tick. */
@@ -297,12 +273,29 @@ public class FightTracker
 	{
 		Fight f = current;
 		current = null;
+		finishAndKeep(f, endMs, reason);
+	}
+
+	private void endBossPart(long endMs, String reason)
+	{
+		Fight b = bossPart;
+		bossPart = null;
+		finishAndKeep(b, endMs, reason);
+	}
+
+	private void finishAndKeep(Fight f, long endMs, String reason)
+	{
 		f.finish(endMs, reason);
 		if (f.knownDamage() == 0)
 		{
 			// only strangers' hits: not our fight
 			return;
 		}
+		addToHistory(f);
+	}
+
+	private void addToHistory(Fight f)
+	{
 		history.add(0, f);
 		trimHistory();
 		if (listener != null)
@@ -333,8 +326,73 @@ public class FightTracker
 		{
 			return;
 		}
-		endNow(now, reason);
+		// the raid ends with its last hit, not when you leave after looting
+		endNow(current != null ? Math.min(now, current.lastActivityMs) : now, reason);
 		raid = null;
+	}
+
+	/**
+	 * Adds a finished run (a Barrows run): the fights from {@code startMs} to {@code endMs} with
+	 * targets that belong to the run, counting only the damage on those targets.
+	 *
+	 * @param activeMs the run time; the rest of the time from start to end is not counted
+	 * @return the run fight
+	 */
+	public Fight addRun(String name, long startMs, long endMs, long activeMs, Predicate<TargetStats> belongs,
+		String reason)
+	{
+		Fight run = new Fight(newId(), sessionId, startMs);
+		run.raid = name;
+		run.run = true;
+		List<Fight> parts = new ArrayList<>(history);
+		if (current != null)
+		{
+			parts.add(current);
+		}
+		for (Fight f : parts)
+		{
+			if (f.partOf != null || f.run || f.mergedFights > 0)
+			{
+				continue;
+			}
+			// by target: a brother can be fought in a fight that started before the run (a rat first)
+			Set<String> keys = new HashSet<>();
+			for (TargetStats t : f.targets.values())
+			{
+				if (belongs.test(t) && t.firstMs >= startMs && t.firstMs <= endMs)
+				{
+					keys.add(t.key);
+					TargetStats runTarget = t.copy();
+					runTarget.key = runKey(f, t.key);
+					run.targets.put(runTarget.key, runTarget);
+				}
+			}
+			if (keys.isEmpty())
+			{
+				continue;
+			}
+			for (PlayerStats p : f.players.values())
+			{
+				PlayerStats only = p.copy();
+				only.keepTargets(keys);
+				// NPC indexes are reused: two brothers may have had the same key in different fights
+				run.player(p.name, p.kind).merge(only, key -> runKey(f, key));
+			}
+		}
+		run.lastActivityMs = endMs;
+		run.finish(endMs, reason);
+		if (endMs - startMs > activeMs)
+		{
+			// the uncounted time (logged out, idle) as one gap at the end
+			run.pauses.add(new long[]{startMs + activeMs, endMs});
+		}
+		addToHistory(run);
+		return run;
+	}
+
+	private static String runKey(Fight f, String targetKey)
+	{
+		return f.id + "/" + targetKey;
 	}
 
 	public String getRaid()
@@ -347,12 +405,26 @@ public class FightTracker
 		return bossPart;
 	}
 
-	/** In a raid the current or last boss of this raid, otherwise the running or last fight. */
+	/**
+	 * The fight for the boss meter: in a raid the current or last boss of this raid, otherwise the
+	 * running or last fight that had a boss. It stays until the next boss fight.
+	 */
 	public Fight getBossDisplayFight()
 	{
 		if (raid == null)
 		{
-			return getDisplayFight();
+			if (current != null && current.hasBossTarget())
+			{
+				return current;
+			}
+			for (Fight f : history)
+			{
+				if (f.hasBossMeter())
+				{
+					return f;
+				}
+			}
+			return null;
 		}
 		if (bossPart != null)
 		{
@@ -381,7 +453,6 @@ public class FightTracker
 		if (bossPart == null && boss)
 		{
 			bossPart = new Fight(newId(), sessionId, now);
-			bossPart.pauseAfterMs = pauseAfterMs;
 			bossPart.raid = raid;
 			bossPart.partOf = current.id;
 		}
@@ -400,21 +471,17 @@ public class FightTracker
 		return true;
 	}
 
-	private void endBossPart(long endMs, String reason)
+	/** The running fight (started if needed) and, inside a raid, the boss fight the same hit counts for. */
+	private List<Fight> fightAndBossPart(long now, boolean boss)
 	{
-		Fight b = bossPart;
-		bossPart = null;
-		b.finish(endMs, reason);
-		if (b.knownDamage() == 0)
+		List<Fight> out = new ArrayList<>(2);
+		out.add(ensureFight(now));
+		Fight b = bossPartFor(now, boss);
+		if (b != null)
 		{
-			return;
+			out.add(b);
 		}
-		history.add(0, b);
-		trimHistory();
-		if (listener != null)
-		{
-			listener.fightEnded(b);
-		}
+		return out;
 	}
 
 	private List<Fight> live()
@@ -438,7 +505,8 @@ public class FightTracker
 		if (current == null)
 		{
 			current = new Fight(newId(), sessionId, now);
-			current.pauseAfterMs = pauseAfterMs;
+			// a raid runs on the game clock: waiting between rooms counts too
+			current.pauseAfterMs = raid == null ? pauseAfterMs : 0;
 			current.raid = raid;
 		}
 		return current;
@@ -528,24 +596,101 @@ public class FightTracker
 		return null;
 	}
 
+	/** Ended fights of this session, newest first. */
+	public List<Fight> getSessionFights()
+	{
+		List<Fight> out = new ArrayList<>();
+		for (Fight f : history)
+		{
+			if (sessionId.equals(f.sessionId))
+			{
+				out.add(f);
+			}
+		}
+		return out;
+	}
+
 	/** All fights of this session added together, or null. */
 	public Fight getSessionTotal(long now)
 	{
-		Fight total = new Fight("session", sessionId, 0);
-		for (int i = history.size() - 1; i >= 0; i--)
+		List<Fight> fights = new ArrayList<>();
+		for (Fight f : history)
 		{
-			Fight f = history.get(i);
-			// raid boss fights are part of their raid fight
-			if (sessionId.equals(f.sessionId) && f.partOf == null)
+			if (isWholeFight(f))
 			{
-				total.merge(f, now);
+				fights.add(f);
 			}
 		}
 		if (current != null)
 		{
-			total.merge(current, now);
+			fights.add(0, current);
 		}
-		return total.mergedFights == 0 ? null : total;
+		return added("session", fights, now);
+	}
+
+	/**
+	 * The overall meter: the running or last fight together with the fights before it, back to the
+	 * last break of {@link #idleTimeoutMs} without fighting. So the meter keeps counting over boss
+	 * kills (Barrows, a slayer trip) instead of starting at zero after every kill.
+	 */
+	public Fight getOverall(long now)
+	{
+		List<Fight> chain = new ArrayList<>();
+		if (current != null)
+		{
+			chain.add(current);
+		}
+		for (Fight f : history)
+		{
+			if (!isWholeFight(f))
+			{
+				continue;
+			}
+			if (!chain.isEmpty() && chain.get(chain.size() - 1).startMs - f.endMs > idleTimeoutMs)
+			{
+				break;
+			}
+			chain.add(f);
+		}
+		return chain.size() == 1 ? chain.get(0) : added("overall", chain, now);
+	}
+
+	/** The overall meter goes on: a fight runs, or the last one ended less than the idle time ago. */
+	public boolean isOverallGoingOn(long now)
+	{
+		if (current != null)
+		{
+			return true;
+		}
+		for (Fight f : history)
+		{
+			if (isWholeFight(f))
+			{
+				return now - f.endMs <= idleTimeoutMs;
+			}
+		}
+		return false;
+	}
+
+	/** A fight of this session that is not part of another one (raid boss fights, runs). */
+	private boolean isWholeFight(Fight f)
+	{
+		return sessionId.equals(f.sessionId) && f.partOf == null && !f.run && f.mergedFights == 0;
+	}
+
+	/** The fights (newest first) added together, or null without fights. */
+	private static Fight added(String id, List<Fight> newestFirst, long now)
+	{
+		if (newestFirst.isEmpty())
+		{
+			return null;
+		}
+		Fight total = new Fight(id, newestFirst.get(0).sessionId, 0);
+		for (int i = newestFirst.size() - 1; i >= 0; i--)
+		{
+			total.merge(newestFirst.get(i), now);
+		}
+		return total;
 	}
 
 	/** Ends the running fight and starts a new session; the history is kept. */

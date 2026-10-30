@@ -115,73 +115,107 @@ public class FightReport
 			}
 		}
 		r.title = fight.title(bossOnly && fight.hasBossTarget());
-		double seconds = r.durationMs / 1000.0;
 
+		// damage by target that GoldenDPS knows the player of
 		Map<String, Long> knownByTarget = new LinkedHashMap<>();
 		for (PlayerStats p : fight.players.values())
 		{
-			PlayerRow row = new PlayerRow();
-			row.name = p.name;
-			row.kind = p.kind;
-			for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
+			r.rows.add(playerRow(fight, p, bossOnly, includeRegen, knownByTarget));
+		}
+		r.addUnaccountedRows(fight, bossOnly, knownByTarget);
+
+		for (PlayerRow row : r.rows)
+		{
+			r.totalDamage += row.damage;
+		}
+		double seconds = r.durationMs / 1000.0;
+		for (PlayerRow row : r.rows)
+		{
+			row.dps = row.damage / seconds;
+			row.percent = r.totalDamage == 0 ? 0 : 100.0 * row.damage / r.totalDamage;
+		}
+
+		r.buildTargets(fight, bossOnly);
+		return r;
+	}
+
+	/** @param knownByTarget gets the player's counted damage added */
+	private static PlayerRow playerRow(Fight fight, PlayerStats p, boolean bossOnly, boolean includeRegen,
+		Map<String, Long> knownByTarget)
+	{
+		PlayerRow row = new PlayerRow();
+		row.name = p.name;
+		row.kind = p.kind;
+		for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
+		{
+			if (!countsHit(fight, p, e.getKey(), bossOnly))
 			{
-				if (!counts(fight, e.getKey(), bossOnly) || !countsFor(fight, p, e.getKey()))
+				continue;
+			}
+			TargetDamage d = e.getValue();
+			row.damage += d.damage;
+			row.hits += d.hits;
+			row.misses += d.misses;
+			row.biggestHit = Math.max(row.biggestHit, d.biggestHit);
+			knownByTarget.merge(e.getKey(), d.damage, Long::sum);
+		}
+		if (p.kind != PlayerKind.ESTIMATE)
+		{
+			row.sources = sourceRows(fight, p, bossOnly, row.damage);
+		}
+		row.healFood = p.healFood;
+		row.healLifesteal = p.healLifesteal;
+		row.healRegen = p.healRegen;
+		row.healOther = p.healOther;
+		row.healing = p.healing(includeRegen);
+		row.overFood = p.overFood;
+		row.overLifesteal = p.overLifesteal;
+		row.overheal = p.overheal();
+		row.damageTaken = p.takenTotal();
+		return row;
+	}
+
+	/** The player's damage per weapon or spell, biggest first. */
+	private static List<SourceRow> sourceRows(Fight fight, PlayerStats p, boolean bossOnly, long playerDamage)
+	{
+		Map<String, SourceRow> byName = new LinkedHashMap<>();
+		for (Map.Entry<String, Map<String, TargetDamage>> source : p.sources().entrySet())
+		{
+			for (Map.Entry<String, TargetDamage> e : source.getValue().entrySet())
+			{
+				if (!countsHit(fight, p, e.getKey(), bossOnly))
 				{
 					continue;
 				}
+				SourceRow row = byName.computeIfAbsent(source.getKey(), name ->
+				{
+					SourceRow created = new SourceRow();
+					created.name = name;
+					return created;
+				});
 				TargetDamage d = e.getValue();
 				row.damage += d.damage;
 				row.hits += d.hits;
 				row.misses += d.misses;
 				row.biggestHit = Math.max(row.biggestHit, d.biggestHit);
-				knownByTarget.merge(e.getKey(), d.damage, Long::sum);
 			}
-			Map<String, SourceRow> src = new LinkedHashMap<>();
-			if (p.kind != PlayerKind.ESTIMATE)
-			{
-				for (Map.Entry<String, Map<String, TargetDamage>> s : p.sources().entrySet())
-				{
-					for (Map.Entry<String, TargetDamage> e : s.getValue().entrySet())
-					{
-						if (!counts(fight, e.getKey(), bossOnly) || !countsFor(fight, p, e.getKey()))
-						{
-							continue;
-						}
-						SourceRow sr = src.computeIfAbsent(s.getKey(), k ->
-						{
-							SourceRow n = new SourceRow();
-							n.name = k;
-							return n;
-						});
-						TargetDamage d = e.getValue();
-						sr.damage += d.damage;
-						sr.hits += d.hits;
-						sr.misses += d.misses;
-						sr.biggestHit = Math.max(sr.biggestHit, d.biggestHit);
-					}
-				}
-			}
-			for (SourceRow sr : src.values())
-			{
-				if (sr.hits + sr.misses > 0)
-				{
-					sr.percent = row.damage == 0 ? 0 : 100.0 * sr.damage / row.damage;
-					row.sources.add(sr);
-				}
-			}
-			row.sources.sort((a, b) -> Long.compare(b.damage, a.damage));
-			row.healFood = p.healFood;
-			row.healLifesteal = p.healLifesteal;
-			row.healRegen = p.healRegen;
-			row.healOther = p.healOther;
-			row.healing = p.healing(includeRegen);
-			row.overFood = p.overFood;
-			row.overLifesteal = p.overLifesteal;
-			row.overheal = p.overheal();
-			row.damageTaken = p.takenTotal();
-			r.rows.add(row);
 		}
+		List<SourceRow> out = new ArrayList<>();
+		for (SourceRow row : byName.values())
+		{
+			if (row.hits + row.misses > 0)
+			{
+				row.percent = playerDamage == 0 ? 0 : 100.0 * row.damage / playerDamage;
+				out.add(row);
+			}
+		}
+		out.sort((a, b) -> Long.compare(b.damage, a.damage));
+		return out;
+	}
 
+	/** Rows for the seen damage that no player row explains: hits by unknown players and effects. */
+	private void addUnaccountedRows(Fight fight, boolean bossOnly, Map<String, Long> knownByTarget)
+	{
 		long unknown = 0;
 		long effects = 0;
 		for (TargetStats t : fight.targets.values())
@@ -196,25 +230,12 @@ public class FightReport
 		}
 		if (unknown > 0)
 		{
-			r.rows.add(pseudoRow(UNKNOWN_NAME, PlayerKind.UNKNOWN, unknown));
+			rows.add(pseudoRow(UNKNOWN_NAME, PlayerKind.UNKNOWN, unknown));
 		}
 		if (effects > 0)
 		{
-			r.rows.add(pseudoRow(EFFECTS_NAME, PlayerKind.EFFECTS, effects));
+			rows.add(pseudoRow(EFFECTS_NAME, PlayerKind.EFFECTS, effects));
 		}
-
-		for (PlayerRow row : r.rows)
-		{
-			r.totalDamage += row.damage;
-		}
-		for (PlayerRow row : r.rows)
-		{
-			row.dps = row.damage / seconds;
-			row.percent = r.totalDamage == 0 ? 0 : 100.0 * row.damage / r.totalDamage;
-		}
-
-		r.buildTargets(fight, bossOnly);
-		return r;
 	}
 
 	private static PlayerRow pseudoRow(String name, PlayerKind kind, long damage)
@@ -224,6 +245,11 @@ public class FightReport
 		row.kind = kind;
 		row.damage = damage;
 		return row;
+	}
+
+	private static boolean countsHit(Fight fight, PlayerStats p, String targetKey, boolean bossOnly)
+	{
+		return counts(fight, targetKey, bossOnly) && countsFor(fight, p, targetKey);
 	}
 
 	private static boolean counts(Fight fight, String targetKey, boolean bossOnly)
@@ -256,8 +282,7 @@ public class FightReport
 			for (Map.Entry<String, TargetDamage> e : p.damageByTarget().entrySet())
 			{
 				TargetStats t = fight.targets.get(e.getKey());
-				if (t == null || !counts(fight, t.key, bossOnly) || !countsFor(fight, p, t.key)
-					|| e.getValue().damage == 0)
+				if (t == null || !countsHit(fight, p, t.key, bossOnly) || e.getValue().damage == 0)
 				{
 					continue;
 				}

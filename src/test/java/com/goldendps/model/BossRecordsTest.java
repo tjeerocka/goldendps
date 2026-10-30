@@ -40,6 +40,40 @@ public class BossRecordsTest
 	}
 
 	@Test
+	public void soloAndPartyKillsHaveTheirOwnRecords()
+	{
+		FightTracker t = new FightTracker();
+		for (int s = 0; s < 30; s += 5)
+		{
+			t.playerHit(1000 + s * 1000L, "Me", PlayerKind.LOCAL, BOSS, 1, "Vorkath", true, 50, false);
+			t.playerHit(1000 + s * 1000L, "Friend", PlayerKind.PARTY, BOSS, 1, "Vorkath", true, 50, false);
+		}
+		t.npcDied(31_000, BOSS, true);
+		BossRecords.Kill duo = BossRecords.kill(t.getHistory().get(0), false);
+		assertTrue(duo.party);
+		assertFalse(BossRecords.kill(vorkath(60, 50), false).party);
+
+		BossRecords r = new BossRecords();
+		r.add(BossRecords.kill(vorkath(60, 50), false));
+		BossRecords.Compare c = r.add(duo);
+		assertNull("the first party kill is compared with nothing", c.before);
+		assertEquals(60_000, r.get("Vorkath", false).fastestMs);
+		assertEquals(30_000, r.get("Vorkath", true).fastestMs);
+		assertEquals("Vorkath (party)", r.get("Vorkath", true).label());
+		assertEquals("Vorkath (solo)", r.get("Vorkath", false).label());
+	}
+
+	@Test
+	public void aRecordCanBeRemoved()
+	{
+		BossRecords r = new BossRecords();
+		r.add(BossRecords.kill(vorkath(60, 50), false));
+		r.remove("Vorkath", false);
+		assertNull(r.get("Vorkath", false));
+		assertTrue(r.list().isEmpty());
+	}
+
+	@Test
 	public void noKillWithoutABossDeath()
 	{
 		FightTracker t = new FightTracker();
@@ -69,7 +103,7 @@ public class BossRecordsTest
 		BossRecords.Compare faster = r.add(BossRecords.kill(vorkath(50, 80), false));
 		assertTrue(faster.newFastest);
 		assertTrue(faster.newBestDps);
-		BossRecords.Record rec = r.get("Vorkath");
+		BossRecords.Record rec = r.get("Vorkath", false);
 		assertEquals(3, rec.kills);
 		assertEquals(50_000, rec.fastestMs);
 	}
@@ -89,7 +123,7 @@ public class BossRecordsTest
 		List<Fight> newestFirst = Arrays.asList(vorkath(50, 80), vorkath(60, 50));
 		BossRecords r = new BossRecords();
 		r.seed(newestFirst, false);
-		BossRecords.Record rec = r.get("Vorkath");
+		BossRecords.Record rec = r.get("Vorkath", false);
 		assertEquals(2, rec.kills);
 		assertEquals(50_000, rec.fastestMs);
 		// the newest kill is the last one
@@ -103,11 +137,11 @@ public class BossRecordsTest
 		BossRecords r = new BossRecords();
 		r.add(BossRecords.kill(vorkath(60, 50), false));
 		BossRecords back = new Gson().fromJson(new Gson().toJson(r), BossRecords.class);
-		assertEquals(60_000, back.get("Vorkath").fastestMs);
+		assertEquals(60_000, back.get("Vorkath", false).fastestMs);
 
 		BossRecords c = r.copy();
 		r.add(BossRecords.kill(vorkath(40, 50), false));
-		assertEquals(60_000, c.get("Vorkath").fastestMs);
+		assertEquals(60_000, c.get("Vorkath", false).fastestMs);
 	}
 
 	@Test
@@ -115,17 +149,17 @@ public class BossRecordsTest
 	{
 		BossRecords r = new BossRecords();
 		BossRecords.Compare first = r.add(BossRecords.kill(vorkath(60, 50), false));
-		assertNull("no PB tag on the first kill", BossRecords.meterTag(r.get("Vorkath"), first));
+		assertNull("no PB tag on the first kill", BossRecords.meterTag(r.get("Vorkath", false), first));
 		assertEquals("first kill!", BossRecords.killLines(first).get(0)[1].replace("1:00 (", "").replace(")", ""));
 
-		assertEquals("PB 1:00", BossRecords.meterTag(r.get("Vorkath"), null));
+		assertEquals("PB 1:00", BossRecords.meterTag(r.get("Vorkath", false), null));
 
 		BossRecords.Compare slow = r.add(BossRecords.kill(vorkath(70, 40), false));
-		assertEquals("PB 1:00", BossRecords.meterTag(r.get("Vorkath"), slow));
+		assertEquals("PB 1:00", BossRecords.meterTag(r.get("Vorkath", false), slow));
 		assertEquals("1:10 (PB 1:00)", BossRecords.killLines(slow).get(0)[1]);
 
 		BossRecords.Compare fast = r.add(BossRecords.kill(vorkath(50, 80), false));
-		assertEquals("NEW PB!", BossRecords.meterTag(r.get("Vorkath"), fast));
+		assertEquals("NEW PB!", BossRecords.meterTag(r.get("Vorkath", false), fast));
 		List<String[]> lines = BossRecords.killLines(fast);
 		assertEquals("0:50 NEW PB! (was 1:00)", lines.get(0)[1]);
 		assertTrue(lines.get(1)[1].contains("NEW BEST ("));
