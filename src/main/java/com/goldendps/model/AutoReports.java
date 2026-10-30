@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Which ended fights are reported to the party by themselves, and when: every boss kill and every
- * Barrows run (not each brother), a few ticks later so the last party hits are in.
+ * Which ended fights are reported to the party by themselves, and when: every boss kill, every
+ * finished raid and every Barrows run (not each brother), a few ticks later so the last party hits are in.
  */
 public class AutoReports
 {
@@ -21,7 +21,7 @@ public class AutoReports
 	public void fightEnded(Fight fight, int tick, boolean includeRegen)
 	{
 		BossRecords.Kill kill = BossRecords.kill(fight, includeRegen);
-		if (fight.run || (kill != null && !BarrowsRun.isBrother(kill.boss)))
+		if (fight.isCompleteRaid() || (kill != null && !BarrowsRun.isBrother(kill.boss)))
 		{
 			pending.put(fight, tick + DELAY_TICKS);
 		}

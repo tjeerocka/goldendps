@@ -266,6 +266,13 @@ public class Fight
 	}
 
 	/** The raid, or the boss or target that took the most damage. */
+	/** "Great Olm (Left claw)" is part of "Great Olm": one boss, one record. */
+	static String bossName(String npcName)
+	{
+		int part = npcName.indexOf(" (");
+		return part > 0 ? npcName.substring(0, part) : npcName;
+	}
+
 	public String title(boolean bossOnly)
 	{
 		if (raid != null && partOf == null && !bossOnly)
@@ -283,7 +290,7 @@ public class Fight
 				{
 					continue;
 				}
-				String n = t == null || t.name == null ? "Unknown" : t.name;
+				String n = t == null || t.name == null ? "Unknown" : t.boss ? bossName(t.name) : t.name;
 				byName.merge(n, e.getValue().damage, Long::sum);
 				if (t != null && t.boss)
 				{

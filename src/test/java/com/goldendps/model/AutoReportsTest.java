@@ -39,6 +39,20 @@ public class AutoReportsTest
 	}
 
 	@Test
+	public void aFinishedRaidIsReported()
+	{
+		AutoReports r = new AutoReports();
+		FightTracker t = new FightTracker();
+		t.startRaid(0, "Chambers of Xeric");
+		t.playerHit(1000, "Me", PlayerKind.LOCAL, "1:1", 1, "Great Olm", true, 50, false);
+		t.npcDied(5000, "1:1", true);
+		t.endRaid(9000, "Left the raid");
+		Fight raid = t.getHistory().get(0);
+		r.fightEnded(raid, 100, false);
+		assertEquals(Collections.singletonList(raid), r.due(200));
+	}
+
+	@Test
 	public void aFightWithoutABossKillIsNotReported()
 	{
 		AutoReports r = new AutoReports();

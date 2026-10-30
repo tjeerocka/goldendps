@@ -89,17 +89,17 @@ class PartyReports
 	private List<String> lines(Fight fight, ReportKind kind, boolean session, long now)
 	{
 		boolean bossOnly = kind == ReportKind.BOSS;
-		// a run counts brother damage only already, and its time goes on to the chest
-		FightReport report = FightReport.of(fight, bossOnly && !fight.run, config.countRegen(), now);
-		// a Barrows run: "Barrows run complete: 3:12 - total 400 (2.1/s) - KC 19"
-		boolean run = fight.run && bossOnly;
-		String title = session ? "Session" : run ? "" : report.getTitle();
-		String label = run ? fight.raid + " run complete:" : kind.label;
+		// a finished raid or Barrows run is reported as a whole, with its full time:
+		// "Chambers of Xeric complete: 31:30 - total 52,000 (27.5/s) - KC 21"
+		boolean completed = bossOnly && fight.isCompleteRaid();
+		FightReport report = FightReport.of(fight, bossOnly && !completed, config.countRegen(), now);
+		String title = session ? "Session" : completed ? "" : report.getTitle();
+		String label = completed ? fight.raid + (fight.run ? " run complete:" : " complete:") : kind.label;
 		MeterMode mode = kind == ReportKind.HEALING ? MeterMode.HEALING : MeterMode.DAMAGE;
 		List<String> lines = ReportFormatter.lines(report, mode, label, title, ReportFormatter.DEFAULT_TOP);
 		if (bossOnly && !session)
 		{
-			int kc = killCounts.near(run ? fight.raid : report.getTitle(), fight.endMs > 0 ? fight.endMs : now);
+			int kc = killCounts.near(completed ? fight.raid : report.getTitle(), fight.endMs > 0 ? fight.endMs : now);
 			String pb = BossRecords.meterTag(null, storage.compare(fight.id));
 			lines.set(0, lines.get(0) + (kc > 0 ? " - KC " + kc : "") + (pb != null ? " - " + pb : ""));
 		}

@@ -44,10 +44,26 @@ public class KillCounts
 		}
 	}
 
-	/** The KC of this boss, raid or chest told close to {@code atMs}, or 0. */
+	/**
+	 * The KC of this boss, raid or chest told close to {@code atMs}, or 0. Raid modes have their own
+	 * count ("Tombs of Amascut: Expert Mode", "Chambers of Xeric Challenge Mode"), so a count whose
+	 * name starts with the raid name also belongs to it.
+	 */
 	public int near(String name, long atMs)
 	{
-		Count c = name == null ? null : counts.get(name.toLowerCase(Locale.ROOT));
-		return c != null && Math.abs(c.atMs - atMs) <= NEAR_MS ? c.value : 0;
+		if (name == null)
+		{
+			return 0;
+		}
+		String wanted = name.toLowerCase(Locale.ROOT);
+		for (Map.Entry<String, Count> e : counts.entrySet())
+		{
+			Count c = e.getValue();
+			if (e.getKey().startsWith(wanted) && Math.abs(c.atMs - atMs) <= NEAR_MS)
+			{
+				return c.value;
+			}
+		}
+		return 0;
 	}
 }

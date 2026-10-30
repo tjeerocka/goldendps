@@ -20,6 +20,16 @@ public class KillCountsTest
 	}
 
 	@Test
+	public void raidModesCountForTheirRaid()
+	{
+		KillCounts k = new KillCounts();
+		k.message(1000, "Your completed Tombs of Amascut: Expert Mode count is: <col=ff0000>12</col>.");
+		k.message(1000, "Your completed Chambers of Xeric Challenge Mode count is: 3.");
+		assertEquals(12, k.near("Tombs of Amascut", 2000));
+		assertEquals(3, k.near("Chambers of Xeric", 2000));
+	}
+
+	@Test
 	public void anOldCountIsNotUsed()
 	{
 		KillCounts k = new KillCounts();

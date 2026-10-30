@@ -85,7 +85,7 @@ class PartyManager
 			return;
 		}
 		changeParty(name);
-		chat.info("joined party \"" + name + "\".");
+		chat.info("you joined party \"" + name + "\".");
 	}
 
 	/** A random name for a new party, or null when you are in a party already. */
@@ -100,7 +100,7 @@ class PartyManager
 		{
 			ownPartyStopped = true;
 			changeParty(null);
-			chat.info("left the party.");
+			chat.info("you left the party.");
 		}
 	}
 
@@ -114,7 +114,7 @@ class PartyManager
 		partyService.send(new GoldenDpsPartyMessage(GoldenDpsPartyMessage.KICK, leader.getLeader(), memberId));
 		kicked.put(memberId, System.currentTimeMillis());
 		notices.kicked(memberId);
-		chat.kicked("removed " + name + " from the party.");
+		chat.kicked("you removed " + name + " from the party.");
 	}
 
 	private void changeParty(String passphrase)
@@ -317,12 +317,12 @@ class PartyManager
 		if (action.join != null)
 		{
 			changeParty(action.join);
-			chat.joined("joined the " + raid.raid + " raid party automatically.");
+			chat.joined("you joined the " + raid.raid + " raid party automatically.");
 		}
 		else if (action.leave)
 		{
 			changeParty(null);
-			chat.info("left the raid party.");
+			chat.info("the raid is over: you left the raid party automatically.");
 		}
 	}
 

@@ -44,6 +44,16 @@ public class RaidFightTest
 	}
 
 	@Test
+	public void olmsClawsAreGreatOlm()
+	{
+		FightTracker t = tracker();
+		t.startRaid(0, "Chambers of Xeric");
+		hit(t, 1000, "301:7", "Great Olm (Left claw)", true, 50);
+		t.npcDied(5000, "301:7", true);
+		assertEquals("Great Olm", ended.get(ended.size() - 1).title());
+	}
+
+	@Test
 	public void raidStartEndsTheOldFight()
 	{
 		FightTracker t = tracker();

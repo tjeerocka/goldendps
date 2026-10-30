@@ -67,6 +67,7 @@ start a boss fight in no party, so the automatic boss reports and the Barrows ru
 raid party replaces it, and leaving it yourself turns it off until your next login.
 
 Automatic reports add the kill count from the game chat and your PB ("KC 19 - PB 5:48" or "NEW PB!").
+A finished raid is reported as a whole ("Chambers of Xeric complete: 31:30 - … - KC 21").
 At Barrows only the whole run is reported ("Barrows run complete: 3:12 - total 400 (2.1/s) - KC 19"), not
 every brother, and a solo report is one line.
 
