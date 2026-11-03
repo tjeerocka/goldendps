@@ -44,6 +44,21 @@ public class RaidFightTest
 	}
 
 	@Test
+	public void aRaidListsItsBossFightsInOrder()
+	{
+		FightTracker t = tracker();
+		t.startRaid(0, TOB);
+		hit(t, 1000, MAIDEN, "The Maiden of Sugadinti", true, 50);
+		t.npcDied(60_000, MAIDEN, true);
+		hit(t, 90_000, BLOAT, "Pestilent Bloat", true, 50);
+		Fight raid = t.getCurrent();
+		List<Fight> parts = t.partsOf(raid);
+		assertEquals(2, parts.size());
+		assertEquals("The Maiden of Sugadinti", parts.get(0).title());
+		assertSame("the running boss fight comes last", t.getBossPart(), parts.get(1));
+	}
+
+	@Test
 	public void olmsClawsAreGreatOlm()
 	{
 		FightTracker t = tracker();
@@ -128,10 +143,10 @@ public class RaidFightTest
 		}
 		t.npcDied(31_000, MAIDEN, true);
 		t.endRaid(40_000, "done");
-		BossRecords.Kill boss = BossRecords.kill(ended.get(0), false);
+		BossRecords.Kill boss = BossRecords.kill(ended.get(0));
 		assertNotNull(boss);
 		assertEquals(30_000, boss.timeMs);
-		assertNull("the raid itself is no boss kill", BossRecords.kill(ended.get(1), false));
+		assertNull("the raid itself is no boss kill", BossRecords.kill(ended.get(1)));
 	}
 
 	@Test

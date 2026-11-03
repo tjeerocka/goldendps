@@ -25,7 +25,8 @@ public class FightTracker
 
 	private long idleTimeoutMs = 300_000;
 	private long pauseAfterMs = 10_000;
-	private int maxHistory = 50;
+	/** Saved fights; more makes the save file and the fight list slow. */
+	private int maxHistory = 200;
 	private String sessionId = newId();
 	private Fight current;
 	/** The raid you are in; the running fight then covers the whole raid. */
@@ -398,6 +399,24 @@ public class FightTracker
 	public String getRaid()
 	{
 		return raid;
+	}
+
+	/** The boss fights of a raid fight, oldest first, the running one included. */
+	public List<Fight> partsOf(Fight raidFight)
+	{
+		List<Fight> parts = new ArrayList<>();
+		for (Fight f : history)
+		{
+			if (raidFight.id.equals(f.partOf))
+			{
+				parts.add(0, f);
+			}
+		}
+		if (bossPart != null && raidFight.id.equals(bossPart.partOf))
+		{
+			parts.add(bossPart);
+		}
+		return parts;
 	}
 
 	public Fight getBossPart()

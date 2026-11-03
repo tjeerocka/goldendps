@@ -83,7 +83,7 @@ public class BossRecords
 	public Map<String, Record> byBoss = new LinkedHashMap<>();
 
 	/** The boss kill in this fight, or null (no boss killed). */
-	public static Kill kill(Fight f, boolean includeRegen)
+	public static Kill kill(Fight f)
 	{
 		// a whole raid is no boss kill (its bosses have their own fights)
 		if (f == null || f.mergedFights > 0 || f.bossDiedMs() <= 0 || (f.raid != null && f.partOf == null))
@@ -91,7 +91,7 @@ public class BossRecords
 			return null;
 		}
 		long at = f.endMs > 0 ? f.endMs : f.bossDiedMs();
-		FightReport r = FightReport.of(f, true, includeRegen, at);
+		FightReport r = FightReport.of(f, true, at);
 		Kill k = new Kill();
 		k.boss = r.getTitle();
 		k.timeMs = f.bossDurationMs(at);
@@ -108,9 +108,9 @@ public class BossRecords
 	}
 
 	/** The boss kill or the finished raid in this fight (its record is the raid time), or null. */
-	public static Kill record(Fight f, boolean includeRegen)
+	public static Kill record(Fight f)
 	{
-		Kill k = kill(f, includeRegen);
+		Kill k = kill(f);
 		if (k != null || f == null || !f.isCompleteRaid() || (f.run && !BarrowsRun.isFullRun(f)))
 		{
 			return k;
@@ -119,7 +119,7 @@ public class BossRecords
 		run.boss = f.raid;
 		run.timeMs = f.durationMs(f.endMs);
 		run.whenMs = f.endMs;
-		FightReport report = FightReport.of(f, false, includeRegen, f.endMs);
+		FightReport report = FightReport.of(f, false, f.endMs);
 		run.party = isParty(report);
 		for (FightReport.PlayerRow row : report.getRows())
 		{
@@ -195,11 +195,11 @@ public class BossRecords
 	}
 
 	/** First start after the update: build the records from the saved fights (newest first). */
-	public void seed(List<Fight> newestFirst, boolean includeRegen)
+	public void seed(List<Fight> newestFirst)
 	{
 		for (int i = newestFirst.size() - 1; i >= 0; i--)
 		{
-			Kill k = record(newestFirst.get(i), includeRegen);
+			Kill k = record(newestFirst.get(i));
 			if (k != null)
 			{
 				add(k);
@@ -217,6 +217,28 @@ public class BossRecords
 		}
 		out.sort(Comparator.comparingInt((Record r) -> -r.kills).thenComparing(r -> r.boss));
 		return out;
+	}
+
+	/** Below this part of the boss's health done, the pace jumps around too much to show. */
+	static final double MIN_PACE_DONE = 0.1;
+
+	/**
+	 * Live PB pace: the kill time this fight is heading for (boss time so far, spread over the
+	 * health that is gone) minus the fastest kill. Negative = faster than the PB. Null when unknown.
+	 */
+	public static Long paceMs(long bossTimeMs, double healthDone, Record pb)
+	{
+		if (pb == null || pb.fastestMs <= 0 || healthDone < MIN_PACE_DONE || healthDone > 1)
+		{
+			return null;
+		}
+		return Math.round(bossTimeMs / healthDone) - pb.fastestMs;
+	}
+
+	/** "+0:05" or "-0:03". */
+	public static String paceText(long paceMs)
+	{
+		return (paceMs < 0 ? "-" : "+") + Format.duration(Math.abs(paceMs));
 	}
 
 	/** Short tag for the boss meter title: "NEW PB!", "PB 1:10" or null. */

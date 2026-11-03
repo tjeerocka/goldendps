@@ -128,16 +128,16 @@ public class BarrowsRunTest
 		Fight r = addRun(t, run.chestOpened(380_000));
 		assertEquals(BarrowsRun.NAME, r.title());
 		assertEquals("first brother hit to chest, banking included", 370_000, r.durationMs(380_000));
-		assertEquals("brothers only", 60, FightReport.of(r, false, false, 380_000).total(MeterMode.DAMAGE), 0.001);
+		assertEquals("brothers only", 60, FightReport.of(r, false, 380_000).total(MeterMode.DAMAGE), 0.001);
 		assertTrue(r.isCompleteRaid());
 		assertFalse("no boss meter for the run", r.hasBossMeter());
 		assertEquals("the session total counts every fight once", 120,
-			FightReport.of(t.getSessionTotal(380_000), false, false, 380_000).total(MeterMode.DAMAGE), 0.001);
+			FightReport.of(t.getSessionTotal(380_000), false, 380_000).total(MeterMode.DAMAGE), 0.001);
 
-		assertNull("two brothers is no full run: no personal best", BossRecords.record(r, false));
-		assertNull("no boss report for the run", BossRecords.kill(r, false));
+		assertNull("two brothers is no full run: no personal best", BossRecords.record(r));
+		assertNull("no boss report for the run", BossRecords.kill(r));
 
-		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), false, 380_000);
+		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), 380_000);
 		assertEquals(1, rates.stream().filter(x -> x.kind == KillRates.Kind.RUN && x.kills == 1).count());
 		assertEquals("brothers are in chests per hour, not in bosses", 0,
 			rates.stream().filter(x -> x.kind == KillRates.Kind.BOSS).count());
@@ -155,7 +155,7 @@ public class BarrowsRunTest
 		hit(t, run, 10_000, "1:1", DHAROK, true);
 		kill(t, run, 20_000, "1:1", DHAROK, true);
 		Fight r = addRun(t, run.chestOpened(30_000));
-		assertEquals(30, FightReport.of(r, false, false, 30_000).total(MeterMode.DAMAGE), 0.001);
+		assertEquals(30, FightReport.of(r, false, 30_000).total(MeterMode.DAMAGE), 0.001);
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class BarrowsRunTest
 		kill(t, run, 61_000, "1:5", VERAC, true);
 		Fight r = addRun(t, run.chestOpened(70_000));
 		assertEquals(2, r.targets.size());
-		assertEquals(2, FightReport.of(r, false, false, 70_000).getTargets().size());
+		assertEquals(2, FightReport.of(r, false, 70_000).getTargets().size());
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class BarrowsRunTest
 		}
 		Fight r = addRun(t, run.chestOpened(6 * MIN));
 		assertTrue(BarrowsRun.isFullRun(r));
-		BossRecords.Kill record = BossRecords.record(r, false);
+		BossRecords.Kill record = BossRecords.record(r);
 		assertEquals(BarrowsRun.NAME, record.boss);
 		assertEquals(6 * MIN, record.timeMs);
 	}

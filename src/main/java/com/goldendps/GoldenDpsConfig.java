@@ -38,9 +38,6 @@ public interface GoldenDpsConfig extends Config
 		}
 	}
 
-	@ConfigSection(name = "Fights", description = "When a fight starts and ends", position = 0)
-	String fightSection = "fights";
-
 	@ConfigSection(name = "Party", description = "Sharing with your RuneLite party", position = 1)
 	String partySection = "party";
 
@@ -50,95 +47,16 @@ public interface GoldenDpsConfig extends Config
 	@ConfigSection(name = "Fun", description = "Extras for group fights", position = 3)
 	String funSection = "fun";
 
-	@ConfigItem(
-		keyName = "idleSeconds",
-		name = "End fight after",
-		description = "The fight ends when the boss dies or nobody hits anything for this long",
-		position = 0,
-		section = fightSection
-	)
-	@Range(min = 3, max = 3600)
-	@Units(Units.SECONDS)
-	default int idleSeconds()
-	{
-		return 300;
-	}
-
-	@ConfigItem(
-		keyName = "pauseSeconds",
-		name = "Pause clock after",
-		description = "The fight clock stops when nobody hits for this long, so AFK time does not lower DPS."
-			+ " 0 disables it.",
-		position = 1,
-		section = fightSection
-	)
-	@Range(min = 0, max = 120)
-	@Units(Units.SECONDS)
-	default int pauseSeconds()
-	{
-		return 10;
-	}
-
+	// Boss only, Show and Data are set in the overlay right-click menu and the panel; hidden here
 	@ConfigItem(
 		keyName = BOSS_ONLY_KEY,
 		name = "Boss only",
 		description = "Only count damage on bosses",
-		position = 2,
-		section = fightSection
+		hidden = true
 	)
 	default boolean bossOnly()
 	{
 		return false;
-	}
-
-	@ConfigItem(
-		keyName = "extraBosses",
-		name = "Extra bosses",
-		description = "More NPC names to treat as bosses, comma separated",
-		position = 3,
-		section = fightSection
-	)
-	default String extraBosses()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "countRegen",
-		name = "Count natural regen",
-		description = "Count natural HP regeneration as healing",
-		position = 4,
-		section = fightSection
-	)
-	default boolean countRegen()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "maxHistory",
-		name = "Fights to keep",
-		description = "How many past fights are saved",
-		position = 5,
-		section = fightSection
-	)
-	@Range(min = 5, max = 500)
-	default int maxHistory()
-	{
-		return 50;
-	}
-
-	@ConfigItem(
-		keyName = "raidFight",
-		name = "One fight per raid",
-		description = "In CoX, ToB, ToA and the Fractured Archive, one fight counts the whole raid until you leave."
-			+ " Every boss also gets its own fight.",
-		position = 6,
-		section = fightSection
-	)
-	default boolean raidFight()
-	{
-		return true;
 	}
 
 	@ConfigItem(
@@ -178,23 +96,11 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "nearbyDamageTaken",
-		name = "Damage taken of others",
-		description = "Count the hitsplats you see on players without GoldenDPS as their damage taken",
-		position = 3,
-		section = partySection
-	)
-	default boolean nearbyDamageTaken()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "autoRaidParty",
 		name = "Raid party",
 		description = "In CoX, ToB, ToA and the Fractured Archive, join a party with everyone in your raid who"
 			+ " runs GoldenDPS automatically, and leave it after the raid. A party you joined yourself is never changed.",
-		position = 4,
+		position = 3,
 		section = partySection
 	)
 	default boolean autoRaidParty()
@@ -206,7 +112,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "autoBossReport",
 		name = "Auto boss report",
 		description = "When a boss dies, the party leader sends the boss damage to the party chat by itself",
-		position = 5,
+		position = 4,
 		section = partySection
 	)
 	default boolean autoBossReport()
@@ -220,7 +126,7 @@ public interface GoldenDpsConfig extends Config
 		description = "When you start a boss fight (or a Barrows run) in no party, put you in a party of your own,"
 			+ " so the automatic boss and Barrows reports also work solo. Leaving it yourself turns it off until"
 			+ " you log out.",
-		position = 6,
+		position = 5,
 		section = partySection
 	)
 	default boolean ownParty()
@@ -243,9 +149,8 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = MODE_KEY,
 		name = "Show",
-		description = "What the bars show. Also in the overlay right-click menu.",
-		position = 1,
-		section = overlaySection
+		description = "What the bars show",
+		hidden = true
 	)
 	default MeterMode overlayMode()
 	{
@@ -255,9 +160,8 @@ public interface GoldenDpsConfig extends Config
 	@ConfigItem(
 		keyName = SCOPE_KEY,
 		name = "Data",
-		description = "The current or last fight, or the total of this session",
-		position = 2,
-		section = overlaySection
+		description = "The current fights or the total of this session",
+		hidden = true
 	)
 	default Scope overlayScope()
 	{
@@ -268,7 +172,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "maxRows",
 		name = "Max bars",
 		description = "How many bars to show",
-		position = 3,
+		position = 1,
 		section = overlaySection
 	)
 	@Range(min = 1, max = 20)
@@ -281,7 +185,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "overlayWidth",
 		name = "Width",
 		description = "Overlay width",
-		position = 4,
+		position = 2,
 		section = overlaySection
 	)
 	@Range(min = 140, max = 400)
@@ -295,7 +199,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "hideWhenEmpty",
 		name = "Hide when empty",
 		description = "Hide the overlay when there is nothing to show",
-		position = 5,
+		position = 3,
 		section = overlaySection
 	)
 	default boolean hideWhenEmpty()
@@ -307,7 +211,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "myColor",
 		name = "My bar color",
 		description = "Color of your own bar",
-		position = 6,
+		position = 4,
 		section = overlaySection
 	)
 	default Color myColor()
@@ -315,18 +219,18 @@ public interface GoldenDpsConfig extends Config
 		return new Color(255, 196, 0);
 	}
 
+
 	@ConfigItem(
 		keyName = "bossMeter",
 		name = "Boss meter",
 		description = "A second meter with only the damage on the boss, over the boss time",
-		position = 7,
+		position = 5,
 		section = overlaySection
 	)
 	default boolean bossMeter()
 	{
 		return true;
 	}
-
 
 	@ConfigItem(
 		keyName = "mvpCrown",

@@ -18,9 +18,9 @@ public class AutoReports
 	private final Map<Fight, Integer> pending = new LinkedHashMap<>();
 
 	/** A fight ended at this tick. */
-	public void fightEnded(Fight fight, int tick, boolean includeRegen)
+	public void fightEnded(Fight fight, int tick)
 	{
-		BossRecords.Kill kill = BossRecords.kill(fight, includeRegen);
+		BossRecords.Kill kill = BossRecords.kill(fight);
 		if (fight.isCompleteRaid() || (kill != null && !BarrowsRun.isBrother(kill.boss)))
 		{
 			pending.put(fight, tick + DELAY_TICKS);

@@ -48,7 +48,7 @@ public class FightTrackerTest
 
 	private FightReport report(Fight f, long now)
 	{
-		return FightReport.of(f, false, false, now);
+		return FightReport.of(f, false, now);
 	}
 
 	@Test
@@ -243,8 +243,8 @@ public class FightTrackerTest
 		tracker.seenHit(600, RAT, 1, "Rat", false, 7);
 
 		Fight f = tracker.getCurrent();
-		FightReport all = FightReport.of(f, false, false, 6000);
-		FightReport boss = FightReport.of(f, true, false, 6000);
+		FightReport all = FightReport.of(f, false, 6000);
+		FightReport boss = FightReport.of(f, true, 6000);
 		assertEquals(57, all.getTotalDamage());
 		assertEquals(40, boss.getTotalDamage());
 		assertNull(boss.row(FightReport.UNKNOWN_NAME));
@@ -288,11 +288,10 @@ public class FightTrackerTest
 		tracker.damageTaken(3000, "Healer", PlayerKind.PARTY, 3);
 
 		Fight f = tracker.getCurrent();
-		FightReport r = FightReport.of(f, false, false, 6000);
+		FightReport r = FightReport.of(f, false, 6000);
 		assertEquals(12, r.row("Me").damageTaken);
 		assertEquals(25, r.row("Me").healing);
 		assertEquals(40, r.row("Healer").healing);
-		assertEquals(26, FightReport.of(f, false, true, 6000).row("Me").healing);
 
 		List<FightReport.PlayerRow> heals = r.sorted(MeterMode.HEALING);
 		assertEquals("Healer", heals.get(0).name);
@@ -477,8 +476,8 @@ public class FightTrackerTest
 		assertEquals(30_000, f.durationMs(99_999));
 		assertEquals(20_000, f.bossDurationMs(99_999));
 
-		FightReport all = FightReport.of(f, false, false, 99_999);
-		FightReport boss = FightReport.of(f, true, false, 99_999);
+		FightReport all = FightReport.of(f, false, 99_999);
+		FightReport boss = FightReport.of(f, true, 99_999);
 		assertEquals(200.0 / 30, all.row("Me").dps, D);
 		assertEquals(100.0 / 20, boss.row("Me").dps, D);
 		assertEquals(20_000, boss.getDurationMs());
@@ -503,7 +502,7 @@ public class FightTrackerTest
 		assertEquals(0, f.bossDurationMs(5000));
 		assertFalse(f.hasBossMeter());
 		// boss only without a boss: normal fight time
-		assertEquals(5000, FightReport.of(f, true, false, 5000).getDurationMs());
+		assertEquals(5000, FightReport.of(f, true, 5000).getDurationMs());
 	}
 
 	@Test
@@ -541,7 +540,7 @@ public class FightTrackerTest
 		Fight f = tracker.getDisplayFight();
 		assertTrue(f.isActive());
 		assertTrue(f.hasBossMeter());
-		assertEquals(30, FightReport.of(f, true, false, 6000).getTotalDamage());
+		assertEquals(30, FightReport.of(f, true, 6000).getTotalDamage());
 	}
 
 	@Test
@@ -556,7 +555,7 @@ public class FightTrackerTest
 		Fight total = tracker.getSessionTotal(70_000);
 		assertEquals(15_000, total.bossDurationMs(70_000));
 		assertFalse(total.hasBossMeter());
-		FightReport boss = FightReport.of(total, true, false, 70_000);
+		FightReport boss = FightReport.of(total, true, 70_000);
 		assertEquals(100.0 / 15, boss.row("Me").dps, D);
 	}
 

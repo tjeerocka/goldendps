@@ -41,7 +41,7 @@ class PartyReports
 	{
 		if (config.autoBossReport())
 		{
-			autoReports.fightEnded(fight, tick, config.countRegen());
+			autoReports.fightEnded(fight, tick);
 		}
 	}
 
@@ -92,7 +92,7 @@ class PartyReports
 		// a finished raid or Barrows run is reported as a whole, with its full time:
 		// "Chambers of Xeric complete: 31:30 - total 52,000 (27.5/s) - KC 21"
 		boolean completed = bossOnly && fight.isCompleteRaid();
-		FightReport report = FightReport.of(fight, bossOnly && !completed, config.countRegen(), now);
+		FightReport report = FightReport.of(fight, bossOnly && !completed, now);
 		String title = session ? "Session" : completed ? "" : report.getTitle();
 		String label = completed ? fight.raid + (fight.run ? " run complete:" : " complete:") : kind.label;
 		MeterMode mode = kind == ReportKind.HEALING ? MeterMode.HEALING : MeterMode.DAMAGE;

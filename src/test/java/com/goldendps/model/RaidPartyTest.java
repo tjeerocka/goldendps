@@ -126,6 +126,44 @@ public class RaidPartyTest
 	}
 
 	@Test
+	public void insideCoxYouJoinTheRememberedParty()
+	{
+		RaidParty r = new RaidParty();
+		tickUntilStable(r, P1, "my friends");    // in the lobby, still in your own party
+		RaidParty.Action action = RaidParty.Action.NONE;
+		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
+		{
+			// inside the raid the game shows no party id; you have left your party
+			action = r.tick(null, null, true);
+		}
+		assertEquals(P1, action.join);
+	}
+
+	@Test
+	public void aRememberedPartyIsUsedAfterARestartAndForgottenAfterTheRaid()
+	{
+		RaidParty r = new RaidParty();
+		r.remember(P1);
+		assertEquals(P1, tickUntilStableInRaid(r));
+		for (int i = 0; i < RaidParty.LEAVE_TICKS; i++)
+		{
+			r.tick(null, P1, false);
+		}
+		assertNull(r.getRemembered());
+		assertNull("outside a raid memory is not used", tickUntilStable(r, null, null));
+	}
+
+	private static String tickUntilStableInRaid(RaidParty r)
+	{
+		RaidParty.Action action = RaidParty.Action.NONE;
+		for (int i = 0; i < RaidParty.STABLE_TICKS; i++)
+		{
+			action = r.tick(null, null, true);
+		}
+		return action.join;
+	}
+
+	@Test
 	public void shortGapsWhileLoadingDoNotLeave()
 	{
 		RaidParty r = new RaidParty();

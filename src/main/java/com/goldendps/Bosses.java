@@ -1,7 +1,6 @@
 package com.goldendps;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import net.runelite.api.gameval.NpcID;
@@ -96,27 +95,12 @@ final class Bosses
 		"sarachnis", "corporeal beast", "nex", "kalphite queen", "king black dragon",
 		"giant mole", "chaos elemental", "chaos fanatic", "crazy archaeologist",
 		"scorpia", "venenatis", "vet'ion", "callisto", "zalcano",
-		"blue moon", "eclipse moon", "blood moon", "deranged archaeologist"
+		"blue moon", "eclipse moon", "blood moon", "deranged archaeologist", "revenant maledictus",
+		"gemstone crab", "brutus", "maggot king", "mad angel",
+		// The Fractured Archive
+		"archive guardian", "ezekiel", "bork", "moia", "dreadnoth the jellied", "dagon'hai elder", "xarth",
+		"ocellus"
 	);
-
-	private final Set<String> extraNames = new HashSet<>();
-
-	void setExtraNames(String csv)
-	{
-		extraNames.clear();
-		if (csv == null)
-		{
-			return;
-		}
-		for (String s : csv.split(","))
-		{
-			String n = s.trim().toLowerCase(Locale.ROOT);
-			if (!n.isEmpty())
-			{
-				extraNames.add(n);
-			}
-		}
-	}
 
 	boolean isBoss(int npcId, String name)
 	{
@@ -129,6 +113,6 @@ final class Bosses
 			return false;
 		}
 		String n = name.toLowerCase(Locale.ROOT);
-		return BOSS_NAMES.contains(n) || extraNames.contains(n);
+		return BOSS_NAMES.contains(n);
 	}
 }

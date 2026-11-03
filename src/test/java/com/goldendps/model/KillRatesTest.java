@@ -26,7 +26,7 @@ public class KillRatesTest
 		vorkath(t, 0, "1:1");
 		vorkath(t, 120_000, "1:2");
 		vorkath(t, 240_000, "1:3");
-		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), false, 300_000);
+		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), 300_000);
 		assertEquals(1, rates.size());
 		KillRates.Rate r = rates.get(0);
 		assertEquals(KillRates.Kind.BOSS, r.kind);
@@ -42,8 +42,8 @@ public class KillRatesTest
 	{
 		FightTracker t = new FightTracker();
 		vorkath(t, 0, "1:1");
-		assertEquals(60.0, KillRates.of(t.getSessionFights(), false, 60_000).get(0).perHour, D);
-		assertEquals(1.0, KillRates.of(t.getSessionFights(), false, 3_600_000).get(0).perHour, D);
+		assertEquals(60.0, KillRates.of(t.getSessionFights(), 60_000).get(0).perHour, D);
+		assertEquals(1.0, KillRates.of(t.getSessionFights(), 3_600_000).get(0).perHour, D);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class KillRatesTest
 			t.endRaid(start + 900_000, "Left the raid");
 		}
 		Fight last = t.getHistory().get(0);
-		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), false, last.endMs);
+		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), last.endMs);
 		KillRates.Rate raid = rates.stream().filter(r -> r.kind == KillRates.Kind.RAID).findFirst().get();
 		assertEquals(2, raid.kills);
 		assertEquals("Theatre of Blood", raid.name);
@@ -74,7 +74,7 @@ public class KillRatesTest
 		FightTracker t = new FightTracker();
 		vorkath(t, 0, "1:1");
 		t.resetSession(70_000);
-		assertTrue(KillRates.of(t.getSessionFights(), false, 80_000).isEmpty());
+		assertTrue(KillRates.of(t.getSessionFights(), 80_000).isEmpty());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class KillRatesTest
 		t.npcDied(9000, "1:2", false);
 		t.playerHit(9000, "Me", PlayerKind.LOCAL, "1:3", 3, "Goblin", false, 5, false);
 		t.endNow(12_000, "test");
-		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), false, 9000);
+		List<KillRates.Rate> rates = KillRates.of(t.getSessionFights(), 9000);
 		KillRates.Rate cow = rates.get(0);
 		assertEquals("Cow", cow.name);
 		assertEquals(KillRates.Kind.MONSTER, cow.kind);

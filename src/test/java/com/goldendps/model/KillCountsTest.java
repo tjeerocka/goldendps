@@ -30,6 +30,22 @@ public class KillCountsTest
 	}
 
 	@Test
+	public void bossesCountedUnderAnotherName()
+	{
+		KillCounts k = new KillCounts();
+		k.message(1000, "Your Grotesque Guardians kill count is: 40.");
+		k.message(1000, "Your Lunar Chest count is: 7.");
+		k.message(1000, "Your Corrupted Gauntlet completion count is: 15.");
+		k.message(1000, "Your Nightmare kill count is: 9.");
+		k.message(1000, "Your Royal Titans kill count is: 22.");
+		assertEquals(40, k.near("Dusk", 2000));
+		assertEquals(7, k.near("Blood Moon", 2000));
+		assertEquals(15, k.near("Corrupted Hunllef", 2000));
+		assertEquals(9, k.near("The Nightmare", 2000));
+		assertEquals(22, k.near("Eldric the Ice King", 2000));
+	}
+
+	@Test
 	public void anOldCountIsNotUsed()
 	{
 		KillCounts k = new KillCounts();

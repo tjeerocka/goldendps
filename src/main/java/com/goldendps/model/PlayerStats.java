@@ -122,9 +122,10 @@ public class PlayerStats
 		return overFood + overLifesteal;
 	}
 
-	public long healing(boolean includeRegen)
+	/** Healing without natural regeneration, which every player gets the same. */
+	public long healing()
 	{
-		return healFood + healLifesteal + healOther + (includeRegen ? healRegen : 0);
+		return healFood + healLifesteal + healOther;
 	}
 
 	public void merge(PlayerStats o)

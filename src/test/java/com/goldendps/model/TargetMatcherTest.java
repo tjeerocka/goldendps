@@ -58,7 +58,7 @@ public class TargetMatcherTest
 		String bobKey = m.partyKey(301, 301, 5, 9640, 4000, 0, "Bob");
 		t.playerHit(600, "Bob", PlayerKind.PARTY, bobKey, 1, "Vorkath", true, 50, false);
 
-		FightReport r = FightReport.of(t.getCurrent(), false, false, 6000);
+		FightReport r = FightReport.of(t.getCurrent(), false, 6000);
 		assertEquals(20, r.row(FightReport.UNKNOWN_NAME).damage);
 		assertEquals(50, r.row("Bob").damage);
 	}

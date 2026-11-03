@@ -80,6 +80,8 @@ class GoldenDpsPanel extends PluginPanel
 		FightReport bossReport;
 		/** {label, value} lines comparing a boss kill with the personal bests. */
 		List<String[]> killLines = new ArrayList<>();
+		/** In a raid: {boss, time, "PB 1:50" / "NEW PB!" / ""} for every boss so far. */
+		List<String[]> bossTimes = new ArrayList<>();
 		List<BossRecords.Record> personalBests = new ArrayList<>();
 		List<KillRates.Rate> killRates = new ArrayList<>();
 		/** The live Barrows run time, or null without a run. */
@@ -96,6 +98,7 @@ class GoldenDpsPanel extends PluginPanel
 		BOSSES(true),
 		MONSTERS(false),
 		FIGHT(true),
+		BOSS_TIMES(true),
 		PLAYERS(true),
 		TARGETS(false),
 		BESTS(false);
@@ -370,6 +373,11 @@ class GoldenDpsPanel extends PluginPanel
 		{
 			content.add(Box.createVerticalStrut(4));
 			content.add(FightCards.summary(d));
+		}
+		if (!d.bossTimes.isEmpty() && addHeading("Boss times", Part.BOSS_TIMES, d.bossTimes.size()))
+		{
+			content.add(Box.createVerticalStrut(4));
+			content.add(FightCards.bossTimes(d.bossTimes));
 		}
 
 		List<FightReport.PlayerRow> rows = new ArrayList<>(r.getRows());

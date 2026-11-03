@@ -17,7 +17,23 @@ public class KillCounts
 	static final long NEAR_MS = 30_000;
 
 	private static final Pattern COUNT = Pattern.compile(
-		"^Your (?:completed )?(.+?) (?:kill |chest )?count is: ([\\d,]+)");
+		"^Your (?:completed )?(.+?) (?:kill |chest |completion )?count is: ([\\d,]+)", Pattern.CASE_INSENSITIVE);
+
+	/** Bosses whose kill count the game tells under another name. */
+	private static final Map<String, String> COUNT_NAMES = new HashMap<>();
+
+	static
+	{
+		COUNT_NAMES.put("dusk", "grotesque guardians");
+		COUNT_NAMES.put("dawn", "grotesque guardians");
+		COUNT_NAMES.put("branda the fire queen", "royal titans");
+		COUNT_NAMES.put("eldric the ice king", "royal titans");
+		COUNT_NAMES.put("blue moon", "lunar");
+		COUNT_NAMES.put("eclipse moon", "lunar");
+		COUNT_NAMES.put("blood moon", "lunar");
+		COUNT_NAMES.put("crystalline hunllef", "gauntlet");
+		COUNT_NAMES.put("corrupted hunllef", "corrupted gauntlet");
+	}
 
 	private static final class Count
 	{
@@ -40,8 +56,15 @@ public class KillCounts
 		if (m.find())
 		{
 			int value = Integer.parseInt(m.group(2).replace(",", ""));
-			counts.put(m.group(1).toLowerCase(Locale.ROOT), new Count(value, now));
+			counts.put(normalize(m.group(1)), new Count(value, now));
 		}
+	}
+
+	/** Lower case without a leading "the": the game says "Nightmare" for The Nightmare. */
+	private static String normalize(String name)
+	{
+		String n = name.toLowerCase(Locale.ROOT);
+		return n.startsWith("the ") ? n.substring(4) : n;
 	}
 
 	/**
@@ -55,7 +78,8 @@ public class KillCounts
 		{
 			return 0;
 		}
-		String wanted = name.toLowerCase(Locale.ROOT);
+		String wanted = normalize(name);
+		wanted = COUNT_NAMES.getOrDefault(wanted, wanted);
 		for (Map.Entry<String, Count> e : counts.entrySet())
 		{
 			Count c = e.getValue();

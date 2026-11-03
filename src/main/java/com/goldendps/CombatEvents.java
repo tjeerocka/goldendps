@@ -66,7 +66,7 @@ class CombatEvents
 		{
 			localPlayerHit(hitsplat, now);
 		}
-		else if (actor instanceof Player && config.nearbyDamageTaken() && isGroupMode())
+		else if (actor instanceof Player && isGroupMode())
 		{
 			otherPlayerHit((Player) actor, hitsplat, now);
 		}

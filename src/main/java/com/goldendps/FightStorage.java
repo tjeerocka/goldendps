@@ -47,7 +47,7 @@ class FightStorage
 	}
 
 	/** Switches to this account and loads its data (once per account). */
-	void loadAccount(long hash, boolean includeRegen)
+	void loadAccount(long hash)
 	{
 		if (hash == -1 || hash == account)
 		{
@@ -70,7 +70,7 @@ class FightStorage
 			{
 				List<Fight> loaded = store.load(hash);
 				BossRecords saved = store.loadRecords(hash);
-				clientThread.invokeLater(() -> loaded(hash, loaded, saved, includeRegen));
+				clientThread.invokeLater(() -> loaded(hash, loaded, saved));
 			}
 			catch (Exception ex)
 			{
@@ -79,7 +79,7 @@ class FightStorage
 		});
 	}
 
-	private void loaded(long hash, List<Fight> loaded, BossRecords saved, boolean includeRegen)
+	private void loaded(long hash, List<Fight> loaded, BossRecords saved)
 	{
 		if (account != hash)
 		{
@@ -88,7 +88,7 @@ class FightStorage
 		if (saved == null)
 		{
 			saved = new BossRecords();
-			saved.seed(loaded, includeRegen);
+			saved.seed(loaded);
 		}
 		records = saved;
 		recordsLoaded = true;
@@ -111,11 +111,11 @@ class FightStorage
 		account = -1;
 	}
 
-	void fightEnded(Fight fight, boolean includeRegen)
+	void fightEnded(Fight fight)
 	{
 		dirty = true;
 		save();
-		BossRecords.Kill kill = BossRecords.record(fight, includeRegen);
+		BossRecords.Kill kill = BossRecords.record(fight);
 		if (kill == null || account == -1)
 		{
 			return;

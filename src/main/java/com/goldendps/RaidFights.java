@@ -11,33 +11,24 @@ import net.runelite.api.coords.WorldPoint;
 class RaidFights
 {
 	private final Client client;
-	private final GoldenDpsConfig config;
 	private final ChatNotifier chat;
 	private final FightTracker tracker;
 	private final RaidZone raidZone = new RaidZone();
 
-	RaidFights(Client client, GoldenDpsConfig config, ChatNotifier chat, FightTracker tracker)
+	RaidFights(Client client, ChatNotifier chat, FightTracker tracker)
 	{
 		this.client = client;
-		this.config = config;
 		this.chat = chat;
 		this.tracker = tracker;
 	}
 
 	void tick(long now)
 	{
-		// the zone is also needed without the raid fight: the raid party stays while you are inside
 		RaidZone.Change change = raidZone.tick(currentRaid());
-		if (!config.raidFight())
+		if (change.start != null)
 		{
-			tracker.endRaid(now, "Raid fight turned off");
-			return;
-		}
-		if (change.start != null || (isInsideRaid() && tracker.getRaid() == null))
-		{
-			String raid = raidZone.getInside();
-			tracker.startRaid(now, raid);
-			chat.info(raid + " started. The meter counts the whole raid until you leave.");
+			tracker.startRaid(now, change.start);
+			chat.info(change.start + " started. The meter counts the whole raid until you leave.");
 		}
 		else if (change.end)
 		{

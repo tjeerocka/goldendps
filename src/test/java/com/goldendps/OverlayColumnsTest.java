@@ -18,7 +18,7 @@ public class OverlayColumnsTest
 		t.playerHit(1000, "Me", PlayerKind.LOCAL, "301:5", 1, "Rat", false, 51, false);
 		t.heal(2000, "Me", PlayerKind.LOCAL, HealType.FOOD, 40, 16);
 		t.damageTaken(2000, "Me", PlayerKind.LOCAL, 7);
-		FightReport r = FightReport.of(t.getCurrent(), false, false, 24_000);
+		FightReport r = FightReport.of(t.getCurrent(), false, 24_000);
 		for (MeterMode m : MeterMode.values())
 		{
 			for (boolean max : new boolean[]{false, true})
@@ -37,7 +37,7 @@ public class OverlayColumnsTest
 		t.playerHit(1000, "Me", PlayerKind.LOCAL, "301:5", 1, "Rat", false, 20, false);
 		t.playerHit(9000, "Me", PlayerKind.LOCAL, "301:5", 1, "Rat", false, 0, true);
 		t.playerHit(17000, "Me", PlayerKind.LOCAL, "301:5", 1, "Rat", false, 31, false);
-		FightReport r = FightReport.of(t.getCurrent(), false, false, 24_000);
+		FightReport r = FightReport.of(t.getCurrent(), false, 24_000);
 		assertArrayEquals(new String[]{"Damage", "DPS", "%"}, GoldenDpsOverlay.columnLabels(MeterMode.DAMAGE, false));
 		// 51 damage in 23 s = 2.2 per second, shown without "/s" because the column says DPS
 		assertArrayEquals(new String[]{"51", "2.2", "100%"},

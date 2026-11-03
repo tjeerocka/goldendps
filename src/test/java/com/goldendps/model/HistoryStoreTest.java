@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import net.runelite.client.util.Filepath;
 
 public class HistoryStoreTest
 {
@@ -33,11 +34,17 @@ public class HistoryStoreTest
 		return t.getHistory().get(0);
 	}
 
+	/** Tests only: the plugin gets its folder from RuneLite (Plugin.getPluginDirectory). */
+	private static Filepath rooted(Path dir)
+	{
+		return Filepath.Unchecked.getRooted(dir);
+	}
+
 	@Test
 	public void saveAndLoadGivesTheSameNumbers() throws Exception
 	{
 		Path dir = folder.getRoot().toPath().resolve("goldendps");
-		HistoryStore store = new HistoryStore(new Gson(), dir);
+		HistoryStore store = new HistoryStore(new Gson(), rooted(dir));
 		store.save(12345L, Collections.singletonList(sampleFight()), 1000);
 
 		assertTrue(Files.exists(dir.resolve("12345.json")));
@@ -45,7 +52,7 @@ public class HistoryStoreTest
 
 		List<Fight> loaded = store.load(12345L);
 		assertEquals(1, loaded.size());
-		FightReport r = FightReport.of(loaded.get(0), false, false, 0);
+		FightReport r = FightReport.of(loaded.get(0), false, 0);
 		assertEquals(44, r.row("Me").damage);
 		assertEquals(30, r.row("Friend").damage);
 		assertEquals(12, r.row(FightReport.UNKNOWN_NAME).damage);
@@ -59,7 +66,7 @@ public class HistoryStoreTest
 	@Test
 	public void accountsHaveTheirOwnFile() throws Exception
 	{
-		HistoryStore store = new HistoryStore(new Gson(), folder.getRoot().toPath());
+		HistoryStore store = new HistoryStore(new Gson(), rooted(folder.getRoot().toPath()));
 		store.save(1L, Collections.singletonList(sampleFight()), 0);
 		assertEquals(1, store.load(1L).size());
 		assertTrue(store.load(2L).isEmpty());
@@ -70,7 +77,7 @@ public class HistoryStoreTest
 	{
 		Path dir = folder.getRoot().toPath();
 		Files.write(dir.resolve("7.json"), "{ not json".getBytes(StandardCharsets.UTF_8));
-		HistoryStore store = new HistoryStore(new Gson(), dir);
+		HistoryStore store = new HistoryStore(new Gson(), rooted(dir));
 
 		assertTrue(store.load(7L).isEmpty());
 		try (Stream<Path> files = Files.list(dir))
@@ -82,7 +89,7 @@ public class HistoryStoreTest
 	@Test
 	public void trackerKeepsLoadedHistory() throws Exception
 	{
-		HistoryStore store = new HistoryStore(new Gson(), folder.getRoot().toPath());
+		HistoryStore store = new HistoryStore(new Gson(), rooted(folder.getRoot().toPath()));
 		store.save(3L, Collections.singletonList(sampleFight()), 0);
 
 		FightTracker t = new FightTracker();
@@ -96,7 +103,7 @@ public class HistoryStoreTest
 	@Test
 	public void recordsAreSavedInTheirOwnFile() throws Exception
 	{
-		HistoryStore store = new HistoryStore(new Gson(), folder.getRoot().toPath());
+		HistoryStore store = new HistoryStore(new Gson(), rooted(folder.getRoot().toPath()));
 		assertTrue(store.loadRecords(7) == null);
 		BossRecords r = new BossRecords();
 		BossRecords.Kill k = new BossRecords.Kill();

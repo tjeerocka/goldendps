@@ -45,7 +45,7 @@ public final class KillRates
 	}
 
 	/** Rates for the fights of one session: raids first, then bosses, then monsters, most kills first. */
-	public static List<Rate> of(List<Fight> fights, boolean includeRegen, long nowMs)
+	public static List<Rate> of(List<Fight> fights, long nowMs)
 	{
 		Map<String, Rate> rates = new LinkedHashMap<>();
 		for (Fight f : fights)
@@ -58,7 +58,7 @@ public final class KillRates
 			{
 				add(rates, f.raid, f.run ? Kind.RUN : Kind.RAID, f.startMs, f.durationMs(f.endMs));
 			}
-			BossRecords.Kill kill = BossRecords.kill(f, includeRegen);
+			BossRecords.Kill kill = BossRecords.kill(f);
 			// Barrows brothers die once per chest: chests per hour says it
 			if (kill != null && !BarrowsRun.isBrother(kill.boss))
 			{

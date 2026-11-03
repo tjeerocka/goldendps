@@ -22,7 +22,7 @@ public class ReportFormatterTest
 		t.seenHit(6000, BOSS, 1, "Vorkath", true, 100);
 		t.heal(6000, "Kurt Yoghurt", PlayerKind.LOCAL, HealType.FOOD, 60, 20);
 		t.heal(6000, "Zezima", PlayerKind.PARTY, HealType.LIFESTEAL, 20);
-		return FightReport.of(t.getCurrent(), false, false, 11_000);
+		return FightReport.of(t.getCurrent(), false, 11_000);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ReportFormatterTest
 		f.target("1:1", 1, "Vorkath", true).engaged = true;
 		f.activity(10_000);
 		f.finish(10_000, "test");
-		List<String> lines = ReportFormatter.lines(FightReport.of(f, false, false, 10_000), MeterMode.DAMAGE,
+		List<String> lines = ReportFormatter.lines(FightReport.of(f, false, 10_000), MeterMode.DAMAGE,
 			"Boss damage", "Vorkath", 5);
 		assertEquals(1, lines.size());
 		assertEquals("Boss damage - Vorkath 0:10 - total 100 (10.0/s)", lines.get(0));
@@ -89,7 +89,7 @@ public class ReportFormatterTest
 		FightTracker t = new FightTracker();
 		String longName = "A very long name that goes on and on and on and on and on and on and on and on and on and on and on and on";
 		t.playerHit(1000, longName, PlayerKind.LOCAL, BOSS, 1, "Vorkath", true, 300, false);
-		FightReport r = FightReport.of(t.getCurrent(), false, false, 11_000);
+		FightReport r = FightReport.of(t.getCurrent(), false, 11_000);
 		for (String line : ReportFormatter.lines(r, MeterMode.DAMAGE, longName, 5))
 		{
 			assertTrue(line.length() <= ReportFormatter.MAX_LINE);

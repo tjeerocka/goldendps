@@ -39,7 +39,7 @@ public class SourceBreakdownTest
 	@Test
 	public void breakdownPerWeaponBiggestFirst()
 	{
-		FightReport r = FightReport.of(fight().getCurrent(), false, false, 5000);
+		FightReport r = FightReport.of(fight().getCurrent(), false, 5000);
 		List<FightReport.SourceRow> s = me(r).sources;
 		assertEquals(2, s.size());
 		assertEquals("Dragon claws (spec)", s.get(0).name);
@@ -56,7 +56,7 @@ public class SourceBreakdownTest
 	@Test
 	public void bossOnlyLeavesOutTrash()
 	{
-		FightReport r = FightReport.of(fight().getCurrent(), true, false, 5000);
+		FightReport r = FightReport.of(fight().getCurrent(), true, 5000);
 		List<FightReport.SourceRow> s = me(r).sources;
 		assertEquals(30, s.get(1).damage);
 		assertEquals(100.0, s.get(0).percent + s.get(1).percent, D);
@@ -65,7 +65,7 @@ public class SourceBreakdownTest
 	@Test
 	public void playersWithoutSourcesHaveNoBreakdown()
 	{
-		FightReport r = FightReport.of(fight().getCurrent(), false, false, 5000);
+		FightReport r = FightReport.of(fight().getCurrent(), false, 5000);
 		for (FightReport.PlayerRow row : r.getRows())
 		{
 			if ("Friend".equals(row.name))
@@ -82,12 +82,12 @@ public class SourceBreakdownTest
 		t.endNow(5000, "test");
 		t.playerHit(9000, "Me", PlayerKind.LOCAL, BOSS, 1, "Vorkath", true, 50, false, "Abyssal whip");
 		t.endNow(10000, "test");
-		FightReport session = FightReport.of(t.getSessionTotal(11000), false, false, 11000);
+		FightReport session = FightReport.of(t.getSessionTotal(11000), false, 11000);
 		assertEquals(90, me(session).sources.get(0).damage);
 
 		Gson gson = new Gson();
 		Fight back = gson.fromJson(gson.toJson(t.getHistory().get(1)), Fight.class);
-		assertEquals(2, me(FightReport.of(back, false, false, 5000)).sources.size());
+		assertEquals(2, me(FightReport.of(back, false, 5000)).sources.size());
 
 		// old save files have no sources at all
 		PlayerStats old = gson.fromJson("{\"name\":\"Me\",\"kind\":\"LOCAL\",\"bySource\":null}", PlayerStats.class);

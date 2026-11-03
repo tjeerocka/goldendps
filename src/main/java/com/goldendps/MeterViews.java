@@ -4,7 +4,9 @@ import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
+import com.goldendps.model.Format;
 import com.goldendps.model.KillRates;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Turns the tracked fights into what the overlays and the panel show. Client thread only. */
@@ -13,16 +15,18 @@ class MeterViews
 	private final GoldenDpsConfig config;
 	private final FightTracker tracker;
 	private final FightStorage storage;
+	private final BossHealth bossHealth;
 	private final BarrowsTracker barrows;
 	private final PartyManager party;
 	private final FunEffects fun;
 
-	MeterViews(GoldenDpsConfig config, FightTracker tracker, FightStorage storage, BarrowsTracker barrows,
-		PartyManager party, FunEffects fun)
+	MeterViews(GoldenDpsConfig config, FightTracker tracker, FightStorage storage, BossHealth bossHealth,
+		BarrowsTracker barrows, PartyManager party, FunEffects fun)
 	{
 		this.config = config;
 		this.tracker = tracker;
 		this.storage = storage;
+		this.bossHealth = bossHealth;
 		this.barrows = barrows;
 		this.party = party;
 		this.fun = fun;
@@ -32,7 +36,7 @@ class MeterViews
 	FightReport overlayReport(long now)
 	{
 		Fight fight = isSessionOverlay() ? tracker.getSessionTotal(now) : tracker.getOverall(now);
-		return fight == null ? null : FightReport.of(fight, config.bossOnly(), config.countRegen(), now);
+		return fight == null ? null : FightReport.of(fight, config.bossOnly(), now);
 	}
 
 	/** The second overlay meter for the current boss, or null when it is turned off or has nothing to show. */
@@ -43,11 +47,12 @@ class MeterViews
 		{
 			return null;
 		}
-		FightReport report = FightReport.of(shown, true, config.countRegen(), now);
-		String pb = BossRecords.meterTag(storage.record(report.getTitle(), BossRecords.isParty(report)),
-			storage.compare(shown.id));
+		FightReport report = FightReport.of(shown, true, now);
+		BossRecords.Record record = storage.record(report.getTitle(), BossRecords.isParty(report));
+		String pb = BossRecords.meterTag(record, storage.compare(shown.id));
 		boolean dead = shown.bossDiedMs() > 0;
-		return new BossMeter(report, dead, !dead && shown.isPaused(now), pb);
+		Long pace = dead ? null : BossRecords.paceMs(report.getDurationMs(), bossHealth.done(shown), record);
+		return new BossMeter(report, dead, !dead && shown.isPaused(now), pb, pace);
 	}
 
 	/** Gives the crown and the snacks to the players of the shown fight and boss. */
@@ -55,9 +60,9 @@ class MeterViews
 	{
 		Fight fight = tracker.getDisplayFight();
 		Fight boss = tracker.getBossDisplayFight();
-		FightReport fightReport = fight == null ? null : FightReport.of(fight, false, config.countRegen(), now);
+		FightReport fightReport = fight == null ? null : FightReport.of(fight, false, now);
 		FightReport bossReport = boss == null || !boss.hasBossTarget()
-			? null : FightReport.of(boss, true, config.countRegen(), now);
+			? null : FightReport.of(boss, true, now);
 		fun.update(fightReport, fight == null ? 0 : fight.endMs, bossReport, boss == null ? 0 : boss.endMs,
 			boss == null ? "" : boss.id, now);
 	}
@@ -106,7 +111,7 @@ class MeterViews
 		Fight fight = panelFight(selectedId, now);
 		if (fight != null)
 		{
-			data.report = FightReport.of(fight, config.bossOnly(), config.countRegen(), now);
+			data.report = FightReport.of(fight, config.bossOnly(), now);
 			data.running = fight.isActive();
 			data.paused = fight.isPaused(now);
 			data.endReason = fight.endReason;
@@ -114,16 +119,45 @@ class MeterViews
 			data.startMs = fight.startMs;
 			if (!config.bossOnly() && fight.hasBossTarget())
 			{
-				data.bossReport = FightReport.of(fight, true, config.countRegen(), now);
+				data.bossReport = FightReport.of(fight, true, now);
 			}
 			data.killLines = BossRecords.killLines(storage.compare(fight.id));
+			data.bossTimes = bossTimes(fight, now);
 		}
 		data.personalBests = storage.personalBests();
-		data.killRates = KillRates.of(sessionFights(), config.countRegen(), now);
+		data.killRates = KillRates.of(sessionFights(), now);
 		data.barrowsRunTime = barrows.liveTime();
 		data.barrowsRunPaused = barrows.isPaused();
 		data.party = party.view(localName);
 		return data;
+	}
+
+	/** Raid splits: every boss of a raid fight with its time and PB. */
+	private List<String[]> bossTimes(Fight raidFight, long now)
+	{
+		List<String[]> out = new ArrayList<>();
+		if (raidFight.raid == null || raidFight.partOf != null || raidFight.run)
+		{
+			return out;
+		}
+		for (Fight part : tracker.partsOf(raidFight))
+		{
+			FightReport report = FightReport.of(part, true, now);
+			BossRecords.Compare kill = storage.compare(part.id);
+			String tag;
+			if (kill != null)
+			{
+				tag = kill.newFastest && kill.before != null ? "NEW PB!"
+					: kill.before != null ? "PB " + Format.duration(kill.before.fastestMs) : "";
+			}
+			else
+			{
+				BossRecords.Record pb = storage.record(report.getTitle(), BossRecords.isParty(report));
+				tag = pb != null ? "PB " + Format.duration(pb.fastestMs) : "";
+			}
+			out.add(new String[]{report.getTitle(), Format.duration(report.getDurationMs()), tag});
+		}
+		return out;
 	}
 
 	/** The ended fights of this session and the running one. */

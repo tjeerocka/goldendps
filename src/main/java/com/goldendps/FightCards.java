@@ -10,6 +10,7 @@ import com.goldendps.model.PlayerKind;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -26,6 +27,18 @@ final class FightCards
 	static boolean isSolo(FightReport report)
 	{
 		return report.getRows().size() <= 1;
+	}
+
+	/** A raid's bosses with their times and how each compares with its PB. */
+	static JPanel bossTimes(List<String[]> bossTimes)
+	{
+		JPanel card = section();
+		for (String[] boss : bossTimes)
+		{
+			String tag = boss[2];
+			card.add(line(boss[0], boss[1] + (tag.isEmpty() ? "" : "  " + tag), tag.startsWith("NEW") ? GOLD : null));
+		}
+		return card;
 	}
 
 	static JPanel summary(GoldenDpsPanel.Data d)

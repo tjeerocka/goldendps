@@ -30,7 +30,7 @@ public class FunModelTest
 		t.playerHit(1000, "Zezima", PlayerKind.PARTY, "1:1", 1, "Vorkath", true, 30, false);
 		t.playerHit(2000, "Zezima", PlayerKind.PARTY, "1:1", 1, "Vorkath", true, 40, false);
 		t.heal(2000, "Zezima", PlayerKind.PARTY, HealType.FOOD, 20);
-		FightReport r = FightReport.of(t.getCurrent(), false, false, 3000);
+		FightReport r = FightReport.of(t.getCurrent(), false, 3000);
 		assertEquals(2, r.playerCount());
 		assertEquals("Zezima", r.topDamage().name);
 		assertEquals("Kurt", r.topHit().name);

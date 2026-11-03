@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -15,6 +16,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.WorldView;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
 
@@ -32,12 +34,16 @@ class PartyManager
 	private static final long KICK_HIDE_MS = 120_000;
 	/** Nameless, logged-out members older than this are stale connections. */
 	private static final long STALE_MEMBER_MS = 15_000;
+	/** A remembered raid party is kept over a client restart for this long (a long CoX raid). */
+	private static final long REMEMBER_MS = 2 * 60 * 60_000;
+	private static final String RAID_PARTY_KEY = "raidParty";
 
 	private final Client client;
 	private final PartyService partyService;
 	private final GoldenDpsConfig config;
 	private final ChatNotifier chat;
 	private final RaidPartyDetector raidPartyDetector;
+	private final ConfigManager configManager;
 
 	private final PartyLeader leader = new PartyLeader();
 	private final RaidParty raidParty = new RaidParty();
@@ -55,11 +61,14 @@ class PartyManager
 	private String lastParty;
 	/** GoldenDPS changed the party since the last tick. */
 	private boolean changedByUs;
+	private boolean rememberedLoaded;
+	private String rememberedSaved;
 
 	@Inject
 	PartyManager(Client client, PartyService partyService, GoldenDpsConfig config, ChatNotifier chat,
-		RaidPartyDetector raidPartyDetector)
+		RaidPartyDetector raidPartyDetector, ConfigManager configManager)
 	{
+		this.configManager = configManager;
 		this.client = client;
 		this.partyService = partyService;
 		this.config = config;
@@ -313,7 +322,9 @@ class PartyManager
 		}
 		RaidPartyDetector.Detected raid = raidPartyDetector.current();
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		loadRememberedRaidParty();
 		RaidParty.Action action = raidParty.tick(raid.partyName, current, inRaid);
+		saveRememberedRaidParty();
 		if (action.join != null)
 		{
 			changeParty(action.join);
@@ -323,6 +334,54 @@ class PartyManager
 		{
 			changeParty(null);
 			chat.info("the raid is over: you left the raid party automatically.");
+		}
+	}
+
+	/** After a client restart: the raid party you were in, if it is recent. */
+	private void loadRememberedRaidParty()
+	{
+		if (rememberedLoaded)
+		{
+			return;
+		}
+		rememberedLoaded = true;
+		String saved = configManager.getConfiguration(GoldenDpsConfig.STATE_GROUP, RAID_PARTY_KEY);
+		int split = saved == null ? -1 : saved.lastIndexOf('|');
+		if (split <= 0)
+		{
+			return;
+		}
+		try
+		{
+			long savedAt = Long.parseLong(saved.substring(split + 1));
+			if (System.currentTimeMillis() - savedAt <= REMEMBER_MS)
+			{
+				raidParty.remember(saved.substring(0, split));
+			}
+		}
+		catch (NumberFormatException ignored)
+		{
+			// an unreadable value is the same as none
+		}
+		rememberedSaved = raidParty.getRemembered();
+	}
+
+	private void saveRememberedRaidParty()
+	{
+		String name = raidParty.getRemembered();
+		if (Objects.equals(name, rememberedSaved))
+		{
+			return;
+		}
+		rememberedSaved = name;
+		if (name == null)
+		{
+			configManager.unsetConfiguration(GoldenDpsConfig.STATE_GROUP, RAID_PARTY_KEY);
+		}
+		else
+		{
+			configManager.setConfiguration(GoldenDpsConfig.STATE_GROUP, RAID_PARTY_KEY,
+				name + "|" + System.currentTimeMillis());
 		}
 	}
 

@@ -101,7 +101,7 @@ public class FightReport
 	private long durationMs;
 	private String title;
 
-	public static FightReport of(Fight fight, boolean bossOnly, boolean includeRegen, long nowMs)
+	public static FightReport of(Fight fight, boolean bossOnly, long nowMs)
 	{
 		FightReport r = new FightReport();
 		r.durationMs = fight.durationMs(nowMs);
@@ -120,7 +120,7 @@ public class FightReport
 		Map<String, Long> knownByTarget = new LinkedHashMap<>();
 		for (PlayerStats p : fight.players.values())
 		{
-			r.rows.add(playerRow(fight, p, bossOnly, includeRegen, knownByTarget));
+			r.rows.add(playerRow(fight, p, bossOnly, knownByTarget));
 		}
 		r.addUnaccountedRows(fight, bossOnly, knownByTarget);
 
@@ -140,7 +140,7 @@ public class FightReport
 	}
 
 	/** @param knownByTarget gets the player's counted damage added */
-	private static PlayerRow playerRow(Fight fight, PlayerStats p, boolean bossOnly, boolean includeRegen,
+	private static PlayerRow playerRow(Fight fight, PlayerStats p, boolean bossOnly,
 		Map<String, Long> knownByTarget)
 	{
 		PlayerRow row = new PlayerRow();
@@ -167,7 +167,7 @@ public class FightReport
 		row.healLifesteal = p.healLifesteal;
 		row.healRegen = p.healRegen;
 		row.healOther = p.healOther;
-		row.healing = p.healing(includeRegen);
+		row.healing = p.healing();
 		row.overFood = p.overFood;
 		row.overLifesteal = p.overLifesteal;
 		row.overheal = p.overheal();

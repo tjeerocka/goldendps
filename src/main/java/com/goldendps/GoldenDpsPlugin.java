@@ -12,7 +12,7 @@ import com.goldendps.model.PlayerKind;
 import com.goldendps.model.TargetMatcher;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
-import java.io.File;
+import java.io.IOException;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -38,7 +38,6 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.OverheadTextChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.gameval.InventoryID;
-import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -64,7 +63,10 @@ import net.runelite.client.util.Text;
 @PluginDescriptor(
 	name = "GoldenDPS",
 	description = "DPS, damage and healing meter for groups and individuals",
-	tags = {"dps", "damage", "meter", "party", "healing", "boss", "pvm", "raid"}
+	tags = {"dps", "damage", "meter", "party", "healing", "boss", "pvm", "raid"},
+	internalName = "goldendps",
+	// fights and personal bests used to be saved in .runelite/goldendps
+	legacyDataDirectory = "goldendps"
 )
 public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 {
@@ -150,11 +152,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	}
 
 	@Override
-	protected void startUp()
+	protected void startUp() throws IOException
 	{
 		createParts();
 		tracker.setListener(this);
-		applyConfig();
 
 		overlayManager.add(overlay);
 		overlayManager.add(headIconOverlay);
@@ -174,14 +175,14 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			if (client.getGameState() == GameState.LOGGED_IN)
 			{
-				storage.loadAccount(client.getAccountHash(), config.countRegen());
+				storage.loadAccount(client.getAccountHash());
 			}
 		});
 	}
 
-	private void createParts()
+	private void createParts() throws IOException
 	{
-		HistoryStore store = new HistoryStore(gson, new File(RuneLite.RUNELITE_DIR, "goldendps").toPath());
+		HistoryStore store = new HistoryStore(gson, getPluginDirectory());
 		storage = new FightStorage(tracker, store, executor, clientThread, () ->
 		{
 			refreshOverlay();
@@ -190,9 +191,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		partyUpdates = new PartyUpdates(client, partyService, party, config, tracker, bosses, matcher);
 		combat = new CombatEvents(client, partyService, config, tracker, bosses, matcher, healing, barrows, party,
 			partyUpdates);
-		raids = new RaidFights(client, config, chat, tracker);
+		raids = new RaidFights(client, chat, tracker);
 		reports = new PartyReports(config, partyService, party, chat, storage, killCounts);
-		views = new MeterViews(config, tracker, storage, barrows, party, fun);
+		views = new MeterViews(config, tracker, storage, new BossHealth(client), barrows, party, fun);
 	}
 
 	@Override
@@ -219,14 +220,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		navButton = null;
 	}
 
-	private void applyConfig()
-	{
-		tracker.setIdleTimeoutMs(config.idleSeconds() * 1000L);
-		tracker.setPauseAfterMs(config.pauseSeconds() * 1000L);
-		tracker.setMaxHistory(config.maxHistory());
-		bosses.setExtraNames(config.extraBosses());
-	}
-
 	@Subscribe
 	public void onConfigChanged(ConfigChanged e)
 	{
@@ -234,7 +227,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			clientThread.invoke(() ->
 			{
-				applyConfig();
 				refreshOverlay();
 				updatePanel();
 			});
@@ -406,7 +398,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		GameState state = e.getGameState();
 		if (state == GameState.LOGGED_IN)
 		{
-			storage.loadAccount(client.getAccountHash(), config.countRegen());
+			storage.loadAccount(client.getAccountHash());
 			barrows.loggedIn();
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
@@ -451,7 +443,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	@Override
 	public void fightEnded(Fight fight)
 	{
-		storage.fightEnded(fight, config.countRegen());
+		storage.fightEnded(fight);
 		reports.fightEnded(fight, client.getTickCount());
 	}
 

@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.BossRecords;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
 import com.goldendps.model.MeterMode;
@@ -38,6 +39,8 @@ class GoldenDpsOverlay extends Overlay
 	private static final Color CATEGORY_COLOR = new Color(190, 190, 190);
 	private static final Color TITLE_COLOR = new Color(255, 200, 0);
 	private static final Color PB_COLOR = new Color(255, 196, 0);
+	private static final Color AHEAD_COLOR = new Color(90, 220, 90);
+	private static final Color BEHIND_COLOR = new Color(235, 90, 70);
 
 	private final GoldenDpsPlugin plugin;
 	private final GoldenDpsConfig config;
@@ -97,10 +100,13 @@ class GoldenDpsOverlay extends Overlay
 		if (boss != null && !bossRows.isEmpty())
 		{
 			String title = "Boss - " + boss.report.getTitle() + (boss.dead ? " (dead)" : "");
+			// while the boss lives the PB pace says more than the PB itself
+			String tag = boss.paceMs != null ? BossRecords.paceText(boss.paceMs) : boss.pb;
 			String time = (boss.paused ? "paused " : "") + Format.duration(boss.report.getDurationMs())
-				+ (boss.pb != null ? "  " + boss.pb : "");
+				+ (tag != null ? "  " + tag : "");
 			Color timeColor = boss.pb != null && boss.pb.startsWith("NEW") ? PB_COLOR
-				: boss.paused ? Color.YELLOW : boss.dead ? Color.LIGHT_GRAY : Color.WHITE;
+				: boss.paused ? Color.YELLOW : boss.dead ? Color.LIGHT_GRAY
+				: boss.paceMs != null ? (boss.paceMs <= 0 ? AHEAD_COLOR : BEHIND_COLOR) : Color.WHITE;
 			y = drawMeter(g, fm, gap(y), width, title, time, timeColor,
 				BOSS_HEADER_BG, boss.report, bossRows, MeterMode.DAMAGE);
 		}

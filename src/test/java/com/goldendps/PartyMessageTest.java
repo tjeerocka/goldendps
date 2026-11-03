@@ -51,9 +51,6 @@ public class PartyMessageTest
 		assertTrue(b.isBoss(net.runelite.api.gameval.NpcID.VORKATH, "Vorkath"));
 		assertTrue(b.isBoss(-1, "Duke Sucellus"));
 		assertFalse(b.isBoss(-1, "Goblin"));
-		b.setExtraNames(" Goblin , ,Hill Giant");
-		assertTrue(b.isBoss(-1, "goblin"));
-		assertTrue(b.isBoss(-1, "Hill giant"));
 		assertFalse(b.isBoss(-1, null));
 	}
 }

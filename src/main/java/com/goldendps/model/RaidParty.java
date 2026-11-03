@@ -44,6 +44,11 @@ public class RaidParty
 	private String candidate;
 	private int stableTicks;
 	private int ticksWithoutRaidParty;
+	/**
+	 * The last raid party the game showed. Inside a CoX raid the game clears it, so someone who
+	 * restarts the client or leaves their own party there can still join the team from memory.
+	 */
+	private String remembered;
 
 	/** Party name for a raid with a member list, or null when fewer than two names are known. */
 	public static String partyName(String raid, int world, List<String> names)
@@ -99,12 +104,17 @@ public class RaidParty
 	/**
 	 * Call every game tick.
 	 *
-	 * @param name         party name for the raid party you are in, or null
+	 * @param shown        party name for the raid party the game shows you, or null
 	 * @param currentParty the RuneLite party you are in, or null
 	 * @param inRaid       you are inside a raid
 	 */
-	public Action tick(String name, String currentParty, boolean inRaid)
+	public Action tick(String shown, String currentParty, boolean inRaid)
 	{
+		if (shown != null)
+		{
+			remembered = shown;
+		}
+		String name = shown != null ? shown : inRaid ? remembered : null;
 		boolean inAutoParty = isAuto(currentParty);
 		boolean inRaidParty = inAutoParty && !isOwn(currentParty);
 		if (name == null)
@@ -112,6 +122,11 @@ public class RaidParty
 			candidate = null;
 			stableTicks = 0;
 			ticksWithoutRaidParty = inRaid ? 0 : ticksWithoutRaidParty + 1;
+			if (ticksWithoutRaidParty < LEAVE_TICKS)
+			{
+				return Action.NONE;
+			}
+			remembered = null;
 			return inRaidParty && ticksWithoutRaidParty == LEAVE_TICKS ? Action.LEAVE : Action.NONE;
 		}
 		ticksWithoutRaidParty = 0;
@@ -127,6 +142,17 @@ public class RaidParty
 			return Action.NONE;
 		}
 		return new Action(name, false);
+	}
+
+	/** The raid party kept in memory, to save it over a client restart; null without one. */
+	public String getRemembered()
+	{
+		return remembered;
+	}
+
+	public void remember(String name)
+	{
+		remembered = name;
 	}
 
 	private static String hash(String s)
