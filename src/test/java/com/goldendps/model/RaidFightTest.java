@@ -59,13 +59,43 @@ public class RaidFightTest
 	}
 
 	@Test
-	public void olmsClawsAreGreatOlm()
+	public void theRaidFightStartsWhenTheGameStartsTheRaid()
+	{
+		FightTracker t = tracker();
+		t.startRaid(0, "Chambers of Xeric");
+		t.raidBegan(5000);
+		hit(t, 25_000, "301:7", "Tekton", true, 50);
+		assertEquals(5000, t.getCurrent().startMs);
+		assertEquals("from the game's start to the last hit", 20_000, t.getCurrent().durationMs(25_000));
+	}
+
+	@Test
+	public void olmIsOneKillOverAllItsPhases()
 	{
 		FightTracker t = tracker();
 		t.startRaid(0, "Chambers of Xeric");
 		hit(t, 1000, "301:7", "Great Olm (Left claw)", true, 50);
 		t.npcDied(5000, "301:7", true);
-		assertEquals("Great Olm", ended.get(ended.size() - 1).title());
+		assertNull("a phase ends, Olm goes on", lastEnded(t));
+		hit(t, 60_000, "301:8", "Great Olm (Right claw)", true, 50);
+		t.npcDied(65_000, "301:8", true);
+		hit(t, 90_000, "301:9", "Great Olm", true, 80);
+		t.npcDied(95_000, "301:9", true);
+		Fight olm = ended.get(ended.size() - 1);
+		assertEquals("Great Olm", olm.title());
+		assertNotNull(BossRecords.kill(olm));
+		assertEquals(1, ended.stream().filter(f -> f.partOf != null).count());
+	}
+
+	@Test
+	public void theVespulaPortalIsNamedAfterItsRoom()
+	{
+		assertEquals("Vespula portal", Fight.bossName("Abyssal portal"));
+	}
+
+	private Fight lastEnded(FightTracker t)
+	{
+		return ended.stream().filter(f -> f.partOf != null).findFirst().orElse(null);
 	}
 
 	@Test

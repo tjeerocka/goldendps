@@ -120,7 +120,9 @@ class PartyUpdates
 		{
 			for (GoldenDpsUpdate.Hit hit : update.hits)
 			{
-				boolean boss = hit.boss || bosses.isBoss(hit.npcId, hit.npcName);
+				// party members on an older GoldenDPS send the name with its color tags
+				String npcName = Names.clean(hit.npcName);
+				boolean boss = hit.boss || bosses.isBoss(hit.npcId, npcName);
 				// away from you, only hits on a boss you can see count
 				if (!together && !(boss && npcInScene(update.world, hit) != null))
 				{
@@ -129,7 +131,7 @@ class PartyUpdates
 				counted = true;
 				String source = hit.source == null || hit.source.length() > MAX_SOURCE_LENGTH ? null : hit.source;
 				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(update.world, hit, name), hit.npcId,
-					hit.npcName, boss, hit.amount, hit.miss, source);
+					npcName, boss, hit.amount, hit.miss, source);
 			}
 		}
 		Fight current = tracker.getCurrent();

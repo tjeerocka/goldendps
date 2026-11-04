@@ -31,6 +31,8 @@ public class FightTracker
 	private Fight current;
 	/** The raid you are in; the running fight then covers the whole raid. */
 	private String raid;
+	/** When the game started the raid's timer, or 0. */
+	private long raidBeganMs;
 	/** Inside a raid: the fight for the boss being fought now. */
 	private Fight bossPart;
 	/** Ended fights, newest first. */
@@ -319,6 +321,19 @@ public class FightTracker
 		}
 		endNow(now, "Raid started");
 		raid = name;
+		raidBeganMs = 0;
+	}
+
+	/**
+	 * The game says the raid has begun and starts its own timer (CoX: "The raid has begun!").
+	 * The raid fight then starts here and not at the first hit, so both timers match.
+	 */
+	public void raidBegan(long now)
+	{
+		if (raid != null && raidBeganMs == 0)
+		{
+			raidBeganMs = now;
+		}
 	}
 
 	public void endRaid(long now, String reason)
@@ -478,16 +493,26 @@ public class FightTracker
 		return bossPart;
 	}
 
+	/**
+	 * Every boss fought is dead. A part of a boss ("Great Olm (Left claw)") does not end the fight on
+	 * its own: Olm's claws die every phase, the fight ends with the head.
+	 */
 	private static boolean allBossesDead(Fight f)
 	{
-		for (TargetStats other : f.targets.values())
+		boolean bossDied = false;
+		for (TargetStats t : f.targets.values())
 		{
-			if (other.boss && other.engaged && !other.died)
+			if (!t.boss || !t.engaged || (t.name != null && !Fight.bossName(t.name).equals(t.name)))
+			{
+				continue;
+			}
+			if (!t.died)
 			{
 				return false;
 			}
+			bossDied = true;
 		}
-		return true;
+		return bossDied;
 	}
 
 	/** The running fight (started if needed) and, inside a raid, the boss fight the same hit counts for. */
@@ -523,7 +548,7 @@ public class FightTracker
 	{
 		if (current == null)
 		{
-			current = new Fight(newId(), sessionId, now);
+			current = new Fight(newId(), sessionId, raid != null && raidBeganMs > 0 ? raidBeganMs : now);
 			// a raid runs on the game clock: waiting between rooms counts too
 			current.pauseAfterMs = raid == null ? pauseAfterMs : 0;
 			current.raid = raid;

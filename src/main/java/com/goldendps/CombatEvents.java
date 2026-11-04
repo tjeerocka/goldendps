@@ -66,7 +66,7 @@ class CombatEvents
 		{
 			localPlayerHit(hitsplat, now);
 		}
-		else if (actor instanceof Player && isGroupMode())
+		else if (actor instanceof Player && config.estimateOthers() && isGroupMode())
 		{
 			otherPlayerHit((Player) actor, hitsplat, now);
 		}
@@ -77,7 +77,7 @@ class CombatEvents
 		int type = hitsplat.getHitsplatType();
 		int amount = hitsplat.getAmount();
 		String key = TargetMatcher.key(client.getWorld(), npc.getIndex());
-		String name = npc.getName();
+		String name = Names.clean(npc.getName());
 		boolean boss = bosses.isBoss(npc.getId(), name);
 		WorldPoint pos = npc.getWorldLocation();
 		if (pos != null)
@@ -107,16 +107,14 @@ class CombatEvents
 			sent.source = source;
 			partyUpdates.addHit(sent);
 		}
-		else if (hitsplat.isOthers() && isGroupMode())
+		else if (hitsplat.isOthers() && config.estimateOthers() && isGroupMode())
 		{
+			// party members send their own hits; without this setting other players are left out entirely
 			tracker.seenHit(now, key, npc.getId(), name, boss, amount);
-			if (config.estimateOthers())
+			String who = attributor.assign(client.getTickCount(), key);
+			if (who != null && !party.isReporter(who, now) && !who.equals(Names.localName(client)))
 			{
-				String who = attributor.assign(client.getTickCount(), key);
-				if (who != null && !party.isReporter(who, now) && !who.equals(Names.localName(client)))
-				{
-					tracker.estimateHit(now, who, key, amount, type == HitsplatID.BLOCK_OTHER || amount <= 0);
-				}
+				tracker.estimateHit(now, who, key, amount, type == HitsplatID.BLOCK_OTHER || amount <= 0);
 			}
 		}
 		else if (isEffect(type))

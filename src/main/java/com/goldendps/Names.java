@@ -10,7 +10,7 @@ final class Names
 	{
 	}
 
-	/** Player name without tags and non-breaking spaces, or null when it is unknown. */
+	/** Player or NPC name without tags (CoX colors "<col=00ffff>Guardian</col>") and non-breaking spaces, or null when it is unknown. */
 	static String clean(String name)
 	{
 		if (name == null)

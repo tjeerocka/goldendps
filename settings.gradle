@@ -1,9 +1,14 @@
 rootProject.name = 'goldendps'
 
-// "GoldenDPS + AoRC" launcher: use the AoRC project folder next to this one
-// (for example IdeaProjects\AoRC and IdeaProjects\goldendps).
-// Other place? Set aorcDir=C:/path/to/AoRC in %USERPROFILE%\.gradle\gradle.properties
-def aorcDir = file(providers.gradleProperty('aorcDir').getOrElse('../AoRC'))
-if (new File(aorcDir, 'settings.gradle').exists()) {
-    includeBuild(aorcDir)
+// "GoldenDPS + Runecraft Companion" launcher: use the Runecraft Companion project folder next to
+// this one (for example IdeaProjects\runecraft-companion and IdeaProjects\goldendps).
+// Other place? Set companionDir=C:/path/to/runecraft-companion in %USERPROFILE%\.gradle\gradle.properties
+def companionPath = providers.gradleProperty('companionDir').getOrNull()
+def companionDir = companionPath != null ? file(companionPath)
+    : ['../runecraft-companion', '../RunecraftCompanion', '../Runecraft Companion']
+        .collect { file(it) }
+        .find { new File(it, 'settings.gradle').exists() }
+if (companionDir != null && new File(companionDir, 'settings.gradle').exists()) {
+    includeBuild(companionDir)
+    gradle.ext.hasCompanion = true
 }

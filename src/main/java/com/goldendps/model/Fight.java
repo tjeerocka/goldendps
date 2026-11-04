@@ -270,7 +270,9 @@ public class Fight
 	static String bossName(String npcName)
 	{
 		int part = npcName.indexOf(" (");
-		return part > 0 ? npcName.substring(0, part) : npcName;
+		String name = part > 0 ? npcName.substring(0, part) : npcName;
+		// in the Vespula room the portal is what you kill; its own name says nothing about the room
+		return name.equals("Abyssal portal") ? "Vespula portal" : name;
 	}
 
 	public String title(boolean bossOnly)

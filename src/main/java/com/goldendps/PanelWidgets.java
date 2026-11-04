@@ -123,7 +123,9 @@ final class PanelWidgets
 		JLabel valueLabel = new JLabel(value);
 		valueLabel.setForeground(highlight != null ? highlight : Color.WHITE);
 		valueLabel.setFont(FontManager.getRunescapeSmallFont());
-		p.add(keyLabel, BorderLayout.WEST);
+		// in the center the key gets what the value leaves and ends with "..." instead of overlapping it
+		keyLabel.setToolTipText(key);
+		p.add(keyLabel, BorderLayout.CENTER);
 		p.add(valueLabel, BorderLayout.EAST);
 		p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 16));
 		return p;

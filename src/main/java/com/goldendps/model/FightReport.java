@@ -98,6 +98,8 @@ public class FightReport
 	private final List<PlayerRow> rows = new ArrayList<>();
 	private final List<TargetRow> targets = new ArrayList<>();
 	private long totalDamage;
+	/** Targets fought that died. */
+	private int kills;
 	private long durationMs;
 	private String title;
 
@@ -115,6 +117,13 @@ public class FightReport
 			}
 		}
 		r.title = fight.title(bossOnly && fight.hasBossTarget());
+		for (TargetStats t : fight.targets.values())
+		{
+			if (t.engaged && t.died && (!bossOnly || t.boss))
+			{
+				r.kills++;
+			}
+		}
 
 		// damage by target that GoldenDPS knows the player of
 		Map<String, Long> knownByTarget = new LinkedHashMap<>();
@@ -451,6 +460,22 @@ public class FightReport
 		return rows;
 	}
 
+	/** Only you fought: poison, burn and hits nobody could be matched to do not make a group. */
+	public boolean isSolo()
+	{
+		int players = 0;
+		boolean you = false;
+		for (PlayerRow row : rows)
+		{
+			if (row.isPlayer())
+			{
+				players++;
+				you |= row.kind == PlayerKind.LOCAL;
+			}
+		}
+		return players == 0 || (players == 1 && you);
+	}
+
 	public PlayerRow row(String name)
 	{
 		for (PlayerRow r : rows)
@@ -471,6 +496,11 @@ public class FightReport
 	public long getTotalDamage()
 	{
 		return totalDamage;
+	}
+
+	public int getKills()
+	{
+		return kills;
 	}
 
 	public double getGroupDps()

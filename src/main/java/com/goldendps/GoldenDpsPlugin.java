@@ -7,6 +7,7 @@ import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
 import com.goldendps.model.KillCounts;
+import com.goldendps.model.RaidPoints;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.TargetMatcher;
@@ -17,6 +18,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
@@ -127,6 +129,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private final FunEffects fun = new FunEffects();
 	/** Kept over plugin restarts, like the game chat it is read from. */
 	private final KillCounts killCounts = new KillCounts();
+	private final RaidPoints raidPoints = new RaidPoints();
 
 	// made in startUp, when the injected fields are set
 	private FightStorage storage;
@@ -192,7 +195,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		combat = new CombatEvents(client, partyService, config, tracker, bosses, matcher, healing, barrows, party,
 			partyUpdates);
 		raids = new RaidFights(client, chat, tracker);
-		reports = new PartyReports(config, partyService, party, chat, storage, killCounts);
+		reports = new PartyReports(config, partyService, party, chat, storage, killCounts, raidPoints);
 		views = new MeterViews(config, tracker, storage, new BossHealth(client), barrows, party, fun);
 	}
 
@@ -337,8 +340,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		if (npc.isDead())
 		{
 			tracker.npcDied(System.currentTimeMillis(), TargetMatcher.key(client.getWorld(), npc.getIndex()),
-				bosses.isBoss(npc.getId(), npc.getName()));
-			barrows.died(System.currentTimeMillis(), npc.getName());
+				bosses.isBoss(npc.getId(), Names.clean(npc.getName())));
+			barrows.died(System.currentTimeMillis(), Names.clean(npc.getName()));
 		}
 	}
 
@@ -349,6 +352,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			long now = System.currentTimeMillis();
 			killCounts.message(now, e.getMessage());
+			raidPoints.message(now, e.getMessage());
+			raids.gameMessage(now, e.getMessage());
 			barrows.gameMessage(now, e.getMessage(), tracker);
 		}
 	}
@@ -411,6 +416,11 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			raids.reset();
 			barrows.loggedOut(now);
 			party.loggedOut(state == GameState.LOGIN_SCREEN);
+			if (state == GameState.LOGIN_SCREEN)
+			{
+				executor.schedule(() -> clientThread.invoke(party::leaveIfStillLoggedOut),
+					PartyManager.LEAVE_AFTER_LOGOUT_MS, TimeUnit.MILLISECONDS);
+			}
 			partyUpdates.clear();
 			tracker.endRaid(now, reason);
 			tracker.endNow(now, reason);
@@ -581,7 +591,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		clientThread.invoke(() ->
 		{
 			long now = System.currentTimeMillis();
-			reports.send(views.overlayFight(kind, now), kind, views.isSessionOverlay(), now);
+			reports.sendByHand(views.overlayFight(kind, now), kind, views.isSessionOverlay(), now);
 		});
 	}
 
@@ -593,7 +603,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		clientThread.invoke(() ->
 		{
 			long now = System.currentTimeMillis();
-			reports.send(views.panelFight(selected, now), kind, GoldenDpsPanel.SESSION_CHOICE.equals(selected), now);
+			reports.sendByHand(views.panelFight(selected, now), kind, GoldenDpsPanel.SESSION_CHOICE.equals(selected), now);
 		});
 	}
 

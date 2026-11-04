@@ -10,6 +10,8 @@ import net.runelite.api.coords.WorldPoint;
 /** One fight per raid: starts when you enter the raid instance and ends when you leave it. Client thread only. */
 class RaidFights
 {
+	private static final String RAID_BEGAN = "The raid has begun!";
+
 	private final Client client;
 	private final ChatNotifier chat;
 	private final FightTracker tracker;
@@ -33,6 +35,15 @@ class RaidFights
 		else if (change.end)
 		{
 			tracker.endRaid(now, "Left the raid");
+		}
+	}
+
+	/** CoX starts its timer with this message; ToB and ToA start theirs at the first room. */
+	void gameMessage(long now, String message)
+	{
+		if (message.startsWith(RAID_BEGAN))
+		{
+			tracker.raidBegan(now);
 		}
 	}
 

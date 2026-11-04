@@ -9,7 +9,8 @@ A DPS, damage and healing meter for groups and individuals.
 
 ## Features
 
-- **Meter overlay** with damage, DPS, healing or damage taken per player. Right-click it to switch
+- **Meter overlay** with damage, DPS, healing or damage taken per player (or a compact one: short names and
+  one number). Right-click it to switch
   modes, toggle boss-only, switch between the current fight and the session total, or report.
 - **Boss meter**: a second meter for the boss you are fighting, with DPS over the boss time only. While the
   boss lives it shows your PB pace ("-0:03" green = faster than your PB), worked out from its health bar. It
@@ -70,7 +71,7 @@ start a boss fight in no party, so the automatic boss reports and the Barrows ru
 raid party replaces it, and leaving it yourself turns it off until your next login.
 
 Automatic reports add the kill count from the game chat and your PB ("KC 19 - PB 5:48" or "NEW PB!").
-A finished raid is reported as a whole ("Chambers of Xeric complete: 31:30 - … - KC 21").
+A finished raid is reported as a whole ("Chambers of Xeric complete: 31:30 - … - KC 21 - 31,408 pts").
 At Barrows only the whole run is reported ("Barrows run complete: 3:12 - total 400 (2.1/s) - KC 19"), not
 every brother, and a solo report is one line.
 

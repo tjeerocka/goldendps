@@ -37,6 +37,16 @@ public final class ReportFormatter
 	/** @param label what the header calls the report ("Boss damage", "Healing") */
 	public static List<String> lines(FightReport report, MeterMode mode, String label, String title, int top)
 	{
+		return lines(report, mode, label, title, top, false);
+	}
+
+	/**
+	 * @param withKills the header gives the kills instead of the DPS: over many monsters
+	 *                  ("Overall damage") the kills say more than a DPS with walking in it
+	 */
+	public static List<String> lines(FightReport report, MeterMode mode, String label, String title, int top,
+		boolean withKills)
+	{
 		List<String> out = new ArrayList<>();
 		List<FightReport.PlayerRow> rows = report.sorted(mode);
 		double total = report.total(mode);
@@ -49,12 +59,12 @@ public final class ReportFormatter
 		header.append(' ').append(Format.duration(report.getDurationMs()));
 		if (!rows.isEmpty())
 		{
-			header.append(" - total ").append(totalText(report, mode, total));
+			header.append(" - total ").append(withKills ? killsText(report, mode, total) : totalText(report, mode, total));
 		}
 		out.add(cut(header.toString()));
-		if (rows.size() == 1 && rows.get(0).kind == PlayerKind.LOCAL)
+		if (report.isSolo())
 		{
-			// solo: the header already has your total and DPS
+			// the header already has your total and DPS
 			return out;
 		}
 
@@ -66,6 +76,13 @@ public final class ReportFormatter
 			out.add(cut((i + 1) + ". " + name + " " + valueText(row, mode, total)));
 		}
 		return out;
+	}
+
+	private static String killsText(FightReport report, MeterMode mode, double total)
+	{
+		int kills = report.getKills();
+		String amount = Format.amount(mode == MeterMode.DPS ? report.getTotalDamage() : total);
+		return kills == 0 ? amount : amount + " - " + kills + (kills == 1 ? " kill" : " kills");
 	}
 
 	private static String totalText(FightReport report, MeterMode mode, double total)

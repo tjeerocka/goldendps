@@ -14,8 +14,8 @@ repositories {
 }
 
 def runeLiteVersion = 'latest.release'
-def aorcDir = file(findProperty('aorcDir') ?: '../AoRC')
-def hasAoRC = new File(aorcDir, 'settings.gradle').exists()
+// found next to this project by settings.gradle
+def hasCompanion = gradle.ext.has('hasCompanion')
 
 dependencies {
     compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
@@ -27,9 +27,10 @@ dependencies {
     testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
     testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
 
-    // AoRC from its own project folder, only for the "GoldenDPS + AoRC" launcher (see settings.gradle)
-    if (hasAoRC) {
-        testImplementation 'com.aorc:aorc:1.0-SNAPSHOT'
+    // Runecraft Companion from its own project folder, only for the "GoldenDPS + Runecraft Companion"
+    // launcher (see settings.gradle)
+    if (hasCompanion) {
+        testImplementation 'com.runecraftcompanion:runecraft-companion:1.0-SNAPSHOT'
     }
 }
 
@@ -50,10 +51,10 @@ tasks.register('run', JavaExec) {
     mainClass = 'com.goldendps.GoldenDpsPluginTest'
 }
 
-// "gradlew runBoth" starts RuneLite with GoldenDPS and AoRC together
+// "gradlew runBoth" starts RuneLite with GoldenDPS and Runecraft Companion together
 tasks.register('runBoth', JavaExec) {
     group = 'application'
-    description = 'Start RuneLite with GoldenDPS and AoRC'
+    description = 'Start RuneLite with GoldenDPS and Runecraft Companion'
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'com.goldendps.BothPluginsTest'
 }

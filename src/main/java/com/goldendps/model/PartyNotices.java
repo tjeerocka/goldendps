@@ -11,10 +11,13 @@ import java.util.Set;
  * Chat notices when someone joins or leaves your party.
  * Names come a few seconds after a member connects, so we wait for the name.
  * Right after you join a party, the people already in it are not announced ({@link #QUIET_MS}).
+ * A member who is back within {@link #BACK_MS} (a world hop, a reconnect) is not announced at all.
  */
 public class PartyNotices
 {
 	public static final long QUIET_MS = 5000;
+	/** A hop or reconnect drops a member's name or id for a few seconds; only a longer absence is leaving. */
+	public static final long BACK_MS = 15_000;
 
 	public static final class Notice
 	{
@@ -32,6 +35,8 @@ public class PartyNotices
 	private final Map<Long, String> known = new HashMap<>();
 	/** Members you kicked: you already got a "removed" notice for them. */
 	private final Set<Long> silentLeave = new HashSet<>();
+	/** Name → when they went: told as "left" only when they are not back by {@link #BACK_MS}. */
+	private final Map<String, Long> gone = new HashMap<>();
 	private long partyKey = Long.MIN_VALUE;
 	private long quietUntil;
 	private boolean welcomed;
@@ -50,6 +55,7 @@ public class PartyNotices
 			partyKey = localId;
 			known.clear();
 			silentLeave.clear();
+			gone.clear();
 			quietUntil = now + QUIET_MS;
 			welcomed = false;
 		}
@@ -59,7 +65,8 @@ public class PartyNotices
 			if (!known.containsKey(e.getKey()))
 			{
 				known.put(e.getKey(), e.getValue());
-				if (!quiet)
+				boolean back = gone.remove(e.getValue()) != null;
+				if (!quiet && !back)
 				{
 					out.add(new Notice(e.getValue(), true));
 				}
@@ -73,8 +80,17 @@ public class PartyNotices
 			}
 			if (!silentLeave.remove(e.getKey()))
 			{
-				out.add(new Notice(e.getValue(), false));
+				gone.put(e.getValue(), now);
 			}
+			return true;
+		});
+		gone.entrySet().removeIf(e ->
+		{
+			if (now - e.getValue() < BACK_MS)
+			{
+				return false;
+			}
+			out.add(new Notice(e.getKey(), false));
 			return true;
 		});
 		return out;
@@ -99,7 +115,7 @@ public class PartyNotices
 	/** Text for {@link #welcome}. */
 	public static String welcomeText(String party, List<String> others)
 	{
-		String in = "GoldenDPS: you are in the party \"" + party + "\"";
+		String in = "you are in the party \"" + party + "\"";
 		if (others.isEmpty())
 		{
 			return in + ". Nobody else is in it yet.";
@@ -119,5 +135,6 @@ public class PartyNotices
 		partyKey = Long.MIN_VALUE;
 		known.clear();
 		silentLeave.clear();
+		gone.clear();
 	}
 }

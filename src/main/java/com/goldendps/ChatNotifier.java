@@ -9,26 +9,23 @@ import net.runelite.client.chat.QueuedMessage;
 class ChatNotifier
 {
 	private static final String PREFIX = "GoldenDPS: ";
-	private static final String JOIN_COLOR = "1aa31a";
 	private static final String LEAVE_COLOR = "c27c00";
 	private static final String KICK_COLOR = "d42020";
 
 	private final ChatMessageManager chatMessageManager;
+	private final GoldenDpsConfig config;
 
 	@Inject
-	ChatNotifier(ChatMessageManager chatMessageManager)
+	ChatNotifier(ChatMessageManager chatMessageManager, GoldenDpsConfig config)
 	{
 		this.chatMessageManager = chatMessageManager;
+		this.config = config;
 	}
 
+	/** Info and good news (joined, raid started) in the color the player picked; leaving and kicks keep theirs. */
 	void info(String text)
 	{
-		send(PREFIX + text);
-	}
-
-	void joined(String text)
-	{
-		send(colored(JOIN_COLOR, PREFIX + text));
+		send(colored(chatHex(), PREFIX + text));
 	}
 
 	void left(String text)
@@ -39,6 +36,11 @@ class ChatNotifier
 	void kicked(String text)
 	{
 		send(colored(KICK_COLOR, PREFIX + text));
+	}
+
+	private String chatHex()
+	{
+		return String.format("%06x", config.chatColor().getRGB() & 0xffffff);
 	}
 
 	private static String colored(String hex, String text)

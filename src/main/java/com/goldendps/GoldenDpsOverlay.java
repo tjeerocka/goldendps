@@ -5,6 +5,7 @@ import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
 import com.goldendps.model.MeterMode;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.ShortNames;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -12,6 +13,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.runelite.api.MenuAction;
 import net.runelite.client.ui.FontManager;
@@ -36,6 +39,7 @@ class GoldenDpsOverlay extends Overlay
 	private static final Color BAR_BG = new Color(255, 255, 255, 18);
 	private static final int PAD = 3;
 	private static final int COL_GAP = 9;
+	private static final int COMPACT_WIDTH = 110;
 	private static final Color CATEGORY_COLOR = new Color(190, 190, 190);
 	private static final Color TITLE_COLOR = new Color(255, 200, 0);
 	private static final Color PB_COLOR = new Color(255, 196, 0);
@@ -90,7 +94,7 @@ class GoldenDpsOverlay extends Overlay
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics fm = g.getFontMetrics();
-		int width = config.overlayWidth();
+		int width = config.compactOverlay() ? COMPACT_WIDTH : config.overlayWidth();
 
 		int y = 0;
 		if (!rows.isEmpty() || !config.hideWhenEmpty())
@@ -128,30 +132,34 @@ class GoldenDpsOverlay extends Overlay
 	private int drawMainMeter(Graphics2D g, FontMetrics fm, int width, MeterMode mode, FightReport report,
 		List<FightReport.PlayerRow> rows)
 	{
-		boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
-		String title = mode.getLabel() + (session ? " - Session" : " overall");
-		if (config.bossOnly())
+		boolean paused = plugin.isFightPaused();
+		String time = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
+		Color timeColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
+		if (config.compactOverlay())
 		{
-			title += " (boss)";
+			// the label sits above the numbers it names: "Time: 0:48      Damage"
+			return drawMeter(g, fm, 0, width, "Time: " + time, mode.getLabel(), CATEGORY_COLOR, HEADER_BG, report,
+				rows, mode);
 		}
+		boolean session = config.overlayScope() == GoldenDpsConfig.Scope.SESSION;
+		String title = mode.getLabel() + (session ? " - Session" : " overall") + (config.bossOnly() ? " (boss)" : "");
 		if (mode == MeterMode.HEALING && report != null && report.groupOverhealPercent() > 0)
 		{
 			title += "  OH " + Format.percent(report.groupOverhealPercent());
 		}
-		boolean paused = plugin.isFightPaused();
-		String right = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
-		Color rightColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
-		return drawMeter(g, fm, 0, width, title, right, rightColor, HEADER_BG, report, rows, mode);
+		return drawMeter(g, fm, 0, width, title, time, timeColor, HEADER_BG, report, rows, mode);
 	}
 
 	/** Draws a header and its bars; returns the y below them. */
 	private int drawMeter(Graphics2D g, FontMetrics fm, int top, int width, String title, String right,
 		Color rightColor, Color headerBg, FightReport report, List<FightReport.PlayerRow> rows, MeterMode mode)
 	{
+		boolean compact = config.compactOverlay();
 		int rowH = fm.getHeight() + 3;
 		int shown = Math.min(rows.size(), config.maxRows());
-		// header, column labels (only with bars), bars
-		int height = rowH * (shown + 1 + (shown > 0 ? 1 : 0)) + PAD;
+		// header, column labels (only with bars and not compact), bars
+		int labelRows = shown > 0 && !compact ? 1 : 0;
+		int height = rowH * (shown + 1 + labelRows) + PAD;
 
 		g.setColor(BACKGROUND);
 		g.fillRect(0, top, width, height);
@@ -170,7 +178,7 @@ class GoldenDpsOverlay extends Overlay
 
 		// each column is as wide as its widest cell, laid out from the right
 		boolean maxHit = config.showMaxHit();
-		String[] labels = columnLabels(mode, maxHit);
+		String[] labels = compact ? new String[]{""} : columnLabels(mode, maxHit);
 		double total = report.total(mode);
 		String[][] cells = new String[shown][];
 		int[] colW = new int[labels.length];
@@ -180,7 +188,7 @@ class GoldenDpsOverlay extends Overlay
 		}
 		for (int i = 0; i < shown; i++)
 		{
-			cells[i] = columnValues(rows.get(i), mode, total, maxHit);
+			cells[i] = compact ? new String[]{compactValue(rows.get(i), mode)} : columnValues(rows.get(i), mode, total, maxHit);
 			for (int c = 0; c < labels.length; c++)
 			{
 				colW[c] = Math.max(colW[c], fm.stringWidth(cells[i][c]));
@@ -195,18 +203,23 @@ class GoldenDpsOverlay extends Overlay
 		}
 		int nameMaxW = x - PAD - 2;
 
-		int labelY = top + rowH + textY - 1;
-		drawText(g, "Player", PAD + 2, labelY, CATEGORY_COLOR);
-		for (int c = 0; c < labels.length; c++)
+		if (!compact)
 		{
-			drawText(g, labels[c], colRight[c] - fm.stringWidth(labels[c]), labelY, CATEGORY_COLOR);
+			int labelY = top + rowH + textY - 1;
+			drawText(g, "Player", PAD + 2, labelY, CATEGORY_COLOR);
+			for (int c = 0; c < labels.length; c++)
+			{
+				drawText(g, labels[c], colRight[c] - fm.stringWidth(labels[c]), labelY, CATEGORY_COLOR);
+			}
 		}
+		Map<String, String> shortNames = compact ? ShortNames.of(rows.stream().map(r -> r.name)
+			.collect(Collectors.toList())) : null;
 
 		double max = FightReport.value(rows.get(0), mode);
 		for (int i = 0; i < shown; i++)
 		{
 			FightReport.PlayerRow row = rows.get(i);
-			int y = top + rowH * (i + 2) + 1;
+			int y = top + rowH * (i + 1 + labelRows) + 1;
 			double value = FightReport.value(row, mode);
 
 			g.setColor(BAR_BG);
@@ -217,7 +230,8 @@ class GoldenDpsOverlay extends Overlay
 			g.fillRect(PAD, y, barW, rowH - 2);
 
 			int rowTextY = y + textY - 1;
-			String left = (i + 1) + ". " + (row.isEstimate() ? "~" : "") + row.name;
+			String name = compact ? shortNames.get(row.name) : row.name;
+			String left = (compact ? "" : (i + 1) + ". ") + (row.isEstimate() ? "~" : "") + name;
 			drawText(g, fit(fm, left, nameMaxW), PAD + 2, rowTextY, Color.WHITE);
 			for (int c = 0; c < labels.length; c++)
 			{
@@ -242,6 +256,12 @@ class GoldenDpsOverlay extends Overlay
 			return EFFECTS_COLOR;
 		}
 		return PALETTE[Math.floorMod(row.name.hashCode(), PALETTE.length)];
+	}
+
+	/** The one number of the compact meter. */
+	static String compactValue(FightReport.PlayerRow row, MeterMode mode)
+	{
+		return mode == MeterMode.DPS ? Format.dps(row.dps) : Format.amount(FightReport.value(row, mode));
 	}
 
 	/** Column labels after the player name; damage modes get a "Max" (biggest hit) column. */

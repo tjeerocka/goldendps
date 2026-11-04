@@ -40,9 +40,22 @@ public class PartyNoticesTest
 		assertTrue(j.get(0).joined);
 		assertTrue("only once", n.tick(11_000, 1, members(5, "Monster NRGs")).isEmpty());
 
-		List<PartyNotices.Notice> l = n.tick(20_000, 1, members());
+		assertTrue("not yet: maybe a world hop", n.tick(20_000, 1, members()).isEmpty());
+		List<PartyNotices.Notice> l = n.tick(20_000 + PartyNotices.BACK_MS, 1, members());
 		assertEquals(1, l.size());
 		assertFalse(l.get(0).joined);
+	}
+
+	@Test
+	public void aHopOrReconnectIsNotAnnounced()
+	{
+		PartyNotices n = new PartyNotices();
+		n.tick(0, 1, members());
+		n.tick(10_000, 1, members(5, "Jern Henrik"));
+		n.tick(20_000, 1, members());
+		// back with a new member id a few seconds later
+		assertTrue(n.tick(23_000, 1, members(9, "Jern Henrik")).isEmpty());
+		assertTrue(n.tick(60_000, 1, members(9, "Jern Henrik")).isEmpty());
 	}
 
 	@Test
@@ -74,9 +87,9 @@ public class PartyNoticesTest
 		n.tick(2000, 1, members(5, "Zezima", 6, "Bob"));
 		n.tick(PartyNotices.QUIET_MS, 1, members(5, "Zezima", 6, "Bob"));
 		List<String> w = n.welcome(PartyNotices.QUIET_MS);
-		assertEquals("GoldenDPS: you are in the party \"tjeerocka\" with Bob, Zezima.", PartyNotices.welcomeText("tjeerocka", w));
+		assertEquals("you are in the party \"tjeerocka\" with Bob, Zezima.", PartyNotices.welcomeText("tjeerocka", w));
 		assertTrue("only once", n.welcome(9000) == null);
-		assertEquals("GoldenDPS: you are in the party \"x\". Nobody else is in it yet.",
+		assertEquals("you are in the party \"x\". Nobody else is in it yet.",
 			PartyNotices.welcomeText("x", new java.util.ArrayList<>()));
 	}
 }

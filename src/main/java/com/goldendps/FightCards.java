@@ -24,11 +24,6 @@ final class FightCards
 	}
 
 	/** Only one player did damage: no group numbers, no shares. */
-	static boolean isSolo(FightReport report)
-	{
-		return report.getRows().size() <= 1;
-	}
-
 	/** A raid's bosses with their times and how each compares with its PB. */
 	static JPanel bossTimes(List<String[]> bossTimes)
 	{
@@ -55,7 +50,7 @@ final class FightCards
 		{
 			card.add(line("Started", new SimpleDateFormat("dd MMM HH:mm").format(new Date(d.startMs))));
 		}
-		boolean solo = isSolo(r);
+		boolean solo = r.isSolo();
 		card.add(line(solo ? "Damage" : "Group damage", Format.amount(r.getTotalDamage())));
 		card.add(line(solo ? "DPS" : "Group DPS", Format.dps(r.getGroupDps())));
 		FightReport.PlayerRow topHit = r.topHit();

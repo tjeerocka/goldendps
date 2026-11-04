@@ -32,6 +32,8 @@ class PartyManager
 	private static final long REPORTER_MS = 120_000;
 	/** Kicked members are hidden at once; the party server may list them a little longer. */
 	private static final long KICK_HIDE_MS = 120_000;
+	/** After a logout you stay in the party this long, to pick another world on the login screen. */
+	static final long LEAVE_AFTER_LOGOUT_MS = 10_000;
 	/** Nameless, logged-out members older than this are stale connections. */
 	private static final long STALE_MEMBER_MS = 15_000;
 	/** A remembered raid party is kept over a client restart for this long (a long CoX raid). */
@@ -53,6 +55,7 @@ class PartyManager
 	private final Map<Long, Long> firstSeen = new HashMap<>();
 	private final Set<String> instanceMates = new HashSet<>();
 	private long localMemberId;
+	private long loggedOutAtMs;
 	/** You left or were kicked: no own party until the next login. */
 	private boolean ownPartyStopped;
 	/** A boss fight (or Barrows run) started: make your own party if you are in none. */
@@ -219,9 +222,26 @@ class PartyManager
 	void loggedOut(boolean toLoginScreen)
 	{
 		notices.reset();
-		if (toLoginScreen)
+		if (!toLoginScreen)
 		{
-			ownPartyStopped = false;
+			return;
+		}
+		ownPartyStopped = false;
+		loggedOutAtMs = System.currentTimeMillis();
+	}
+
+	/**
+	 * Some time after a logout: still logged out, so leave. RuneLite keeps you in the party while
+	 * logged out, and the others would see you there for nothing.
+	 */
+	void leaveIfStillLoggedOut()
+	{
+		// a little slack: the timer may fire a moment early; a newer logout has its own timer
+		boolean stillOut = client.getGameState() == GameState.LOGIN_SCREEN
+			&& System.currentTimeMillis() - loggedOutAtMs >= LEAVE_AFTER_LOGOUT_MS - 500;
+		if (stillOut && config.leaveOnLogout() && partyService.isInParty())
+		{
+			changeParty(null);
 		}
 	}
 
@@ -273,7 +293,7 @@ class PartyManager
 		{
 			if (n.joined)
 			{
-				chat.joined(n.name + " joined the party.");
+				chat.info(n.name + " joined the party.");
 			}
 			else
 			{
@@ -283,7 +303,7 @@ class PartyManager
 		List<String> others = notices.welcome(now);
 		if (others != null)
 		{
-			chat.joined(PartyNotices.welcomeText(partyService.getPartyPassphrase(), others));
+			chat.info(PartyNotices.welcomeText(partyService.getPartyPassphrase(), others));
 		}
 	}
 
@@ -328,7 +348,7 @@ class PartyManager
 		if (action.join != null)
 		{
 			changeParty(action.join);
-			chat.joined("you joined the " + raid.raid + " raid party automatically.");
+			chat.info("you joined the " + raid.raid + " raid party automatically.");
 		}
 		else if (action.leave)
 		{
@@ -414,7 +434,7 @@ class PartyManager
 			return;
 		}
 		changeParty(RaidParty.OWN_PREFIX + partyService.generatePassphrase().replace('-', ' '));
-		chat.joined("you are in your own party now, so boss reports also work solo (setting: Own party).");
+		chat.info("you are in your own party now, so boss reports also work solo (setting: Own party).");
 	}
 
 	GoldenDpsPartyPanel.View view(String localName)

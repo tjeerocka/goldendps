@@ -382,7 +382,7 @@ class GoldenDpsPanel extends PluginPanel
 
 		List<FightReport.PlayerRow> rows = new ArrayList<>(r.getRows());
 		rows.sort((a, b) -> Long.compare(b.damage, a.damage));
-		boolean solo = FightCards.isSolo(r);
+		boolean solo = r.isSolo();
 		if (!rows.isEmpty() && addHeading(solo ? "Details" : "Players", Part.PLAYERS, solo ? 0 : rows.size()))
 		{
 			for (FightReport.PlayerRow row : rows)

@@ -69,6 +69,30 @@ public class ReportFormatterTest
 	}
 
 	@Test
+	public void burnDamageDoesNotMakeAGroup()
+	{
+		FightTracker t = new FightTracker();
+		t.playerHit(1000, "Me", PlayerKind.LOCAL, "1:1", 1, "Lesser demon", false, 40, false);
+		t.effectHit(2000, "1:1", 1, "Lesser demon", false, 2);
+		FightReport r = FightReport.of(t.getCurrent(), false, 3000);
+		assertTrue(r.isSolo());
+		assertEquals(1, ReportFormatter.lines(r, MeterMode.DAMAGE, "Damage", "Lesser demon", 5).size());
+	}
+
+	@Test
+	public void theOverallReportGivesTheKills()
+	{
+		FightTracker t = new FightTracker();
+		t.playerHit(1000, "Me", PlayerKind.LOCAL, "1:1", 1, "Grizzly bear", false, 30, false);
+		t.npcDied(2000, "1:1", false);
+		t.playerHit(3000, "Me", PlayerKind.LOCAL, "1:2", 1, "Grizzly bear", false, 30, false);
+		t.npcDied(4000, "1:2", false);
+		FightReport r = FightReport.of(t.getCurrent(), false, 5000);
+		assertEquals("Overall damage - Grizzly bear 0:04 - total 60 - 2 kills",
+			ReportFormatter.lines(r, MeterMode.DAMAGE, "Overall damage", "Grizzly bear", 5, true).get(0));
+	}
+
+	@Test
 	public void topLimitsThePlayers()
 	{
 		List<String> lines = ReportFormatter.lines(fight(), MeterMode.DAMAGE, "Vorkath", 1);

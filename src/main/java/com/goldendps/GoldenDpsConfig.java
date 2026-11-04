@@ -85,8 +85,9 @@ public interface GoldenDpsConfig extends Config
 
 	@ConfigItem(
 		keyName = "estimateOthers",
-		name = "Guess other players",
-		description = "Estimate the damage of players without GoldenDPS from their attack animations (marked with ~)",
+		name = "Show other players",
+		description = "Also count players outside your party: their damage is guessed from their attacks (marked"
+			+ " with ~). Off: only you and your party members show.",
 		position = 2,
 		section = partySection
 	)
@@ -135,6 +136,31 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "leaveOnLogout",
+		name = "Leave party on logout",
+		description = "Leave the party 10 seconds after you log out, unless you are back in by then"
+			+ " (world hops never leave)",
+		position = 6,
+		section = partySection
+	)
+	default boolean leaveOnLogout()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "chatColor",
+		name = "Chat color",
+		description = "The color of GoldenDPS messages in your chatbox (leaving and kicks stay orange and red)",
+		position = 7,
+		section = partySection
+	)
+	default Color chatColor()
+	{
+		return new Color(0, 190, 210);
+	}
+
+	@ConfigItem(
 		keyName = "showOverlay",
 		name = "Show overlay",
 		description = "Show the meter on the game screen",
@@ -169,10 +195,23 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "compactOverlay",
+		name = "Compact",
+		description = "A narrow meter: short names (\"Franz\" becomes \"Fr\") and only the damage (or the number"
+			+ " you show)",
+		position = 1,
+		section = overlaySection
+	)
+	default boolean compactOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "maxRows",
 		name = "Max bars",
 		description = "How many bars to show",
-		position = 1,
+		position = 2,
 		section = overlaySection
 	)
 	@Range(min = 1, max = 20)
@@ -185,7 +224,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "overlayWidth",
 		name = "Width",
 		description = "Overlay width",
-		position = 2,
+		position = 3,
 		section = overlaySection
 	)
 	@Range(min = 140, max = 400)
@@ -199,7 +238,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "hideWhenEmpty",
 		name = "Hide when empty",
 		description = "Hide the overlay when there is nothing to show",
-		position = 3,
+		position = 4,
 		section = overlaySection
 	)
 	default boolean hideWhenEmpty()
@@ -211,7 +250,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "myColor",
 		name = "My bar color",
 		description = "Color of your own bar",
-		position = 4,
+		position = 5,
 		section = overlaySection
 	)
 	default Color myColor()
@@ -224,7 +263,7 @@ public interface GoldenDpsConfig extends Config
 		keyName = "bossMeter",
 		name = "Boss meter",
 		description = "A second meter with only the damage on the boss, over the boss time",
-		position = 5,
+		position = 6,
 		section = overlaySection
 	)
 	default boolean bossMeter()
