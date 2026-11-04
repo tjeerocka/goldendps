@@ -33,6 +33,13 @@ public final class Format
 		return String.format(Locale.US, "%.0f%%", v);
 	}
 
+	/** "90% (255/284)", or "-" without attacks. */
+	public static String accuracy(int hits, int misses)
+	{
+		int attacks = hits + misses;
+		return attacks == 0 ? "-" : String.format(Locale.US, "%.0f%% (%d/%d)", 100.0 * hits / attacks, hits, attacks);
+	}
+
 	/** 0:42, 12:05, 1:02:03 */
 	public static String duration(long ms)
 	{

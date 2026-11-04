@@ -96,9 +96,7 @@ final class Bosses
 		"giant mole", "chaos elemental", "chaos fanatic", "crazy archaeologist",
 		"scorpia", "venenatis", "vet'ion", "callisto", "zalcano",
 		"blue moon", "eclipse moon", "blood moon", "deranged archaeologist", "revenant maledictus",
-		// not the Gemstone Crab: it never dies, it moves after a fixed 10 minutes, so kill times and PB
-		// pace mean nothing there; its damage still shows on the normal meter
-		"brutus", "maggot king", "mad angel",
+		"gemstone crab", "brutus", "maggot king", "mad angel",
 		// The Fractured Archive
 		"archive guardian", "ezekiel", "bork", "moia", "dreadnoth the jellied", "dagon'hai elder", "xarth",
 		"ocellus"

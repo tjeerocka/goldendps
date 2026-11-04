@@ -47,6 +47,8 @@ class GoldenDpsPartyPanel extends JPanel
 		boolean youLead;
 		/** "Raid party" or "Own party" when GoldenDPS joined it, else null. */
 		String autoLabel;
+		/** The last party you were in, for Rejoin, or null. */
+		String lastParty;
 		List<Member> members = new ArrayList<>();
 	}
 
@@ -67,6 +69,7 @@ class GoldenDpsPartyPanel extends JPanel
 	private final JButton randomButton;
 	private final JButton copyButton;
 	private final JButton leaveButton;
+	private final JButton rejoinButton;
 	private View lastView = new View();
 	private String shownCode;
 	private long confirmKickId = -1;
@@ -106,6 +109,7 @@ class GoldenDpsPartyPanel extends JPanel
 		actions.add(copyButton);
 		leaveButton = button("Leave", "Leave the party", null, plugin::leaveParty);
 		actions.add(leaveButton);
+		rejoinButton = button("Rejoin", null, null, plugin::rejoinParty);
 
 		JPanel top = new JPanel(new GridLayout(0, 1, 0, 4));
 		top.setOpaque(false);
@@ -113,6 +117,7 @@ class GoldenDpsPartyPanel extends JPanel
 		top.add(nameLabel);
 		top.add(nameRow);
 		top.add(actions);
+		top.add(rejoinButton);
 
 		memberList.setLayout(new BoxLayout(memberList, BoxLayout.Y_AXIS));
 		memberList.setOpaque(false);
@@ -153,6 +158,9 @@ class GoldenDpsPartyPanel extends JPanel
 		shownCode = v.inParty ? v.code : null;
 		leaveButton.setEnabled(v.inParty);
 		copyButton.setEnabled(v.inParty);
+		rejoinButton.setEnabled(!v.inParty && v.lastParty != null);
+		rejoinButton.setToolTipText(v.inParty ? LEAVE_FIRST : v.lastParty != null
+			? "Join your last party \"" + v.lastParty + "\" again" : "No last party yet");
 		// switching party needs an explicit Leave first
 		nameField.setEditable(!v.inParty);
 		randomButton.setEnabled(!v.inParty);

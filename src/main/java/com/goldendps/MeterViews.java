@@ -51,7 +51,9 @@ class MeterViews
 		BossRecords.Record record = storage.record(report.getTitle(), BossRecords.isParty(report));
 		String pb = BossRecords.meterTag(record, storage.compare(shown.id));
 		boolean dead = shown.bossDiedMs() > 0;
-		Long pace = dead ? null : BossRecords.paceMs(report.getDurationMs(), bossHealth.done(shown), record);
+		// a timed boss's health bar is its clock, not your damage: no pace there
+		Long pace = dead || BossRecords.isTimed(report.getTitle()) ? null
+			: BossRecords.paceMs(report.getDurationMs(), bossHealth.done(shown), record);
 		return new BossMeter(report, dead, !dead && shown.isPaused(now), pb, pace);
 	}
 

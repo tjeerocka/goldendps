@@ -30,12 +30,9 @@ public class FightReport
 		public long healing;
 		public long healFood;
 		public long healLifesteal;
-		public long healRegen;
 		public long healOther;
-		/** Wasted healing (food + lifesteal). */
+		/** Wasted food and potion healing. */
 		public long overheal;
-		public long overFood;
-		public long overLifesteal;
 		public long damageTaken;
 		/** Damage per weapon / spell, biggest first. Empty when not known. */
 		public List<SourceRow> sources = new ArrayList<>();
@@ -44,13 +41,6 @@ public class FightReport
 		public double overhealPercent()
 		{
 			return FightReport.overhealPercent(healing, overheal);
-		}
-
-		/** Hits / (hits + misses), 0..100. -1 when there were no attacks (or unknown). */
-		public double accuracy()
-		{
-			int attacks = hits + misses;
-			return attacks == 0 ? -1 : 100.0 * hits / attacks;
 		}
 
 		/** A real player row (you, party, or a guessed player). */
@@ -93,6 +83,8 @@ public class FightReport
 		public long total;
 		/** Player name (or UNKNOWN_NAME / EFFECTS_NAME) to damage, biggest first. */
 		public Map<String, Long> byPlayer = new LinkedHashMap<>();
+		/** Hits and misses per player; guessed players are left out. */
+		public Map<String, TargetDamage> attacksByPlayer = new LinkedHashMap<>();
 	}
 
 	private final List<PlayerRow> rows = new ArrayList<>();
@@ -174,11 +166,8 @@ public class FightReport
 		}
 		row.healFood = p.healFood;
 		row.healLifesteal = p.healLifesteal;
-		row.healRegen = p.healRegen;
 		row.healOther = p.healOther;
 		row.healing = p.healing();
-		row.overFood = p.overFood;
-		row.overLifesteal = p.overLifesteal;
 		row.overheal = p.overheal();
 		row.damageTaken = p.takenTotal();
 		return row;
@@ -297,6 +286,10 @@ public class FightReport
 				}
 				TargetRow row = targetRow(byName, t);
 				row.byPlayer.merge(p.name, e.getValue().damage, Long::sum);
+				if (p.kind != PlayerKind.ESTIMATE)
+				{
+					row.attacksByPlayer.computeIfAbsent(p.name, n -> new TargetDamage()).merge(e.getValue());
+				}
 				row.total += e.getValue().damage;
 				knownByTarget.merge(t.key, e.getValue().damage, Long::sum);
 			}

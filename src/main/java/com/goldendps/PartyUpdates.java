@@ -67,6 +67,7 @@ class PartyUpdates
 				outgoing.lifestealOverheal += heal.overheal;
 				break;
 			case REGEN:
+				// not counted any more, still sent for older GoldenDPS versions
 				outgoing.regen += heal.amount;
 				break;
 			case HEAL_OTHER:
@@ -142,7 +143,6 @@ class PartyUpdates
 		tracker.damageTaken(now, name, PlayerKind.PARTY, update.taken);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.FOOD, update.food, update.foodOverheal);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.LIFESTEAL, update.lifesteal, update.lifestealOverheal);
-		tracker.heal(now, name, PlayerKind.PARTY, HealType.REGEN, update.regen);
 		tracker.heal(now, name, PlayerKind.PARTY, HealType.HEAL_OTHER, update.healOther);
 	}
 

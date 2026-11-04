@@ -81,7 +81,11 @@ public class FightTrackerTest
 		assertEquals(3, me.hits);
 		assertEquals(1, me.misses);
 		assertEquals(30, me.biggestHit);
-		assertEquals(75.0, me.accuracy(), D);
+		assertEquals("75% (3/4)", Format.accuracy(me.hits, me.misses));
+		assertEquals("-", Format.accuracy(0, 0));
+		TargetDamage onTarget = r.getTargets().get(0).attacksByPlayer.get("Me");
+		assertEquals(3, onTarget.hits);
+		assertEquals(1, onTarget.misses);
 		assertEquals(6.0, me.dps, D);
 		assertEquals(100.0, me.percent, D);
 		assertNull("solo: no unknown row", r.row(FightReport.UNKNOWN_NAME));
@@ -310,17 +314,16 @@ public class FightTrackerTest
 
 		FightReport r = report(tracker.getCurrent(), 6000);
 		assertEquals(9, r.row("Me").healing);
-		assertEquals(26, r.row("Me").overheal);
-		assertEquals(11, r.row("Me").overFood);
-		assertEquals(15, r.row("Me").overLifesteal);
-		// Me: 9 healed + 26 wasted = 35 -> 74%; group: 29 healed + 28 wasted -> 49%
-		assertEquals(100.0 * 26 / 35, r.row("Me").overhealPercent(), D);
+		// lifesteal past full health is not counted: only the 11 food
+		assertEquals(11, r.row("Me").overheal);
+		// Me: 9 healed + 11 wasted = 20 -> 55%; group: 29 healed + 13 wasted -> 31%
+		assertEquals(100.0 * 11 / 20, r.row("Me").overhealPercent(), D);
 		assertEquals(100.0 * 2 / 22, r.row("Friend").overhealPercent(), D);
-		assertEquals(100.0 * 28 / 57, r.groupOverhealPercent(), D);
+		assertEquals(100.0 * 13 / 42, r.groupOverhealPercent(), D);
 		assertEquals(0.0, FightReport.overhealPercent(0, 0), D);
 
 		Fight copy = tracker.getCurrent().copy();
-		assertEquals(26, copy.players.get("Me").overheal());
+		assertEquals(11, copy.players.get("Me").overheal());
 	}
 
 	@Test

@@ -7,11 +7,14 @@ import static com.goldendps.PanelWidgets.section;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.TargetDamage;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import net.runelite.client.ui.ColorScheme;
@@ -84,8 +87,13 @@ final class FightCards
 			|| d.bossReport.getDurationMs() != d.report.getDurationMs());
 	}
 
-	/** In a solo fight the summary already has the damage and DPS. */
-	static JPanel player(FightReport.PlayerRow row, FightReport.PlayerRow bossRow, boolean solo)
+	/**
+	 * In a solo fight the summary already has the damage and DPS.
+	 * @param openSources weapons that show their accuracy, as {@link #sourceKey}
+	 * @param toggleSource a click on a weapon opens or closes it
+	 */
+	static JPanel player(FightReport.PlayerRow row, FightReport.PlayerRow bossRow, boolean solo,
+		Set<String> openSources, Consumer<String> toggleSource)
 	{
 		JPanel card = section();
 		Color nameColor = row.kind == PlayerKind.LOCAL ? GOLD
@@ -109,10 +117,8 @@ final class FightCards
 			return card;
 		}
 		card.add(line("Biggest hit", String.valueOf(row.biggestHit)));
-		double accuracy = row.accuracy();
-		card.add(line("Accuracy", accuracy < 0 ? "-"
-			: String.format("%.0f%% (%d/%d)", accuracy, row.hits, row.hits + row.misses)));
-		addSources(card, row);
+		card.add(line("Accuracy", Format.accuracy(row.hits, row.misses)));
+		addSources(card, row, openSources, toggleSource);
 		if (row.isEstimate())
 		{
 			card.add(line("", "No GoldenDPS: damage is a guess"));
@@ -124,8 +130,9 @@ final class FightCards
 		return card;
 	}
 
-	/** Damage per weapon, special attack or spell. */
-	private static void addSources(JPanel card, FightReport.PlayerRow row)
+	/** Damage per weapon, special attack or spell; a click shows its accuracy under it. */
+	private static void addSources(JPanel card, FightReport.PlayerRow row, Set<String> openSources,
+		Consumer<String> toggleSource)
 	{
 		if (row.sources.isEmpty())
 		{
@@ -134,11 +141,25 @@ final class FightCards
 		card.add(line("Breakdown", ""));
 		for (FightReport.SourceRow source : row.sources)
 		{
-			JComponent l = line("  " + source.name, Format.amount(source.damage) + "  (" + Format.percent(source.percent) + ")");
-			l.setToolTipText(String.format("%s: %d hits, %d misses, biggest %d, average %.1f per attack",
+			String key = sourceKey(row.name, source.name);
+			boolean open = openSources.contains(key);
+			JComponent l = line((open ? "  - " : "  + ") + source.name,
+				Format.amount(source.damage) + "  (" + Format.percent(source.percent) + ")");
+			l.setToolTipText(String.format("%s: %d hits, %d misses, biggest %d, average %.1f per attack. Click for accuracy.",
 				source.name, source.hits, source.misses, source.biggestHit, source.average()));
+			PanelWidgets.clickable(l, () -> toggleSource.accept(key));
 			card.add(l);
+			if (open)
+			{
+				card.add(line("      Accuracy", Format.accuracy(source.hits, source.misses)));
+			}
 		}
+	}
+
+	/** One weapon of one player, so the same weapon of two players opens on its own. */
+	static String sourceKey(String player, String source)
+	{
+		return player + "|" + source;
 	}
 
 	private static void addHealing(JPanel card, FightReport.PlayerRow row)
@@ -147,12 +168,9 @@ final class FightCards
 		addIfAny(card, "  Food/potions", row.healFood);
 		addIfAny(card, "  Lifesteal", row.healLifesteal);
 		addIfAny(card, "  On others", row.healOther);
-		addIfAny(card, "  Regen", row.healRegen);
 		if (row.overheal > 0)
 		{
 			card.add(line("Overhealing", Format.percent(row.overhealPercent()) + "  (" + Format.amount(row.overheal) + ")"));
-			addIfAny(card, "  Food/potions", row.overFood);
-			addIfAny(card, "  Lifesteal", row.overLifesteal);
 		}
 	}
 
@@ -174,6 +192,11 @@ final class FightCards
 		{
 			double percent = target.total == 0 ? 0 : 100.0 * byPlayer.getValue() / target.total;
 			card.add(line("  " + byPlayer.getKey(), Format.amount(byPlayer.getValue()) + " (" + Format.percent(percent) + ")"));
+			TargetDamage attacks = target.attacksByPlayer.get(byPlayer.getKey());
+			if (attacks != null)
+			{
+				card.add(line("    Accuracy", Format.accuracy(attacks.hits, attacks.misses)));
+			}
 		}
 		return card;
 	}

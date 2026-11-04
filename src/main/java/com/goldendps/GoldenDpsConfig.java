@@ -125,8 +125,8 @@ public interface GoldenDpsConfig extends Config
 		keyName = "ownParty",
 		name = "Own party",
 		description = "When you start a boss fight (or a Barrows run) in no party, put you in a party of your own,"
-			+ " so the automatic boss and Barrows reports also work solo. Leaving it yourself turns it off until"
-			+ " you log out.",
+			+ " so the automatic boss and Barrows reports also work solo. Leaving a party yourself, or losing it,"
+			+ " turns it off until you log out.",
 		position = 5,
 		section = partySection
 	)

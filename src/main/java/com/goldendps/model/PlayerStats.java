@@ -21,10 +21,9 @@ public class PlayerStats
 	public long seenTaken;
 	public long healFood;
 	public long healLifesteal;
-	public long healRegen;
 	public long healOther;
+	/** Wasted food and potion healing. Lifesteal past full health is not counted: you cannot avoid it. */
 	public long overFood;
-	public long overLifesteal;
 
 	public PlayerStats()
 	{
@@ -83,16 +82,9 @@ public class PlayerStats
 
 	public void addHeal(HealType type, int amount, int overheal)
 	{
-		if (overheal > 0)
+		if (overheal > 0 && type == HealType.FOOD)
 		{
-			if (type == HealType.FOOD)
-			{
-				overFood += overheal;
-			}
-			else if (type == HealType.LIFESTEAL)
-			{
-				overLifesteal += overheal;
-			}
+			overFood += overheal;
 		}
 		if (amount <= 0)
 		{
@@ -106,9 +98,6 @@ public class PlayerStats
 			case LIFESTEAL:
 				healLifesteal += amount;
 				break;
-			case REGEN:
-				healRegen += amount;
-				break;
 			case HEAL_OTHER:
 				healOther += amount;
 				break;
@@ -119,7 +108,7 @@ public class PlayerStats
 
 	public long overheal()
 	{
-		return overFood + overLifesteal;
+		return overFood;
 	}
 
 	/** Healing without natural regeneration, which every player gets the same. */
@@ -150,10 +139,8 @@ public class PlayerStats
 		seenTaken += o.seenTaken;
 		healFood += o.healFood;
 		healLifesteal += o.healLifesteal;
-		healRegen += o.healRegen;
 		healOther += o.healOther;
 		overFood += o.overFood;
-		overLifesteal += o.overLifesteal;
 	}
 
 	private static void mergeTargets(Map<String, TargetDamage> into, Map<String, TargetDamage> from,

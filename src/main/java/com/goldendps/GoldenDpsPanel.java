@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.BorderFactory;
@@ -129,6 +130,8 @@ class GoldenDpsPanel extends PluginPanel
 	private boolean updating;
 	/** Sections whose show/hide differs from the default. */
 	private final Set<Part> toggled = EnumSet.noneOf(Part.class);
+	/** Weapons in the breakdown that show their accuracy (this session only). */
+	private final Set<String> openSources = new HashSet<>();
 
 	GoldenDpsPanel(GoldenDpsPlugin plugin)
 	{
@@ -388,7 +391,8 @@ class GoldenDpsPanel extends PluginPanel
 			for (FightReport.PlayerRow row : rows)
 			{
 				content.add(Box.createVerticalStrut(4));
-				content.add(FightCards.player(row, d.bossReport == null ? null : d.bossReport.row(row.name), solo));
+				content.add(FightCards.player(row, d.bossReport == null ? null : d.bossReport.row(row.name), solo,
+					openSources, this::toggleSource));
 			}
 		}
 
@@ -416,7 +420,8 @@ class GoldenDpsPanel extends PluginPanel
 			pbs.add(bold(rec.label(), Color.WHITE));
 			pbs.add(actionRow(small(rec.kills + " kc", ColorScheme.LIGHT_GRAY_COLOR), "reset",
 				"Delete this personal best", () -> confirmResetBest(rec)));
-			pbs.add(line("Fastest", Format.duration(rec.fastestMs)));
+			pbs.add(BossRecords.isTimed(rec.boss) ? line("Most damage", Format.amount(rec.mostDamage))
+				: line("Fastest", Format.duration(rec.fastestMs)));
 			if (rec.bestDps > 0)
 			{
 				pbs.add(line("Best DPS", Format.dps(rec.bestDps)));
@@ -428,6 +433,15 @@ class GoldenDpsPanel extends PluginPanel
 	private boolean isOpen(Part part)
 	{
 		return part.openByDefault != toggled.contains(part);
+	}
+
+	private void toggleSource(String key)
+	{
+		if (!openSources.remove(key))
+		{
+			openSources.add(key);
+		}
+		plugin.requestPanelUpdate();
 	}
 
 	private void toggle(Part part)

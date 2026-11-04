@@ -3,6 +3,7 @@ package com.goldendps;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -99,9 +100,16 @@ final class PanelWidgets
 			return row;
 		}
 		row.add(small(action, ColorScheme.LIGHT_GRAY_COLOR), BorderLayout.EAST);
-		row.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		row.setToolTipText(tip);
-		row.addMouseListener(new MouseAdapter()
+		clickable(row, onClick);
+		return row;
+	}
+
+	/** A hand cursor, and a click runs {@code onClick}. Labels with a tooltip catch clicks, so they get it too. */
+	static void clickable(Component c, Runnable onClick)
+	{
+		c.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		c.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent e)
@@ -109,7 +117,13 @@ final class PanelWidgets
 				onClick.run();
 			}
 		});
-		return row;
+		if (c instanceof Container)
+		{
+			for (Component child : ((Container) c).getComponents())
+			{
+				clickable(child, onClick);
+			}
+		}
 	}
 
 	/** A key on the left and a value on the right; {@code highlight} colors both. */

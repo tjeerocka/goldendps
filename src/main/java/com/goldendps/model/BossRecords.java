@@ -21,6 +21,8 @@ public class BossRecords
 		public long timeMs;
 		/** Your DPS on the boss (0 = you did no damage). */
 		public double myDps;
+		/** Your damage on the boss: the record of a boss on a fixed timer. */
+		public long myDamage;
 		public long whenMs;
 		/** The fight of this kill, to find its comparison later. */
 		public String fightId;
@@ -37,6 +39,8 @@ public class BossRecords
 		public double bestDps;
 		public double lastDps;
 		public long lastMs;
+		/** Your most damage in one kill: the PB of a boss on a fixed timer. */
+		public long mostDamage;
 		/** Records of party kills; false = solo (records saved before the split were solo kills). */
 		public boolean party;
 
@@ -56,6 +60,7 @@ public class BossRecords
 			c.bestDps = bestDps;
 			c.lastDps = lastDps;
 			c.lastMs = lastMs;
+			c.mostDamage = mostDamage;
 			return c;
 		}
 	}
@@ -68,6 +73,7 @@ public class BossRecords
 		public Record before;
 		public boolean newFastest;
 		public boolean newBestDps;
+		public boolean newMostDamage;
 
 		/** Your DPS compared with your last kill, in % (+5 = 5% more). NaN when there is no last kill. */
 		public double vsLastDpsPercent()
@@ -83,6 +89,15 @@ public class BossRecords
 	public Map<String, Record> byBoss = new LinkedHashMap<>();
 
 	/** The boss kill in this fight, or null (no boss killed). */
+	/** A boss on a fixed timer: the Gemstone Crab moves on after 10 minutes whatever you do. */
+	private static final String TIMED_BOSS = "Gemstone Crab";
+
+	/** A boss on a fixed timer: its PB is your most damage, not the fastest time; no PB pace. */
+	public static boolean isTimed(String boss)
+	{
+		return TIMED_BOSS.equals(boss);
+	}
+
 	public static Kill kill(Fight f)
 	{
 		// a whole raid is no boss kill (its bosses have their own fights)
@@ -102,6 +117,7 @@ public class BossRecords
 			if (row.kind == PlayerKind.LOCAL)
 			{
 				k.myDps = row.dps;
+				k.myDamage = row.damage;
 			}
 		}
 		return k.boss == null || k.timeMs <= 0 ? null : k;
@@ -166,10 +182,15 @@ public class BossRecords
 			byBoss.put(key(k.boss, k.party), r);
 		}
 		r.kills++;
-		if (r.fastestMs <= 0 || k.timeMs < r.fastestMs)
+		if (!isTimed(k.boss) && (r.fastestMs <= 0 || k.timeMs < r.fastestMs))
 		{
 			r.fastestMs = k.timeMs;
 			c.newFastest = true;
+		}
+		if (k.myDamage > r.mostDamage)
+		{
+			r.mostDamage = k.myDamage;
+			c.newMostDamage = true;
 		}
 		if (k.myDps > 0)
 		{
@@ -244,6 +265,11 @@ public class BossRecords
 	/** Short tag for the boss meter title: "NEW PB!", "PB 1:10" or null. */
 	public static String meterTag(Record rec, Compare kill)
 	{
+		String boss = kill != null ? kill.kill.boss : rec != null ? rec.boss : null;
+		if (isTimed(boss))
+		{
+			return damageTag(rec, kill);
+		}
 		if (kill != null && kill.newFastest && kill.before != null)
 		{
 			return "NEW PB!";
@@ -259,6 +285,16 @@ public class BossRecords
 		return null;
 	}
 
+	/** {@link #meterTag} for a boss on a fixed timer: "NEW PB!" or "PB 12.3k" (most damage). */
+	private static String damageTag(Record rec, Compare kill)
+	{
+		if (kill != null && kill.before != null)
+		{
+			return kill.newMostDamage ? "NEW PB!" : "PB " + Format.amount(kill.before.mostDamage);
+		}
+		return kill == null && rec != null && rec.mostDamage > 0 ? "PB " + Format.amount(rec.mostDamage) : null;
+	}
+
 	/** Panel lines for a boss kill: {label, value}. Empty when this fight was no boss kill. */
 	public static List<String[]> killLines(Compare c)
 	{
@@ -268,7 +304,13 @@ public class BossRecords
 			return out;
 		}
 		Record b = c.before;
-		if (b == null)
+		if (isTimed(c.kill.boss))
+		{
+			String pb = b == null ? "" : c.newMostDamage ? " NEW PB! (was " + Format.amount(b.mostDamage) + ")"
+				: " (PB " + Format.amount(b.mostDamage) + ")";
+			out.add(new String[]{"Your damage", Format.amount(c.kill.myDamage) + pb});
+		}
+		else if (b == null)
 		{
 			out.add(new String[]{"Kill time", Format.duration(c.kill.timeMs) + " (first kill!)"});
 		}

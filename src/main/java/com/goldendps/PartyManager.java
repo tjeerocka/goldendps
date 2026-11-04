@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
@@ -25,20 +26,23 @@ import net.runelite.client.party.PartyService;
  * chat notices, the automatic raid party, and which members are in your instance.
  * All methods run on the client thread.
  */
+@Slf4j
 @Singleton
 class PartyManager
 {
 	/** A member counts as running GoldenDPS for this long after their last update. */
 	private static final long REPORTER_MS = 120_000;
-	/** Kicked members are hidden at once; the party server may list them a little longer. */
+	/**
+	 * Kicked members are hidden at once, for this long: the party server may list them a little longer.
+	 * Members who said bye stay hidden until the server drops them, which can take minutes.
+	 */
 	private static final long KICK_HIDE_MS = 120_000;
 	/** After a logout you stay in the party this long, to pick another world on the login screen. */
 	static final long LEAVE_AFTER_LOGOUT_MS = 10_000;
-	/** Nameless, logged-out members older than this are stale connections. */
-	private static final long STALE_MEMBER_MS = 15_000;
 	/** A remembered raid party is kept over a client restart for this long (a long CoX raid). */
 	private static final long REMEMBER_MS = 2 * 60 * 60_000;
 	private static final String RAID_PARTY_KEY = "raidParty";
+	private static final String LAST_PARTY_KEY = "lastParty";
 
 	private final Client client;
 	private final PartyService partyService;
@@ -51,11 +55,12 @@ class PartyManager
 	private final RaidParty raidParty = new RaidParty();
 	private final PartyNotices notices = new PartyNotices();
 	private final Map<String, Long> reporters = new HashMap<>();
-	private final Map<Long, Long> kicked = new HashMap<>();
-	private final Map<Long, Long> firstSeen = new HashMap<>();
+	/** Members who are gone but still listed by the party server, with the time to show them again. */
+	private final Map<Long, Long> hidden = new HashMap<>();
 	private final Set<String> instanceMates = new HashSet<>();
 	private long localMemberId;
-	private long loggedOutAtMs;
+	/** Read by the logout timer, which runs off the client thread. */
+	private volatile long loggedOutAtMs;
 	/** You left or were kicked: no own party until the next login. */
 	private boolean ownPartyStopped;
 	/** A boss fight (or Barrows run) started: make your own party if you are in none. */
@@ -63,8 +68,11 @@ class PartyManager
 	/** The party at the last tick, to see you leave your own party in RuneLite's Party panel. */
 	private String lastParty;
 	/** GoldenDPS changed the party since the last tick. */
-	private boolean changedByUs;
+	private volatile boolean changedByUs;
 	private boolean rememberedLoaded;
+	/** The last party you were in, for the Rejoin button. Kept over a client restart. */
+	private String lastPartyName;
+	private boolean lastPartyLoaded;
 	private String rememberedSaved;
 
 	@Inject
@@ -106,6 +114,38 @@ class PartyManager
 		return partyService.isInParty() ? null : partyService.generatePassphrase().replace('-', ' ');
 	}
 
+	/** Join the last party you were in again. */
+	void rejoin()
+	{
+		String name = lastParty();
+		if (name != null)
+		{
+			join(name);
+		}
+	}
+
+	/** The last party you were in, or null. Your own party is left out: nobody else is in it. */
+	String lastParty()
+	{
+		if (!lastPartyLoaded)
+		{
+			lastPartyLoaded = true;
+			lastPartyName = configManager.getConfiguration(GoldenDpsConfig.STATE_GROUP, LAST_PARTY_KEY);
+		}
+		return lastPartyName;
+	}
+
+	private void rememberLastParty()
+	{
+		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
+		if (current == null || RaidParty.isOwn(current) || current.equals(lastParty()))
+		{
+			return;
+		}
+		lastPartyName = current;
+		configManager.setConfiguration(GoldenDpsConfig.STATE_GROUP, LAST_PARTY_KEY, current);
+	}
+
 	void leave()
 	{
 		if (partyService.isInParty())
@@ -124,13 +164,15 @@ class PartyManager
 			return;
 		}
 		partyService.send(new GoldenDpsPartyMessage(GoldenDpsPartyMessage.KICK, leader.getLeader(), memberId));
-		kicked.put(memberId, System.currentTimeMillis());
+		hidden.put(memberId, System.currentTimeMillis() + KICK_HIDE_MS);
 		notices.kicked(memberId);
 		chat.kicked("you removed " + name + " from the party.");
 	}
 
 	private void changeParty(String passphrase)
 	{
+		// RuneLite just closes the connection, and the party server keeps listing you for minutes
+		send(GoldenDpsPartyMessage.BYE);
 		changedByUs = true;
 		partyService.changeParty(passphrase);
 		leader.left();
@@ -183,6 +225,10 @@ class PartyManager
 			case GoldenDpsPartyMessage.KICK:
 				onKick(m);
 				break;
+			case GoldenDpsPartyMessage.BYE:
+				hidden.put(m.getMemberId(), Long.MAX_VALUE);
+				onMemberLeft(m.getMemberId());
+				break;
 			default:
 				break;
 		}
@@ -232,14 +278,28 @@ class PartyManager
 
 	/**
 	 * Some time after a logout: still logged out, so leave. RuneLite keeps you in the party while
-	 * logged out, and the others would see you there for nothing.
+	 * logged out, and the others would see you there for nothing. Runs on the timer thread: on the
+	 * login screen the client thread does not reliably run queued work, and nothing else touches
+	 * the party there.
 	 */
 	void leaveIfStillLoggedOut()
 	{
 		// a little slack: the timer may fire a moment early; a newer logout has its own timer
-		boolean stillOut = client.getGameState() == GameState.LOGIN_SCREEN
-			&& System.currentTimeMillis() - loggedOutAtMs >= LEAVE_AFTER_LOGOUT_MS - 500;
+		GameState state = client.getGameState();
+		long outMs = System.currentTimeMillis() - loggedOutAtMs;
+		boolean stillOut = state == GameState.LOGIN_SCREEN && outMs >= LEAVE_AFTER_LOGOUT_MS - 500;
+		log.debug("GoldenDPS logout check: state={}, out for {} ms, setting={}, in party={}", state, outMs,
+			config.leaveOnLogout(), partyService.isInParty());
 		if (stillOut && config.leaveOnLogout() && partyService.isInParty())
+		{
+			changeParty(null);
+		}
+	}
+
+	/** Closing the client: tell the party server you are gone, instead of leaving a stale member behind. */
+	void clientClosed()
+	{
+		if (config.leaveOnLogout() && partyService.isInParty())
 		{
 			changeParty(null);
 		}
@@ -250,6 +310,7 @@ class PartyManager
 	{
 		updateInstanceMates();
 		watchOwnParty();
+		rememberLastParty();
 		updateRaidParty(inRaid);
 		updateOwnParty();
 		updateMembership(now);
@@ -257,6 +318,13 @@ class PartyManager
 
 	private void updateMembership(long now)
 	{
+		List<Long> listed = new ArrayList<>();
+		for (PartyMember m : partyService.getMembers())
+		{
+			listed.add(m.getMemberId());
+		}
+		hidden.entrySet().removeIf(e -> now > e.getValue() || !listed.contains(e.getKey()));
+
 		PartyMember local = partyService.isInParty() ? partyService.getLocalMember() : null;
 		if (local == null)
 		{
@@ -284,7 +352,7 @@ class PartyManager
 		for (PartyMember m : partyService.getMembers())
 		{
 			String n = Names.clean(m.getDisplayName());
-			if (n != null && m.getMemberId() != localMemberId && !kicked.containsKey(m.getMemberId()))
+			if (n != null && m.getMemberId() != localMemberId && !hidden.containsKey(m.getMemberId()))
 			{
 				named.put(m.getMemberId(), n);
 			}
@@ -405,11 +473,14 @@ class PartyManager
 		}
 	}
 
-	/** Leaving your own party anywhere (also in RuneLite's Party panel) stops it until the next login. */
+	/** A party lost without GoldenDPS (RuneLite's Party panel, a dropped connection) stops own parties until logout. */
 	private void watchOwnParty()
 	{
 		String current = partyService.isInParty() ? partyService.getPartyPassphrase() : null;
-		if (RaidParty.isOwn(lastParty) && !lastParty.equals(current) && !changedByUs)
+		boolean lostByOthers = lastParty != null && !lastParty.equals(current) && !changedByUs;
+		// a party you lose (left in RuneLite's panel, or a dropped connection) must not be swapped
+		// for an own party behind your back: you may want to join your friends again
+		if (lostByOthers && (current == null || RaidParty.isOwn(lastParty)))
 		{
 			ownPartyStopped = true;
 		}
@@ -441,6 +512,7 @@ class PartyManager
 	{
 		GoldenDpsPartyPanel.View v = new GoldenDpsPartyPanel.View();
 		v.inParty = partyService.isInParty();
+		v.lastParty = lastParty();
 		if (!v.inParty)
 		{
 			return v;
@@ -450,12 +522,10 @@ class PartyManager
 		v.autoLabel = RaidParty.isOwn(v.code) ? "Own party" : RaidParty.isAuto(v.code) ? "Raid party" : null;
 
 		long now = System.currentTimeMillis();
-		kicked.values().removeIf(t -> now - t > KICK_HIDE_MS);
-		firstSeen.keySet().retainAll(memberIds());
 		PartyMember local = partyService.getLocalMember();
 		for (PartyMember m : partyService.getMembers())
 		{
-			if (kicked.containsKey(m.getMemberId()))
+			if (hidden.containsKey(m.getMemberId()))
 			{
 				continue;
 			}
@@ -463,8 +533,8 @@ class PartyManager
 			row.id = m.getMemberId();
 			row.you = local != null && m.getMemberId() == local.getMemberId();
 			String name = Names.clean(m.getDisplayName());
-			long seen = firstSeen.computeIfAbsent(m.getMemberId(), id -> now);
-			if (!row.you && name == null && !m.isLoggedIn() && now - seen > STALE_MEMBER_MS)
+			// no name and logged out: a connection the party server has not dropped yet (a closed client)
+			if (!row.you && name == null && !m.isLoggedIn())
 			{
 				continue;
 			}
@@ -498,7 +568,10 @@ class PartyManager
 		List<Long> ids = new ArrayList<>();
 		for (PartyMember m : partyService.getMembers())
 		{
-			ids.add(m.getMemberId());
+			if (!hidden.containsKey(m.getMemberId()))
+			{
+				ids.add(m.getMemberId());
+			}
 		}
 		return ids;
 	}

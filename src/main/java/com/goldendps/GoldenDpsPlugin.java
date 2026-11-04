@@ -232,6 +232,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			{
 				refreshOverlay();
 				updatePanel();
+				if ("chatColor".equals(e.getKey()))
+				{
+					chat.recolorOldMessages();
+				}
 			});
 		}
 	}
@@ -408,6 +412,13 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		}
 		else if (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING)
 		{
+			// the party first: an error in the clean-up below must not keep you in the party
+			party.loggedOut(state == GameState.LOGIN_SCREEN);
+			if (state == GameState.LOGIN_SCREEN)
+			{
+				executor.schedule(party::leaveIfStillLoggedOut, PartyManager.LEAVE_AFTER_LOGOUT_MS,
+					TimeUnit.MILLISECONDS);
+			}
 			long now = System.currentTimeMillis();
 			String reason = state == GameState.HOPPING ? "World hop" : "Logged out";
 			healing.reset();
@@ -415,12 +426,6 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			matcher.clear();
 			raids.reset();
 			barrows.loggedOut(now);
-			party.loggedOut(state == GameState.LOGIN_SCREEN);
-			if (state == GameState.LOGIN_SCREEN)
-			{
-				executor.schedule(() -> clientThread.invoke(party::leaveIfStillLoggedOut),
-					PartyManager.LEAVE_AFTER_LOGOUT_MS, TimeUnit.MILLISECONDS);
-			}
 			partyUpdates.clear();
 			tracker.endRaid(now, reason);
 			tracker.endNow(now, reason);
@@ -436,6 +441,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		try
 		{
 			long now = System.currentTimeMillis();
+			party.clientClosed();
 			barrows.clientClosed(now);
 			tracker.endNow(now, "Client closed");
 			Future<?> write = storage.saveNow();
@@ -564,6 +570,15 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			{
 				SwingUtilities.invokeLater(() -> p.setPartyName(name));
 			}
+		});
+	}
+
+	void rejoinParty()
+	{
+		clientThread.invoke(() ->
+		{
+			party.rejoin();
+			updatePanel();
 		});
 	}
 

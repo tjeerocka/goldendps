@@ -17,8 +17,9 @@ A DPS, damage and healing meter for groups and individuals.
   pauses when nobody hits the boss for 10 seconds and stays until the next boss fight.
 - **Side panel** with kills per hour at the top, then every fight; click a heading to show or hide it: per-player details (accuracy, biggest hit, healing by source,
   overhealing, damage taken), damage per target, and a breakdown per weapon, special attack and spell.
-- **Overhealing**: food, potions, Sanguinesti staff and blood spells, shown as a percentage of all
-  healing.
+- **Overhealing**: wasted food and potions, shown as a percentage of all healing. Lifesteal past full
+  health is not counted, since you cannot avoid it.
+- **Accuracy** per player, per target, and per weapon: click a weapon in the breakdown to see it.
 - **Personal bests** per boss, raid and Barrows run, kept apart for solo and party kills: fastest time and
   best DPS, compared with your last one. A Barrows run only sets a PB when all six brothers died in it.
   Click "reset" next to a personal best to delete it.
@@ -80,9 +81,9 @@ every brother, and a solo report is one line.
 | Source | Detection | Overhealing |
 |---|---|---|
 | Food and potions | Eat/Drink click and the item leaving the inventory | heal from a table minus the real heal |
-| Sanguinesti staff | heal graphic on your target or on you | half the damage minus the real heal |
-| Blood spells | blood impact on your target with a magic weapon | 25% of the damage (more with bloodbark, ancient sceptre, Zuriel's staff) minus the real heal |
-| Other lifesteal | HP gained in the tick you hit | not known |
+| Sanguinesti staff | heal graphic on your target or on you | not counted |
+| Blood spells | blood impact on your target with a magic weapon | not counted |
+| Other lifesteal | HP gained in the tick you hit | not counted |
 | Heal Other / Heal Group | HP lost without a hitsplat after casting | — |
 
 Overhealing is only counted when you end at your maximum HP, so a wrong table value cannot create waste.

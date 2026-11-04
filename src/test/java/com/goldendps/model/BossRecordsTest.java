@@ -76,6 +76,27 @@ public class BossRecordsTest
 		assertEquals("+0:15", BossRecords.paceText(15_000));
 	}
 
+	private static BossRecords.Kill crab(int damage)
+	{
+		FightTracker t = new FightTracker();
+		t.playerHit(1000, "Me", PlayerKind.LOCAL, BOSS, 1, "Gemstone Crab", true, damage, false);
+		t.npcDied(600_000, BOSS, true);
+		return BossRecords.kill(t.getHistory().get(0));
+	}
+
+	@Test
+	public void theGemstoneCrabPbIsYourMostDamage()
+	{
+		BossRecords r = new BossRecords();
+		r.add(crab(500));
+		BossRecords.Compare less = r.add(crab(300));
+		assertEquals("PB 500", BossRecords.meterTag(null, less));
+		BossRecords.Compare more = r.add(crab(800));
+		assertEquals("NEW PB!", BossRecords.meterTag(null, more));
+		assertEquals(800, r.get("Gemstone Crab", false).mostDamage);
+		assertEquals("no fastest time on a timer", 0, r.get("Gemstone Crab", false).fastestMs);
+	}
+
 	@Test
 	public void aRecordCanBeRemoved()
 	{
