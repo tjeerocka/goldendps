@@ -36,8 +36,8 @@ class FightStorage
 	private MonsterStats monsters = new MonsterStats();
 	/** Personal bests and monster stats are loaded. */
 	private boolean statsLoaded;
-	/** Fights that ended while the stats were loading. */
-	private final List<Fight> pendingFights = new ArrayList<>();
+	/** Fights that ended and monsters that died while the stats were loading. */
+	private final List<Runnable> pendingStats = new ArrayList<>();
 	private final Map<String, BossRecords.Compare> killCompares = new HashMap<>();
 
 	FightStorage(FightTracker tracker, HistoryStore store, ExecutorService executor, ClientThread clientThread,
@@ -67,7 +67,7 @@ class FightStorage
 		records = new BossRecords();
 		monsters = new MonsterStats();
 		statsLoaded = false;
-		pendingFights.clear();
+		pendingStats.clear();
 		killCompares.clear();
 		executor.execute(() ->
 		{
@@ -99,11 +99,8 @@ class FightStorage
 		records = saved;
 		monsters = savedMonsters;
 		statsLoaded = true;
-		for (Fight f : pendingFights)
-		{
-			addToStats(f);
-		}
-		pendingFights.clear();
+		pendingStats.forEach(Runnable::run);
+		pendingStats.clear();
 		saveStats();
 
 		// fights that ended while loading are newer than the loaded ones
@@ -126,16 +123,31 @@ class FightStorage
 		{
 			return;
 		}
+		addToStats(() -> addRecord(fight));
+	}
+
+	/** A monster died in this fight: it shows in the monster stats right away. */
+	void monsterDied(Fight fight, String targetKey)
+	{
+		if (account != -1)
+		{
+			addToStats(() -> monsters.addKill(fight, targetKey));
+		}
+	}
+
+	/** Runs now, or after loading when the stats are not loaded yet; then saves them. */
+	private void addToStats(Runnable change)
+	{
 		if (!statsLoaded)
 		{
-			pendingFights.add(fight);
+			pendingStats.add(change);
 			return;
 		}
-		addToStats(fight);
+		change.run();
 		saveStats();
 	}
 
-	private void addToStats(Fight fight)
+	private void addRecord(Fight fight)
 	{
 		BossRecords.Kill kill = BossRecords.record(fight);
 		if (kill != null)
@@ -143,7 +155,6 @@ class FightStorage
 			kill.fightId = fight.id;
 			killCompares.put(fight.id, records.add(kill));
 		}
-		monsters.add(fight);
 	}
 
 	/** Saves a running fight now and then, so a crash loses little. */

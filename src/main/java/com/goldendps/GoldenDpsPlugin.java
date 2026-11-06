@@ -343,8 +343,14 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		NPC npc = e.getNpc();
 		if (npc.isDead())
 		{
-			tracker.npcDied(System.currentTimeMillis(), TargetMatcher.key(client.getWorld(), npc.getIndex()),
-				bosses.isBoss(npc.getId(), Names.clean(npc.getName())));
+			String key = TargetMatcher.key(client.getWorld(), npc.getIndex());
+			// the fight may end with this death, so take it before
+			Fight fight = tracker.getCurrent();
+			tracker.npcDied(System.currentTimeMillis(), key, bosses.isBoss(npc.getId(), Names.clean(npc.getName())));
+			if (fight != null)
+			{
+				storage.monsterDied(fight, key);
+			}
 			barrows.died(System.currentTimeMillis(), Names.clean(npc.getName()));
 		}
 	}

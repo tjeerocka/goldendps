@@ -2,6 +2,7 @@ package com.goldendps.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ public class MonsterStats
 		/** Time from the first hit on the monster to its death. */
 		public long fastestMs;
 		public long totalMs;
+		/** Kills with a known time (a respawn on the same NPC index has none). */
+		public int timedKills;
 		public long lastKillMs;
 		/** Your hits on it. */
 		public TargetDamage attacks = new TargetDamage();
@@ -24,7 +27,7 @@ public class MonsterStats
 
 		public long averageMs()
 		{
-			return kills == 0 ? 0 : totalMs / kills;
+			return timedKills == 0 ? 0 : totalMs / timedKills;
 		}
 
 		Monster copy()
@@ -34,6 +37,7 @@ public class MonsterStats
 			c.kills = kills;
 			c.fastestMs = fastestMs;
 			c.totalMs = totalMs;
+			c.timedKills = timedKills;
 			c.lastKillMs = lastKillMs;
 			c.attacks = attacks.copy();
 			for (Map.Entry<String, TargetDamage> e : weapons.entrySet())
@@ -62,52 +66,103 @@ public class MonsterStats
 		}
 	}
 
-	public Map<String, Monster> byName = new LinkedHashMap<>();
-
-	/** Adds every monster you hit that died in this fight. */
-	public void add(Fight f)
+	/** Your hits on one target that are already counted, with the death they were counted at. */
+	private static final class Counted
 	{
-		// a raid's bosses, a Barrows run's brothers and a session total are also in fights of their own
-		if (f.partOf != null || f.run || f.mergedFights > 0)
+		final long diedMs;
+		final TargetDamage attacks;
+		final Map<String, TargetDamage> weapons;
+
+		Counted(long diedMs, TargetDamage attacks, Map<String, TargetDamage> weapons)
 		{
-			return;
-		}
-		PlayerStats me = localPlayer(f);
-		if (me == null)
-		{
-			return;
-		}
-		for (TargetStats t : f.targets.values())
-		{
-			TargetDamage mine = me.byTarget.get(t.key);
-			if (t.died && t.name != null && mine != null && mine.hits + mine.misses > 0)
-			{
-				addKill(t, mine, me);
-			}
+			this.diedMs = diedMs;
+			this.attacks = attacks;
+			this.weapons = weapons;
 		}
 	}
 
-	private void addKill(TargetStats t, TargetDamage mine, PlayerStats me)
+	public Map<String, Monster> byName = new LinkedHashMap<>();
+
+	/**
+	 * What is counted per target of the running fight. NPC indexes are reused, so a respawn joins the
+	 * target of the monster before it; only the hits since that kill are new. Not saved (transient).
+	 */
+	private transient String countedFightId;
+	private transient Map<String, Counted> counted;
+
+	/** Adds a kill the moment the monster dies, if you hit it. */
+	public void addKill(Fight f, String targetKey)
 	{
+		TargetStats t = f.targets.get(targetKey);
+		PlayerStats me = localPlayer(f);
+		TargetDamage mine = me == null ? null : me.byTarget.get(targetKey);
+		if (t == null || !t.died || t.name == null || mine == null)
+		{
+			return;
+		}
+		if (counted == null || !f.id.equals(countedFightId))
+		{
+			counted = new HashMap<>();
+			countedFightId = f.id;
+		}
+		Counted before = counted.get(targetKey);
+		TargetDamage attacks = minus(mine, before == null ? null : before.attacks);
+		if (attacks.hits + attacks.misses == 0 || (before != null && before.diedMs == t.diedMs))
+		{
+			// you did not hit this one, or its death was already counted
+			return;
+		}
+		Map<String, TargetDamage> weapons = weaponsOn(me, targetKey);
+		counted.put(targetKey, new Counted(t.diedMs, mine.copy(), weapons));
+
 		Monster m = byName.computeIfAbsent(t.name, n -> new Monster());
 		m.name = t.name;
 		m.kills++;
 		long timeMs = t.diedMs - t.firstMs;
-		if (timeMs > 0)
+		if (before == null && timeMs > 0)
 		{
+			m.timedKills++;
 			m.totalMs += timeMs;
 			m.fastestMs = m.fastestMs <= 0 ? timeMs : Math.min(m.fastestMs, timeMs);
 		}
 		m.lastKillMs = Math.max(m.lastKillMs, t.diedMs);
-		m.attacks.merge(mine);
-		for (Map.Entry<String, Map<String, TargetDamage>> source : me.sources().entrySet())
+		m.attacks.merge(attacks);
+		for (Map.Entry<String, TargetDamage> w : weapons.entrySet())
 		{
-			TargetDamage onTarget = source.getValue().get(t.key);
-			if (onTarget != null)
+			TargetDamage newHits = minus(w.getValue(), before == null ? null : before.weapons.get(w.getKey()));
+			if (newHits.hits + newHits.misses > 0)
 			{
-				m.weapons.computeIfAbsent(source.getKey(), k -> new TargetDamage()).merge(onTarget);
+				m.weapons.computeIfAbsent(w.getKey(), k -> new TargetDamage()).merge(newHits);
 			}
 		}
+	}
+
+	/** Copies of your hits per weapon on one target. */
+	private static Map<String, TargetDamage> weaponsOn(PlayerStats me, String targetKey)
+	{
+		Map<String, TargetDamage> out = new HashMap<>();
+		for (Map.Entry<String, Map<String, TargetDamage>> source : me.sources().entrySet())
+		{
+			TargetDamage onTarget = source.getValue().get(targetKey);
+			if (onTarget != null)
+			{
+				out.put(source.getKey(), onTarget.copy());
+			}
+		}
+		return out;
+	}
+
+	/** The hits in {@code all} that are not in {@code counted}. The biggest hit stays: it is a maximum anyway. */
+	private static TargetDamage minus(TargetDamage all, TargetDamage counted)
+	{
+		TargetDamage out = all.copy();
+		if (counted != null)
+		{
+			out.damage -= counted.damage;
+			out.hits -= counted.hits;
+			out.misses -= counted.misses;
+		}
+		return out;
 	}
 
 	private static PlayerStats localPlayer(Fight f)

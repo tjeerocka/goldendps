@@ -9,14 +9,10 @@ import org.junit.Test;
 public class MonsterStatsTest
 {
 	private final FightTracker tracker = new FightTracker();
-	private final List<Fight> ended = new ArrayList<>();
+	private final MonsterStats stats = new MonsterStats();
 
-	{
-		tracker.setListener(ended::add);
-	}
-
-	/** Kills one monster: 3 hits of {@code hit} and 1 miss with the bow, 1 hit with the spec, 2.4 s apart. */
-	private Fight kill(long start, String key, String name, int hit)
+	/** Kills one monster as the plugin does: 3 hits and 1 miss with the bow, 1 spec hit, 2.4 s apart. */
+	private void kill(long start, String key, String name, int hit)
 	{
 		long now = start;
 		for (int i = 0; i < 3; i++, now += 2400)
@@ -26,17 +22,17 @@ public class MonsterStatsTest
 		tracker.playerHit(now, "Me", PlayerKind.LOCAL, key, 1, name, false, 0, true, "Bow");
 		tracker.playerHit(now += 2400, "Me", PlayerKind.LOCAL, key, 1, name, false, 40, false, "Claws (spec)");
 		tracker.playerHit(now, "Friend", PlayerKind.PARTY, key, 1, name, false, 99, false, "Sword");
+		Fight fight = tracker.getCurrent();
 		tracker.npcDied(now, key, false);
-		tracker.endNow(now + 1000, "test");
-		return ended.get(ended.size() - 1);
+		stats.addKill(fight, key);
 	}
 
 	@Test
-	public void addsUpYourKillsPerMonster()
+	public void countsEachKillTheMomentItDies()
 	{
-		MonsterStats stats = new MonsterStats();
-		stats.add(kill(1000, "1:1", "Gargoyle", 10));
-		stats.add(kill(100_000, "1:2", "Gargoyle", 20));
+		kill(1000, "1:1", "Gargoyle", 10);
+		assertEquals(1, stats.byName.get("Gargoyle").kills);
+		kill(20_000, "1:2", "Gargoyle", 20);
 		MonsterStats.Monster m = stats.byName.get("Gargoyle");
 
 		assertEquals(2, m.kills);
@@ -55,25 +51,37 @@ public class MonsterStatsTest
 	}
 
 	@Test
-	public void raidBossesAndSessionTotalsAreNotCountedTwice()
+	public void aRespawnOnTheSameIndexCountsOnlyItsOwnHits()
 	{
-		MonsterStats stats = new MonsterStats();
-		Fight f = kill(1000, "1:1", "Tekton", 10);
-		Fight part = f.copy();
-		part.partOf = "raid";
-		stats.add(part);
-		Fight total = f.copy();
-		total.mergedFights = 2;
-		stats.add(total);
-		assertNull(stats.byName.get("Tekton"));
+		kill(1000, "1:1", "Gargoyle", 10);
+		// the same death reported again is no new kill
+		stats.addKill(tracker.getCurrent(), "1:1");
+		kill(20_000, "1:1", "Gargoyle", 20);
+		MonsterStats.Monster m = stats.byName.get("Gargoyle");
+		assertEquals(2, m.kills);
+		assertEquals(8, m.attacks.hits);
+		assertEquals(30 + 60 + 80, m.attacks.damage);
+		assertEquals(6, m.weapons.get("Bow").hits);
+		// the respawn's time is not known: it shares the first monster's first hit
+		assertEquals(1, m.timedKills);
+		assertEquals(9600, m.averageMs());
+	}
+
+	@Test
+	public void aMonsterYouDidNotHitIsNoKill()
+	{
+		tracker.playerHit(1000, "Friend", PlayerKind.PARTY, "1:1", 1, "Gargoyle", false, 50, false, "Sword");
+		Fight fight = tracker.getCurrent();
+		tracker.npcDied(2000, "1:1", false);
+		stats.addKill(fight, "1:1");
+		assertNull(stats.byName.get("Gargoyle"));
 	}
 
 	@Test
 	public void entriesJoinMonstersAndPersonalBestsLastKillFirst()
 	{
-		MonsterStats stats = new MonsterStats();
-		stats.add(kill(1000, "1:1", "Vorkath", 10));
-		stats.add(kill(100_000, "1:2", "Gargoyle", 10));
+		kill(1000, "1:1", "Vorkath", 10);
+		kill(100_000, "1:2", "Gargoyle", 10);
 		BossRecords.Record solo = new BossRecords.Record();
 		solo.boss = "Vorkath";
 		solo.lastMs = 500;
