@@ -14,7 +14,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 
@@ -105,7 +108,33 @@ final class PanelWidgets
 		return row;
 	}
 
-	/** A hand cursor, and a click runs {@code onClick}. Labels with a tooltip catch clicks, so they get it too. */
+	/** A right-click menu with one item, on the component and everything in it. */
+	static void rightClickMenu(JComponent c, String item, Runnable onClick)
+	{
+		JPopupMenu menu = new JPopupMenu();
+		JMenuItem menuItem = new JMenuItem(item);
+		menuItem.addActionListener(e -> onClick.run());
+		menu.add(menuItem);
+		c.setComponentPopupMenu(menu);
+		inheritMenu(c);
+	}
+
+	private static void inheritMenu(Container c)
+	{
+		for (Component child : c.getComponents())
+		{
+			if (child instanceof JComponent)
+			{
+				((JComponent) child).setInheritsPopupMenu(true);
+			}
+			if (child instanceof Container)
+			{
+				inheritMenu((Container) child);
+			}
+		}
+	}
+
+	/** A hand cursor, and a left click runs {@code onClick}. Labels with a tooltip catch clicks, so they get it too. */
 	static void clickable(Component c, Runnable onClick)
 	{
 		c.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -114,7 +143,11 @@ final class PanelWidgets
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				onClick.run();
+				// a right click opens a menu, if there is one; it should not also open or close a section
+				if (SwingUtilities.isLeftMouseButton(e))
+				{
+					onClick.run();
+				}
 			}
 		});
 		if (c instanceof Container)

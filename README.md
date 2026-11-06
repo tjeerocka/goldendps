@@ -22,7 +22,9 @@ A DPS, damage and healing meter for groups and individuals.
 - **Accuracy** per player, per target, and per weapon: click a weapon in the breakdown to see it.
 - **Personal bests** per boss, raid and Barrows run, kept apart for solo and party kills: fastest time and
   best DPS, compared with your last one. A Barrows run only sets a PB when all six brothers died in it.
-  Click "reset" next to a personal best to delete it.
+- **Monster stats** in the side panel: every monster, raid and Barrows run you killed, last kill first.
+  Click one to see its personal bests and your stats over all its kills (no limit): kill times, biggest
+  hit, damage per kill, accuracy, and a breakdown per weapon. "reset" deletes them.
 - **Raids**: in CoX, ToB, ToA and the Fractured Archive one fight covers the whole raid, and every boss
   also gets a fight of its own. The panel lists every boss of the raid with its time and PB ("Boss times").
 - **Barrows**: every brother is a boss fight, and opening the chest adds the run: from your first hit on
@@ -96,7 +98,7 @@ Overhealing is only counted when you end at your maximum HP, so a wrong table va
 
 ## Data
 
-Fight history and personal bests are stored per account in `.runelite/plugin-data/goldendps/` (older
+Fight history, personal bests and monster stats are stored per account in `.runelite/plugin-data/goldendps/` (older
 versions used `.runelite/goldendps/`; RuneLite moves that folder over by itself).
 
 ## Development

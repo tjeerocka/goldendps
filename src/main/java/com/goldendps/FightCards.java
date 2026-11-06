@@ -1,11 +1,15 @@
 package com.goldendps;
 
 import static com.goldendps.PanelWidgets.GOLD;
+import static com.goldendps.PanelWidgets.actionRow;
 import static com.goldendps.PanelWidgets.bold;
 import static com.goldendps.PanelWidgets.line;
 import static com.goldendps.PanelWidgets.section;
+import static com.goldendps.PanelWidgets.small;
+import com.goldendps.model.BossRecords;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
+import com.goldendps.model.MonsterStats;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.TargetDamage;
 import java.awt.Color;
@@ -118,7 +122,7 @@ final class FightCards
 		}
 		card.add(line("Biggest hit", String.valueOf(row.biggestHit)));
 		card.add(line("Accuracy", Format.accuracy(row.hits, row.misses)));
-		addSources(card, row, openSources, toggleSource);
+		addSources(card, row.name, row.sources, "  ", openSources, toggleSource);
 		if (row.isEstimate())
 		{
 			card.add(line("", "No GoldenDPS: damage is a guess"));
@@ -130,20 +134,24 @@ final class FightCards
 		return card;
 	}
 
-	/** Damage per weapon, special attack or spell; a click shows its accuracy under it. */
-	private static void addSources(JPanel card, FightReport.PlayerRow row, Set<String> openSources,
-		Consumer<String> toggleSource)
+	/**
+	 * Damage per weapon, special attack or spell; a click shows its accuracy and biggest hit under it.
+	 * @param owner the player or monster, so the same weapon opens on its own in every card
+	 * @param indent spaces before the weapon names
+	 */
+	private static void addSources(JPanel card, String owner, List<FightReport.SourceRow> sources, String indent,
+		Set<String> openSources, Consumer<String> toggleSource)
 	{
-		if (row.sources.isEmpty())
+		if (sources.isEmpty())
 		{
 			return;
 		}
-		card.add(line("Breakdown", ""));
-		for (FightReport.SourceRow source : row.sources)
+		card.add(line(indent.substring(2) + "Breakdown", ""));
+		for (FightReport.SourceRow source : sources)
 		{
-			String key = sourceKey(row.name, source.name);
+			String key = sourceKey(owner, source.name);
 			boolean open = openSources.contains(key);
-			JComponent l = line((open ? "  - " : "  + ") + source.name,
+			JComponent l = line(indent + (open ? "- " : "+ ") + source.name,
 				Format.amount(source.damage) + "  (" + Format.percent(source.percent) + ")");
 			l.setToolTipText(String.format("%s: %d hits, %d misses, biggest %d, average %.1f per attack. Click for accuracy.",
 				source.name, source.hits, source.misses, source.biggestHit, source.average()));
@@ -151,15 +159,65 @@ final class FightCards
 			card.add(l);
 			if (open)
 			{
-				card.add(line("      Accuracy", Format.accuracy(source.hits, source.misses)));
+				card.add(line(indent + "    Accuracy", Format.accuracy(source.hits, source.misses)));
+				card.add(line(indent + "    Biggest hit", String.valueOf(source.biggestHit)));
 			}
 		}
 	}
 
-	/** One weapon of one player, so the same weapon of two players opens on its own. */
-	static String sourceKey(String player, String source)
+	/** One weapon in one card, so the same weapon of two players opens on its own. */
+	static String sourceKey(String owner, String source)
 	{
-		return player + "|" + source;
+		return owner + "|" + source;
+	}
+
+	/** The list line of a monster: "143 kills  90%". */
+	static String monsterSummary(MonsterStats.Entry e)
+	{
+		MonsterStats.Monster m = e.stats;
+		String accuracy = m == null || m.attacks.hits + m.attacks.misses == 0 ? ""
+			: "  " + Format.percent(100.0 * m.attacks.hits / (m.attacks.hits + m.attacks.misses));
+		return e.kills() + (e.kills() == 1 ? " kill" : " kills") + accuracy;
+	}
+
+	/** The open card of a monster, raid or Barrows run: personal bests, then your stats over all kills. */
+	static void addMonster(JPanel card, MonsterStats.Entry e, Set<String> openSources, Consumer<String> toggleSource,
+		Runnable reset)
+	{
+		MonsterStats.Monster m = e.stats;
+		card.add(actionRow(small("  Personal bests and stats", ColorScheme.LIGHT_GRAY_COLOR), "reset",
+			"Delete the personal bests and stats of " + e.name, reset));
+		addBest(card, "Solo", e.solo);
+		addBest(card, "Party", e.party);
+		if (m == null)
+		{
+			return;
+		}
+		if (e.solo == null && e.party == null && m.fastestMs > 0)
+		{
+			card.add(line("  Best time", Format.duration(m.fastestMs)));
+		}
+		if (m.averageMs() > 0)
+		{
+			card.add(line("  Average time", Format.duration(m.averageMs())));
+		}
+		card.add(line("  Biggest hit", String.valueOf(m.attacks.biggestHit)));
+		card.add(line("  Damage per kill", Format.amount(m.attacks.damage / m.kills)));
+		card.add(line("  Accuracy", Format.accuracy(m.attacks.hits, m.attacks.misses)));
+		addSources(card, e.name, FightReport.sourceRows(m.weapons, m.attacks.damage), "    ", openSources,
+			toggleSource);
+	}
+
+	/** "Solo PB  1:21 (5.2 DPS)"; a boss on a fixed timer has most damage instead of a time. */
+	private static void addBest(JPanel card, String label, BossRecords.Record rec)
+	{
+		if (rec == null)
+		{
+			return;
+		}
+		String best = BossRecords.isTimed(rec.boss) ? Format.amount(rec.mostDamage) + " damage"
+			: Format.duration(rec.fastestMs);
+		card.add(line("  " + label + " PB", best + (rec.bestDps > 0 ? "  (" + Format.dps(rec.bestDps) + " DPS)" : "")));
 	}
 
 	private static void addHealing(JPanel card, FightReport.PlayerRow row)

@@ -4,6 +4,7 @@ import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightTracker;
 import com.goldendps.model.HistoryStore;
+import com.goldendps.model.MonsterStats;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.callback.ClientThread;
 
 /**
- * Loads and saves the fight history and personal bests of the logged-in account.
+ * Loads and saves the fight history, personal bests and monster stats of the logged-in account.
  * State is changed on the client thread; files are written on the executor from copies.
  */
 @Slf4j
@@ -32,8 +33,11 @@ class FightStorage
 	private boolean dirty;
 	private long lastSaveMs;
 	private BossRecords records = new BossRecords();
-	private boolean recordsLoaded;
-	private final List<BossRecords.Kill> pendingKills = new ArrayList<>();
+	private MonsterStats monsters = new MonsterStats();
+	/** Personal bests and monster stats are loaded. */
+	private boolean statsLoaded;
+	/** Fights that ended while the stats were loading. */
+	private final List<Fight> pendingFights = new ArrayList<>();
 	private final Map<String, BossRecords.Compare> killCompares = new HashMap<>();
 
 	FightStorage(FightTracker tracker, HistoryStore store, ExecutorService executor, ClientThread clientThread,
@@ -61,8 +65,9 @@ class FightStorage
 		tracker.clearHistory();
 		account = hash;
 		records = new BossRecords();
-		recordsLoaded = false;
-		pendingKills.clear();
+		monsters = new MonsterStats();
+		statsLoaded = false;
+		pendingFights.clear();
 		killCompares.clear();
 		executor.execute(() ->
 		{
@@ -70,7 +75,8 @@ class FightStorage
 			{
 				List<Fight> loaded = store.load(hash);
 				BossRecords saved = store.loadRecords(hash);
-				clientThread.invokeLater(() -> loaded(hash, loaded, saved));
+				MonsterStats savedMonsters = store.loadMonsters(hash);
+				clientThread.invokeLater(() -> loaded(hash, loaded, saved, savedMonsters));
 			}
 			catch (Exception ex)
 			{
@@ -79,7 +85,7 @@ class FightStorage
 		});
 	}
 
-	private void loaded(long hash, List<Fight> loaded, BossRecords saved)
+	private void loaded(long hash, List<Fight> loaded, BossRecords saved, MonsterStats savedMonsters)
 	{
 		if (account != hash)
 		{
@@ -91,13 +97,14 @@ class FightStorage
 			saved.seed(loaded);
 		}
 		records = saved;
-		recordsLoaded = true;
-		for (BossRecords.Kill k : pendingKills)
+		monsters = savedMonsters;
+		statsLoaded = true;
+		for (Fight f : pendingFights)
 		{
-			killCompares.put(k.fightId, records.add(k));
+			addToStats(f);
 		}
-		pendingKills.clear();
-		saveRecords();
+		pendingFights.clear();
+		saveStats();
 
 		// fights that ended while loading are newer than the loaded ones
 		List<Fight> all = new ArrayList<>(tracker.getHistory());
@@ -115,19 +122,28 @@ class FightStorage
 	{
 		dirty = true;
 		save();
+		if (account == -1)
+		{
+			return;
+		}
+		if (!statsLoaded)
+		{
+			pendingFights.add(fight);
+			return;
+		}
+		addToStats(fight);
+		saveStats();
+	}
+
+	private void addToStats(Fight fight)
+	{
 		BossRecords.Kill kill = BossRecords.record(fight);
-		if (kill == null || account == -1)
+		if (kill != null)
 		{
-			return;
+			kill.fightId = fight.id;
+			killCompares.put(fight.id, records.add(kill));
 		}
-		kill.fightId = fight.id;
-		if (!recordsLoaded)
-		{
-			pendingKills.add(kill);
-			return;
-		}
-		killCompares.put(fight.id, records.add(kill));
-		saveRecords();
+		monsters.add(fight);
 	}
 
 	/** Saves a running fight now and then, so a crash loses little. */
@@ -178,34 +194,49 @@ class FightStorage
 		return killCompares.get(fightId);
 	}
 
-	List<BossRecords.Record> personalBests()
+	/** Every monster, raid and Barrows run with its stats and personal bests, last kill first. */
+	List<MonsterStats.Entry> monsterEntries()
 	{
-		return records.list();
+		return monsters.entries(records.list());
 	}
 
-	void resetRecord(String boss, boolean party)
+	/** Deletes the stats and personal bests of one monster, raid or Barrows run. */
+	void resetMonster(String name)
 	{
-		records.remove(boss, party);
-		saveRecords();
+		monsters.remove(name);
+		records.remove(name, false);
+		records.remove(name, true);
+		saveStats();
 	}
 
-	private void saveRecords()
+	/** Deletes the stats and personal bests of everything. */
+	void resetAllMonsters()
 	{
-		if (account == -1 || !recordsLoaded)
+		monsters = new MonsterStats();
+		records = new BossRecords();
+		killCompares.clear();
+		saveStats();
+	}
+
+	private void saveStats()
+	{
+		if (account == -1 || !statsLoaded)
 		{
 			return;
 		}
 		long acc = account;
-		BossRecords copy = records.copy();
+		BossRecords recordsCopy = records.copy();
+		MonsterStats monstersCopy = monsters.copy();
 		executor.execute(() ->
 		{
 			try
 			{
-				store.saveRecords(acc, copy);
+				store.saveRecords(acc, recordsCopy);
+				store.saveMonsters(acc, monstersCopy);
 			}
 			catch (Exception ex)
 			{
-				log.warn("Could not save personal bests", ex);
+				log.warn("Could not save personal bests and monster stats", ex);
 			}
 		});
 	}

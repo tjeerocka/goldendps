@@ -117,4 +117,23 @@ public class HistoryStoreTest
 		assertEquals(1, back.get("Zulrah", false).kills);
 		assertTrue("fights file untouched", store.load(7).isEmpty());
 	}
+
+	@Test
+	public void monsterStatsAreSavedInTheirOwnFile() throws Exception
+	{
+		HistoryStore store = new HistoryStore(new Gson(), rooted(folder.getRoot().toPath()));
+		assertTrue(store.loadMonsters(7).byName.isEmpty());
+		MonsterStats stats = new MonsterStats();
+		MonsterStats.Monster m = new MonsterStats.Monster();
+		m.name = "Gargoyle";
+		m.kills = 3;
+		m.attacks.add(25, false);
+		m.weapons.put("Bow", m.attacks.copy());
+		stats.byName.put(m.name, m);
+		store.saveMonsters(7, stats);
+		MonsterStats.Monster back = store.loadMonsters(7).byName.get("Gargoyle");
+		assertEquals(3, back.kills);
+		assertEquals(25, back.weapons.get("Bow").biggestHit);
+		assertTrue("records file untouched", store.loadRecords(7) == null);
+	}
 }

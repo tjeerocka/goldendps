@@ -651,9 +651,14 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		runAndRefresh(() -> tracker.endNow(System.currentTimeMillis(), "Ended by you"));
 	}
 
-	void resetPersonalBest(String boss, boolean party)
+	void resetMonster(String name)
 	{
-		runAndRefresh(() -> storage.resetRecord(boss, party));
+		runAndRefresh(() -> storage.resetMonster(name));
+	}
+
+	void resetAllMonsters()
+	{
+		runAndRefresh(storage::resetAllMonsters);
 	}
 
 	void clearHistory()

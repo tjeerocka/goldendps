@@ -126,7 +126,7 @@ class MeterViews
 			data.killLines = BossRecords.killLines(storage.compare(fight.id));
 			data.bossTimes = bossTimes(fight, now);
 		}
-		data.personalBests = storage.personalBests();
+		data.monsters = storage.monsterEntries();
 		data.killRates = KillRates.of(sessionFights(), now);
 		data.barrowsRunTime = barrows.liveTime();
 		data.barrowsRunPaused = barrows.isPaused();

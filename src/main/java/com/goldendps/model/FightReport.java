@@ -176,36 +176,39 @@ public class FightReport
 	/** The player's damage per weapon or spell, biggest first. */
 	private static List<SourceRow> sourceRows(Fight fight, PlayerStats p, boolean bossOnly, long playerDamage)
 	{
-		Map<String, SourceRow> byName = new LinkedHashMap<>();
+		Map<String, TargetDamage> bySource = new LinkedHashMap<>();
 		for (Map.Entry<String, Map<String, TargetDamage>> source : p.sources().entrySet())
 		{
 			for (Map.Entry<String, TargetDamage> e : source.getValue().entrySet())
 			{
-				if (!countsHit(fight, p, e.getKey(), bossOnly))
+				if (countsHit(fight, p, e.getKey(), bossOnly))
 				{
-					continue;
+					bySource.computeIfAbsent(source.getKey(), k -> new TargetDamage()).merge(e.getValue());
 				}
-				SourceRow row = byName.computeIfAbsent(source.getKey(), name ->
-				{
-					SourceRow created = new SourceRow();
-					created.name = name;
-					return created;
-				});
-				TargetDamage d = e.getValue();
-				row.damage += d.damage;
-				row.hits += d.hits;
-				row.misses += d.misses;
-				row.biggestHit = Math.max(row.biggestHit, d.biggestHit);
 			}
 		}
+		return sourceRows(bySource, playerDamage);
+	}
+
+	/** Damage per weapon or spell, biggest first; {@code totalDamage} is 100%. */
+	public static List<SourceRow> sourceRows(Map<String, TargetDamage> bySource, long totalDamage)
+	{
 		List<SourceRow> out = new ArrayList<>();
-		for (SourceRow row : byName.values())
+		for (Map.Entry<String, TargetDamage> e : bySource.entrySet())
 		{
-			if (row.hits + row.misses > 0)
+			TargetDamage d = e.getValue();
+			if (d.hits + d.misses == 0)
 			{
-				row.percent = playerDamage == 0 ? 0 : 100.0 * row.damage / playerDamage;
-				out.add(row);
+				continue;
 			}
+			SourceRow row = new SourceRow();
+			row.name = e.getKey();
+			row.damage = d.damage;
+			row.hits = d.hits;
+			row.misses = d.misses;
+			row.biggestHit = d.biggestHit;
+			row.percent = totalDamage == 0 ? 0 : 100.0 * d.damage / totalDamage;
+			out.add(row);
 		}
 		out.sort((a, b) -> Long.compare(b.damage, a.damage));
 		return out;

@@ -8,11 +8,11 @@ import static com.goldendps.PanelWidgets.line;
 import static com.goldendps.PanelWidgets.note;
 import static com.goldendps.PanelWidgets.section;
 import static com.goldendps.PanelWidgets.small;
-import com.goldendps.model.BossRecords;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.Format;
 import com.goldendps.model.KillRates;
+import com.goldendps.model.MonsterStats;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -83,7 +83,8 @@ class GoldenDpsPanel extends PluginPanel
 		List<String[]> killLines = new ArrayList<>();
 		/** In a raid: {boss, time, "PB 1:50" / "NEW PB!" / ""} for every boss so far. */
 		List<String[]> bossTimes = new ArrayList<>();
-		List<BossRecords.Record> personalBests = new ArrayList<>();
+		/** Every monster, raid and Barrows run with its personal bests and stats, last kill first. */
+		List<MonsterStats.Entry> monsters = new ArrayList<>();
 		List<KillRates.Rate> killRates = new ArrayList<>();
 		/** The live Barrows run time, or null without a run. */
 		String barrowsRunTime;
@@ -102,7 +103,7 @@ class GoldenDpsPanel extends PluginPanel
 		BOSS_TIMES(true),
 		PLAYERS(true),
 		TARGETS(false),
-		BESTS(false);
+		MONSTER_STATS(false);
 
 		final boolean openByDefault;
 
@@ -132,6 +133,8 @@ class GoldenDpsPanel extends PluginPanel
 	private final Set<Part> toggled = EnumSet.noneOf(Part.class);
 	/** Weapons in the breakdown that show their accuracy (this session only). */
 	private final Set<String> openSources = new HashSet<>();
+	/** Monsters in the monster stats that show their card (this session only). */
+	private final Set<String> openMonsters = new HashSet<>();
 
 	GoldenDpsPanel(GoldenDpsPlugin plugin)
 	{
@@ -202,21 +205,17 @@ class GoldenDpsPanel extends PluginPanel
 		return buttons;
 	}
 
-	private void confirmResetBest(BossRecords.Record rec)
+	private void confirmResetMonster(String name)
 	{
-		int answer = JOptionPane.showConfirmDialog(this, "Delete the personal best for " + rec.label() + "?",
-			"GoldenDPS", JOptionPane.YES_NO_OPTION);
-		if (answer == JOptionPane.YES_OPTION)
+		if (askYes("Delete the personal bests and stats of " + name + "?"))
 		{
-			plugin.resetPersonalBest(rec.boss, rec.party);
+			plugin.resetMonster(name);
 		}
 	}
 
 	private void confirmClearHistory()
 	{
-		int answer = JOptionPane.showConfirmDialog(this, "Delete all saved fights for this account?",
-			"GoldenDPS", JOptionPane.YES_NO_OPTION);
-		if (answer == JOptionPane.YES_OPTION)
+		if (askYes("Delete all saved fights for this account?"))
 		{
 			plugin.clearHistory();
 		}
@@ -344,7 +343,7 @@ class GoldenDpsPanel extends PluginPanel
 		}
 		addPerHour(d.killRates);
 		addFight(d);
-		addPersonalBests(d.personalBests);
+		addMonsterStats(d.monsters);
 		content.revalidate();
 		content.repaint();
 	}
@@ -406,28 +405,65 @@ class GoldenDpsPanel extends PluginPanel
 		}
 	}
 
-	private void addPersonalBests(List<BossRecords.Record> bests)
+	/** Every monster you killed; a click opens its personal bests and stats. */
+	private void addMonsterStats(List<MonsterStats.Entry> entries)
 	{
-		if (bests.isEmpty() || !addHeading("Personal bests", Part.BESTS, bests.size()))
+		if (entries.isEmpty())
+		{
+			return;
+		}
+		boolean open = addHeading("Monster stats", Part.MONSTER_STATS, entries.size());
+		resetAllOnRightClick((JComponent) content.getComponent(content.getComponentCount() - 1));
+		if (!open)
 		{
 			return;
 		}
 		content.add(Box.createVerticalStrut(4));
-		JPanel pbs = section();
-		for (BossRecords.Record rec : bests)
+		JPanel list = section();
+		for (MonsterStats.Entry e : entries)
 		{
-			// the name gets its own line: long boss names left no room for "reset" next to them
-			pbs.add(bold(rec.label(), Color.WHITE));
-			pbs.add(actionRow(small(rec.kills + " kc", ColorScheme.LIGHT_GRAY_COLOR), "reset",
-				"Delete this personal best", () -> confirmResetBest(rec)));
-			pbs.add(BossRecords.isTimed(rec.boss) ? line("Most damage", Format.amount(rec.mostDamage))
-				: line("Fastest", Format.duration(rec.fastestMs)));
-			if (rec.bestDps > 0)
+			JComponent row = line((openMonsters.contains(e.name) ? "- " : "+ ") + e.name, FightCards.monsterSummary(e));
+			row.setToolTipText("Click for the personal bests and stats of " + e.name);
+			PanelWidgets.clickable(row, () -> toggleMonster(e.name));
+			list.add(row);
+			if (openMonsters.contains(e.name))
 			{
-				pbs.add(line("Best DPS", Format.dps(rec.bestDps)));
+				FightCards.addMonster(list, e, openSources, this::toggleSource,
+					() -> confirmResetMonster(e.name));
 			}
 		}
-		content.add(pbs);
+		resetAllOnRightClick(list);
+		content.add(list);
+	}
+
+	private void resetAllOnRightClick(JComponent c)
+	{
+		PanelWidgets.rightClickMenu(c, "Reset all monster stats", this::confirmResetAllMonsters);
+	}
+
+	/** Asked twice: it deletes every personal best, and that cannot be undone. */
+	private void confirmResetAllMonsters()
+	{
+		if (askYes("Delete the personal bests and stats of every monster, raid and Barrows run?")
+			&& askYes("Are you sure? This cannot be undone."))
+		{
+			plugin.resetAllMonsters();
+		}
+	}
+
+	private boolean askYes(String question)
+	{
+		return JOptionPane.showConfirmDialog(this, question, "GoldenDPS", JOptionPane.YES_NO_OPTION)
+			== JOptionPane.YES_OPTION;
+	}
+
+	private void toggleMonster(String name)
+	{
+		if (!openMonsters.remove(name))
+		{
+			openMonsters.add(name);
+		}
+		plugin.requestPanelUpdate();
 	}
 
 	private boolean isOpen(Part part)

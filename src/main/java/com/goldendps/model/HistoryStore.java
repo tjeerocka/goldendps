@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.runelite.client.util.Filepath;
 
-/** Fight history and personal bests as JSON, one file of each per account. */
+/** Fight history, personal bests and monster stats as JSON, one file of each per account. */
 public class HistoryStore
 {
 	public static final int VERSION = 1;
@@ -60,6 +60,17 @@ public class HistoryStore
 		return dir.joinSegment(accountHash + ".records.json");
 	}
 
+	/** Monster stats have no limit, so they live apart from the fight history too. */
+	public void saveMonsters(long accountHash, MonsterStats monsters) throws IOException
+	{
+		write(monstersFile(accountHash), monsters);
+	}
+
+	private Filepath monstersFile(long accountHash)
+	{
+		return dir.joinSegment(accountHash + ".monsters.json");
+	}
+
 	/** Writes to a temporary file first, so a crash never leaves a half-written file. */
 	private void write(Filepath target, Object data) throws IOException
 	{
@@ -82,20 +93,37 @@ public class HistoryStore
 	/** Saved personal bests, or null when there are none or the file is broken. */
 	public BossRecords loadRecords(long accountHash) throws IOException
 	{
-		Filepath file = recordsFile(accountHash);
+		BossRecords data = read(recordsFile(accountHash), BossRecords.class);
+		if (data == null || data.byBoss == null)
+		{
+			return null;
+		}
+		data.byBoss.values().removeIf(x -> x == null || x.boss == null);
+		return data;
+	}
+
+	/** Saved monster stats; empty when there are none yet or the file is broken. */
+	public MonsterStats loadMonsters(long accountHash) throws IOException
+	{
+		MonsterStats data = read(monstersFile(accountHash), MonsterStats.class);
+		if (data == null || data.byName == null)
+		{
+			return new MonsterStats();
+		}
+		data.byName.values().removeIf(m -> m == null || m.name == null || m.attacks == null || m.weapons == null);
+		return data;
+	}
+
+	/** The file as {@code type}, or null when it is missing or broken. */
+	private <T> T read(Filepath file, Class<T> type) throws IOException
+	{
 		if (!file.exists())
 		{
 			return null;
 		}
 		try (Reader r = file.openBufferedReader())
 		{
-			BossRecords data = gson.fromJson(r, BossRecords.class);
-			if (data == null || data.byBoss == null)
-			{
-				return null;
-			}
-			data.byBoss.values().removeIf(x -> x == null || x.boss == null);
-			return data;
+			return gson.fromJson(r, type);
 		}
 		catch (JsonParseException e)
 		{
