@@ -127,7 +127,7 @@ public class BarrowsRunTest
 
 		Fight r = addRun(t, run.chestOpened(380_000));
 		assertEquals(BarrowsRun.NAME, r.title());
-		assertEquals("first brother hit to chest, banking included", 370_000, r.durationMs(380_000));
+		assertEquals("first brother hit to chest, banking included", Fight.wholeTicks(370_000), r.durationMs(380_000));
 		assertEquals("brothers only", 60, FightReport.of(r, false, 380_000).total(MeterMode.DAMAGE), 0.001);
 		assertTrue(r.isCompleteRaid());
 		assertFalse("no boss meter for the run", r.hasBossMeter());

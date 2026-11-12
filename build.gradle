@@ -14,8 +14,6 @@ repositories {
 }
 
 def runeLiteVersion = 'latest.release'
-// found next to this project by settings.gradle
-def hasCompanion = gradle.ext.has('hasCompanion')
 
 dependencies {
     compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
@@ -26,12 +24,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
     testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
-
-    // Runecraft Companion from its own project folder, only for the "GoldenDPS + Runecraft Companion"
-    // launcher (see settings.gradle)
-    if (hasCompanion) {
-        testImplementation 'com.runecraftcompanion:runecraft-companion:1.0-SNAPSHOT'
-    }
 }
 
 group = 'com.goldendps'
@@ -51,12 +43,9 @@ tasks.register('run', JavaExec) {
     mainClass = 'com.goldendps.GoldenDpsPluginTest'
 }
 
-// "gradlew runBoth" starts RuneLite with GoldenDPS and Runecraft Companion together
-tasks.register('runBoth', JavaExec) {
-    group = 'application'
-    description = 'Start RuneLite with GoldenDPS and Runecraft Companion'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.goldendps.BothPluginsTest'
+// dev only: the "GoldenDPS + Runecraft Companion" launcher (not in the public repo)
+if (file('companion.gradle').exists()) {
+    apply from: 'companion.gradle'
 }
 
 tasks.withType(JavaCompile).configureEach {

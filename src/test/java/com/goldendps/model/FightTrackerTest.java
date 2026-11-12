@@ -86,7 +86,7 @@ public class FightTrackerTest
 		TargetDamage onTarget = r.getTargets().get(0).attacksByPlayer.get("Me");
 		assertEquals(3, onTarget.hits);
 		assertEquals(1, onTarget.misses);
-		assertEquals(6.0, me.dps, D);
+		assertEquals(60 / (Fight.wholeTicks(10_000) / 1000.0), me.dps, D);
 		assertEquals(100.0, me.percent, D);
 		assertNull("solo: no unknown row", r.row(FightReport.UNKNOWN_NAME));
 		assertEquals(PlayerKind.LOCAL, me.kind);
@@ -477,13 +477,13 @@ public class FightTrackerTest
 
 		Fight f = tracker.getHistory().get(0);
 		assertEquals(30_000, f.durationMs(99_999));
-		assertEquals(20_000, f.bossDurationMs(99_999));
+		assertEquals(Fight.wholeTicks(20_000), f.bossDurationMs(99_999));
 
 		FightReport all = FightReport.of(f, false, 99_999);
 		FightReport boss = FightReport.of(f, true, 99_999);
 		assertEquals(200.0 / 30, all.row("Me").dps, D);
-		assertEquals(100.0 / 20, boss.row("Me").dps, D);
-		assertEquals(20_000, boss.getDurationMs());
+		assertEquals(100.0 / (Fight.wholeTicks(20_000) / 1000.0), boss.row("Me").dps, D);
+		assertEquals(Fight.wholeTicks(20_000), boss.getDurationMs());
 		assertEquals("Vorkath", boss.getTitle());
 	}
 
@@ -493,7 +493,7 @@ public class FightTrackerTest
 		myHit(0, RAT, false, 10);
 		myHit(5000, BOSS, true, 10);
 		Fight f = tracker.getCurrent();
-		assertEquals(7000, f.bossDurationMs(12_000));
+		assertEquals(Fight.wholeTicks(7000), f.bossDurationMs(12_000));
 		assertEquals(0, f.bossDiedMs());
 	}
 
@@ -505,7 +505,7 @@ public class FightTrackerTest
 		assertEquals(0, f.bossDurationMs(5000));
 		assertFalse(f.hasBossMeter());
 		// boss only without a boss: normal fight time
-		assertEquals(5000, FightReport.of(f, true, 5000).getDurationMs());
+		assertEquals(Fight.wholeTicks(5000), FightReport.of(f, true, 5000).getDurationMs());
 	}
 
 	@Test
@@ -586,16 +586,16 @@ public class FightTrackerTest
 		myHit(1_000, RAT, false, 10);
 		Fight f = tracker.getCurrent();
 		assertFalse(f.isPaused(10_000));
-		assertEquals(9_000, f.durationMs(10_000));
+		assertEquals(Fight.wholeTicks(9_000), f.durationMs(10_000));
 		assertTrue(f.isPaused(60_000));
-		assertEquals(10_000, f.durationMs(60_000));
-		assertEquals(10_000, f.durationMs(200_000));
+		assertEquals(Fight.wholeTicks(10_000), f.durationMs(60_000));
+		assertEquals(Fight.wholeTicks(10_000), f.durationMs(200_000));
 		tracker.tick(300_999);
 		assertNotNull("fight stays open while AFK", tracker.getCurrent());
 		tracker.tick(301_000);
 		assertNull(tracker.getCurrent());
 		// same time as the live clock showed: no jump when the fight ends
-		assertEquals(10_000, tracker.getHistory().get(0).durationMs(999_999));
+		assertEquals(Fight.wholeTicks(10_000), tracker.getHistory().get(0).durationMs(999_999));
 	}
 
 	@Test
@@ -608,8 +608,8 @@ public class FightTrackerTest
 		myHit(66_000, BOSS, true, 100);   // 60 s gap: 50 s paused
 		tracker.npcDied(67_000, BOSS, true);
 		Fight f = tracker.getHistory().get(0);
-		assertEquals(16_000, f.bossDurationMs(70_000));
-		assertEquals(16_000, f.durationMs(70_000));
+		assertEquals(Fight.wholeTicks(16_000), f.bossDurationMs(70_000));
+		assertEquals(Fight.wholeTicks(16_000), f.durationMs(70_000));
 	}
 
 	@Test
@@ -619,7 +619,7 @@ public class FightTrackerTest
 		tracker.setPauseAfterMs(0);
 		myHit(1_000, RAT, false, 10);
 		myHit(101_000, RAT, false, 10);
-		assertEquals(100_000, tracker.getCurrent().durationMs(101_000));
+		assertEquals(Fight.wholeTicks(100_000), tracker.getCurrent().durationMs(101_000));
 	}
 
 	@Test
@@ -630,8 +630,8 @@ public class FightTrackerTest
 		myHit(1_000, RAT, false, 10);
 		myHit(101_000, RAT, false, 10);
 		tracker.endNow(101_000, "test");
-		assertEquals(10_000, tracker.getHistory().get(0).copy().durationMs(0));
-		assertEquals(10_000, tracker.getSessionTotal(0).durationMs(0));
+		assertEquals(Fight.wholeTicks(10_000), tracker.getHistory().get(0).copy().durationMs(0));
+		assertEquals(Fight.wholeTicks(10_000), tracker.getSessionTotal(0).durationMs(0));
 	}
 
 	@Test
@@ -650,5 +650,47 @@ public class FightTrackerTest
 		myHit(0, RAT, false, 6);
 		FightReport r = report(tracker.getCurrent(), 0);
 		assertEquals(10.0, r.row("Me").dps, D);
+	}
+
+	@Test
+	public void timesAreInWholeTicks()
+	{
+		tracker.setPauseAfterMs(0);
+		myHit(1000, BOSS, true, 10);
+		tracker.npcDied(55_583, BOSS, true);
+		assertEquals("91 ticks", 54_600, tracker.getHistory().get(0).bossDurationMs(0));
+	}
+
+	@Test
+	public void theGameTimeWinsOverOurClock()
+	{
+		myHit(1000, BOSS, true, 10);
+		// the game prints the time when the boss dies, before it is gone
+		assertNull(tracker.gameTime(40_000, GameTimes.parse("Fight duration: 0:42.60")));
+		tracker.npcDied(43_000, BOSS, true);
+		Fight f = tracker.getHistory().get(0);
+		assertEquals(42_600, f.bossDurationMs(0));
+		assertEquals(42_600, BossRecords.kill(f).timeMs);
+	}
+
+	@Test
+	public void aGameTimeRightAfterTheKillFixesTheEndedFight()
+	{
+		myHit(1000, BOSS, true, 10);
+		tracker.npcDied(43_000, BOSS, true);
+		Fight f = tracker.getHistory().get(0);
+		assertSame(f, tracker.gameTime(45_000, GameTimes.parse("Fight duration: 0:42.60")));
+		assertEquals(42_600, f.bossDurationMs(0));
+		assertNull("too late for this kill",
+			tracker.gameTime(43_000 + FightTracker.GAME_TIME_NEAR_MS + 1, GameTimes.parse("Fight duration: 0:30.00")));
+		assertEquals(42_600, f.bossDurationMs(0));
+	}
+
+	@Test
+	public void aGameTimeWithoutABossIsIgnored()
+	{
+		myHit(1000, RAT, false, 10);
+		assertNull(tracker.gameTime(2000, GameTimes.parse("Fight duration: 0:42.60")));
+		assertEquals(0, tracker.getCurrent().gameTimeMs);
 	}
 }

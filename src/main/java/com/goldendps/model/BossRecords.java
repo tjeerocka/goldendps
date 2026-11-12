@@ -101,7 +101,7 @@ public class BossRecords
 	public static Kill kill(Fight f)
 	{
 		// a whole raid is no boss kill (its bosses have their own fights)
-		if (f == null || f.mergedFights > 0 || f.bossDiedMs() <= 0 || (f.raid != null && f.partOf == null))
+		if (f == null || f.mergedFights > 0 || f.bossDiedMs() <= 0 || f.isWholeRaid())
 		{
 			return null;
 		}
@@ -205,6 +205,20 @@ public class BossRecords
 		return c;
 	}
 
+	/** The game told the real time of a kill that is already added: its fastest time is worked out again. */
+	public void retime(Compare c, long timeMs)
+	{
+		Record r = byBoss.get(key(c.kill.boss, c.kill.party));
+		c.kill.timeMs = timeMs;
+		if (r == null || isTimed(c.kill.boss))
+		{
+			return;
+		}
+		long before = c.before == null ? 0 : c.before.fastestMs;
+		c.newFastest = before <= 0 || timeMs < before;
+		r.fastestMs = c.newFastest ? timeMs : before;
+	}
+
 	public void remove(String boss, boolean party)
 	{
 		byBoss.remove(key(boss, party));
@@ -276,11 +290,11 @@ public class BossRecords
 		}
 		if (kill != null && kill.before != null)
 		{
-			return "PB " + Format.duration(kill.before.fastestMs);
+			return "PB " + Format.preciseDuration(kill.before.fastestMs);
 		}
 		if (kill == null && rec != null && rec.fastestMs > 0)
 		{
-			return "PB " + Format.duration(rec.fastestMs);
+			return "PB " + Format.preciseDuration(rec.fastestMs);
 		}
 		return null;
 	}
@@ -312,12 +326,12 @@ public class BossRecords
 		}
 		else if (b == null)
 		{
-			out.add(new String[]{"Kill time", Format.duration(c.kill.timeMs) + " (first kill!)"});
+			out.add(new String[]{"Kill time", Format.preciseDuration(c.kill.timeMs) + " (first kill!)"});
 		}
 		else
 		{
-			out.add(new String[]{"Kill time", Format.duration(c.kill.timeMs)
-				+ (c.newFastest ? " NEW PB! (was " : " (PB ") + Format.duration(b.fastestMs) + ")"});
+			out.add(new String[]{"Kill time", Format.preciseDuration(c.kill.timeMs)
+				+ (c.newFastest ? " NEW PB! (was " : " (PB ") + Format.preciseDuration(b.fastestMs) + ")"});
 		}
 		if (c.kill.myDps > 0)
 		{

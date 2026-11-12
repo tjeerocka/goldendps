@@ -56,6 +56,9 @@ training elsewhere does not show on your meter. This can be turned off.
 Fights use active time: when nobody attacks for 10 seconds the clock stops, so AFK time does not lower
 DPS. A fight ends when the boss dies or after 5 minutes without hits. Raids are the exception: the raid
 and its bosses run on the game clock (time between rooms counts), from the first hit to the last.
+Times count in game ticks (0.6 seconds) and show like the game does (0:54.60). When the game prints a
+time for a boss or raid ("Fight duration: 0:54.60"), that time is used, so your kill time and PB match
+the game.
 
 The overall meter goes on over boss kills: it adds up your fights until you stop fighting for 5 minutes.
 The boss meter and the panel show each fight on its own.

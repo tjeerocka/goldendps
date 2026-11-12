@@ -3,6 +3,7 @@ package com.goldendps;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
+import com.goldendps.model.GameTimes;
 import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
@@ -365,6 +366,17 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			raidPoints.message(now, e.getMessage());
 			raids.gameMessage(now, e.getMessage());
 			barrows.gameMessage(now, e.getMessage(), tracker);
+			takeGameTime(now, e.getMessage());
+		}
+	}
+
+	private void takeGameTime(long now, String message)
+	{
+		GameTimes.Time time = GameTimes.parse(message);
+		Fight ended = time == null ? null : tracker.gameTime(now, time);
+		if (ended != null)
+		{
+			storage.gameTimeChanged(ended);
 		}
 	}
 

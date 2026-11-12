@@ -18,7 +18,8 @@ public class ForbiddenApiTest
 	private static final List<String> FORBIDDEN = Arrays.asList(
 		"import java.io.File;", "java.nio.file.Files", "java.nio.file.Paths", "RUNELITE_DIR",
 		"Filepath.Unchecked", "new Gson(", "new OkHttpClient", "Thread.sleep", "java.lang.reflect",
-		"Runtime.getRuntime", "ProcessBuilder", "java.awt.Desktop", "LinkBrowser", "menuAction(");
+		"Class.forName", "setAccessible(", "getDeclared", " native ", "System.exit", "Runtime.getRuntime",
+		"ProcessBuilder", "java.awt.Desktop", "LinkBrowser", "menuAction(");
 
 	@Test
 	public void noForbiddenApis() throws IOException

@@ -106,7 +106,7 @@ class GoldenDpsOverlay extends Overlay
 			String title = "Boss - " + boss.report.getTitle() + (boss.dead ? " (dead)" : "");
 			// while the boss lives the PB pace says more than the PB itself
 			String tag = boss.paceMs != null ? BossRecords.paceText(boss.paceMs) : boss.pb;
-			String time = (boss.paused ? "paused " : "") + Format.duration(boss.report.getDurationMs())
+			String time = (boss.paused ? "paused " : "") + Format.preciseDuration(boss.report.getDurationMs())
 				+ (tag != null ? "  " + tag : "");
 			Color timeColor = boss.pb != null && boss.pb.startsWith("NEW") ? PB_COLOR
 				: boss.paused ? Color.YELLOW : boss.dead ? Color.LIGHT_GRAY
@@ -133,7 +133,7 @@ class GoldenDpsOverlay extends Overlay
 		List<FightReport.PlayerRow> rows)
 	{
 		boolean paused = plugin.isFightPaused();
-		String time = report == null ? "" : (paused ? "paused " : "") + Format.duration(report.getDurationMs());
+		String time = report == null ? "" : (paused ? "paused " : "") + Format.preciseDuration(report.getDurationMs());
 		Color timeColor = paused ? Color.YELLOW : plugin.isFightRunning() ? Color.WHITE : Color.LIGHT_GRAY;
 		if (config.compactOverlay())
 		{

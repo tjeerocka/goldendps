@@ -127,19 +127,19 @@ public class BossRecordsTest
 		assertTrue(first.newBestDps);
 
 		// slower kill, less DPS
-		BossRecords.Compare slower = r.add(BossRecords.kill(vorkath(70, 40)));
+		BossRecords.Compare slower = r.add(BossRecords.kill(vorkath(72, 40)));
 		assertFalse(slower.newFastest);
 		assertFalse(slower.newBestDps);
 		assertEquals(60_000, slower.before.fastestMs);
 		assertTrue(slower.vsLastDpsPercent() < 0);
 
 		// faster kill with more DPS
-		BossRecords.Compare faster = r.add(BossRecords.kill(vorkath(50, 80)));
+		BossRecords.Compare faster = r.add(BossRecords.kill(vorkath(48, 80)));
 		assertTrue(faster.newFastest);
 		assertTrue(faster.newBestDps);
 		BossRecords.Record rec = r.get("Vorkath", false);
 		assertEquals(3, rec.kills);
-		assertEquals(50_000, rec.fastestMs);
+		assertEquals(48_000, rec.fastestMs);
 	}
 
 	@Test
@@ -154,14 +154,14 @@ public class BossRecordsTest
 	@Test
 	public void seedFromSavedFights()
 	{
-		List<Fight> newestFirst = Arrays.asList(vorkath(50, 80), vorkath(60, 50));
+		List<Fight> newestFirst = Arrays.asList(vorkath(48, 80), vorkath(60, 50));
 		BossRecords r = new BossRecords();
 		r.seed(newestFirst);
 		BossRecords.Record rec = r.get("Vorkath", false);
 		assertEquals(2, rec.kills);
-		assertEquals(50_000, rec.fastestMs);
+		assertEquals(48_000, rec.fastestMs);
 		// the newest kill is the last one
-		assertEquals(80 * 10 / 50.0, rec.lastDps, D);
+		assertEquals(80 * 10 / 48.0, rec.lastDps, D);
 		assertEquals(Collections.singletonList("Vorkath"), Collections.singletonList(r.list().get(0).boss));
 	}
 
@@ -174,7 +174,7 @@ public class BossRecordsTest
 		assertEquals(60_000, back.get("Vorkath", false).fastestMs);
 
 		BossRecords c = r.copy();
-		r.add(BossRecords.kill(vorkath(40, 50)));
+		r.add(BossRecords.kill(vorkath(42, 50)));
 		assertEquals(60_000, c.get("Vorkath", false).fastestMs);
 	}
 
@@ -184,22 +184,38 @@ public class BossRecordsTest
 		BossRecords r = new BossRecords();
 		BossRecords.Compare first = r.add(BossRecords.kill(vorkath(60, 50)));
 		assertNull("no PB tag on the first kill", BossRecords.meterTag(r.get("Vorkath", false), first));
-		assertEquals("first kill!", BossRecords.killLines(first).get(0)[1].replace("1:00 (", "").replace(")", ""));
+		assertEquals("first kill!", BossRecords.killLines(first).get(0)[1].replace("1:00.00 (", "").replace(")", ""));
 
-		assertEquals("PB 1:00", BossRecords.meterTag(r.get("Vorkath", false), null));
+		assertEquals("PB 1:00.00", BossRecords.meterTag(r.get("Vorkath", false), null));
 
-		BossRecords.Compare slow = r.add(BossRecords.kill(vorkath(70, 40)));
-		assertEquals("PB 1:00", BossRecords.meterTag(r.get("Vorkath", false), slow));
-		assertEquals("1:10 (PB 1:00)", BossRecords.killLines(slow).get(0)[1]);
+		BossRecords.Compare slow = r.add(BossRecords.kill(vorkath(72, 40)));
+		assertEquals("PB 1:00.00", BossRecords.meterTag(r.get("Vorkath", false), slow));
+		assertEquals("1:12.00 (PB 1:00.00)", BossRecords.killLines(slow).get(0)[1]);
 
-		BossRecords.Compare fast = r.add(BossRecords.kill(vorkath(50, 80)));
+		BossRecords.Compare fast = r.add(BossRecords.kill(vorkath(48, 80)));
 		assertEquals("NEW PB!", BossRecords.meterTag(r.get("Vorkath", false), fast));
 		List<String[]> lines = BossRecords.killLines(fast);
-		assertEquals("0:50 NEW PB! (was 1:00)", lines.get(0)[1]);
+		assertEquals("0:48.00 NEW PB! (was 1:00.00)", lines.get(0)[1]);
 		assertTrue(lines.get(1)[1].contains("NEW BEST ("));
 		assertEquals("vs last kill", lines.get(2)[0]);
 		assertTrue(lines.get(2)[1].startsWith("+"));
 		assertEquals("3", lines.get(3)[1]);
 		assertTrue(BossRecords.killLines(null).isEmpty());
+	}
+
+	@Test
+	public void aGameTimeAfterTheKillFixesThePb()
+	{
+		BossRecords r = new BossRecords();
+		r.add(BossRecords.kill(vorkath(60, 50)));
+		BossRecords.Compare c = r.add(BossRecords.kill(vorkath(72, 50)));
+		assertFalse(c.newFastest);
+		r.retime(c, 57_000);
+		assertTrue(c.newFastest);
+		assertEquals(57_000, c.kill.timeMs);
+		assertEquals(57_000, r.get("Vorkath", false).fastestMs);
+		r.retime(c, 61_200);
+		assertFalse(c.newFastest);
+		assertEquals("back to the old PB", 60_000, r.get("Vorkath", false).fastestMs);
 	}
 }

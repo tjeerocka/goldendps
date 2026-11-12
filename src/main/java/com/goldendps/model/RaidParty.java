@@ -60,7 +60,7 @@ public class RaidParty
 			{
 				continue;
 			}
-			String c = n.replace(' ', ' ').replaceAll("<[^>]*>", "").trim().toLowerCase(Locale.ROOT);
+			String c = ChatText.withoutTags(n.replace(' ', ' ')).trim().toLowerCase(Locale.ROOT);
 			if (!c.isEmpty() && !clean.contains(c))
 			{
 				clean.add(c);

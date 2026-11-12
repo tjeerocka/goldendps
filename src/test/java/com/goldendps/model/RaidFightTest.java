@@ -66,7 +66,21 @@ public class RaidFightTest
 		t.raidBegan(5000);
 		hit(t, 25_000, "301:7", "Tekton", true, 50);
 		assertEquals(5000, t.getCurrent().startMs);
-		assertEquals("from the game's start to the last hit", 20_000, t.getCurrent().durationMs(25_000));
+		assertEquals("from the game's start to the last hit", Fight.wholeTicks(20_000), t.getCurrent().durationMs(25_000));
+	}
+
+	@Test
+	public void theRaidAndItsRoomsTakeTheGameTimes()
+	{
+		FightTracker t = tracker();
+		t.startRaid(0, TOB);
+		hit(t, 1000, MAIDEN, "The Maiden of Sugadinti", true, 50);
+		t.gameTime(60_000, GameTimes.parse("Wave 'The Maiden of Sugadinti' (Normal Mode) complete!<br>Duration: 1:02.40"));
+		t.npcDied(61_000, MAIDEN, true);
+		t.gameTime(62_000, GameTimes.parse("Theatre of Blood total completion time: 20:00.00"));
+		Fight raid = t.getCurrent();
+		assertEquals(62_400, t.partsOf(raid).get(0).bossDurationMs(0));
+		assertEquals(1_200_000, raid.durationMs(0));
 	}
 
 	@Test

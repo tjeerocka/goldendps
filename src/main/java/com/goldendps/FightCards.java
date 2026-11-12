@@ -48,7 +48,7 @@ final class FightCards
 		FightReport r = d.report;
 		JPanel card = section();
 		card.add(bold(r.getTitle(), GOLD));
-		card.add(line("Time", Format.duration(r.getDurationMs()) + (d.paused ? " (paused)" : d.running ? " (live)" : "")));
+		card.add(line("Time", Format.preciseDuration(r.getDurationMs()) + (d.paused ? " (paused)" : d.running ? " (live)" : "")));
 		if (d.fights > 0)
 		{
 			card.add(line("Fights", String.valueOf(d.fights)));
@@ -67,7 +67,7 @@ final class FightCards
 		}
 		if (bossDiffers(d))
 		{
-			card.add(line("Boss time", Format.duration(d.bossReport.getDurationMs())));
+			card.add(line("Boss time", Format.preciseDuration(d.bossReport.getDurationMs())));
 			card.add(line("Boss damage", Format.amount(d.bossReport.getTotalDamage())));
 			card.add(line("Boss DPS", Format.dps(d.bossReport.getGroupDps())));
 		}
@@ -195,11 +195,11 @@ final class FightCards
 		}
 		if (e.solo == null && e.party == null && m.fastestMs > 0)
 		{
-			card.add(line("  Best time", Format.duration(m.fastestMs)));
+			card.add(line("  Best time", Format.preciseDuration(m.fastestMs)));
 		}
 		if (m.averageMs() > 0)
 		{
-			card.add(line("  Average time", Format.duration(m.averageMs())));
+			card.add(line("  Average time", Format.preciseDuration(m.averageMs())));
 		}
 		card.add(line("  Biggest hit", String.valueOf(m.attacks.biggestHit)));
 		card.add(line("  Damage per kill", Format.amount(m.attacks.damage / m.kills)));
@@ -216,7 +216,7 @@ final class FightCards
 			return;
 		}
 		String best = BossRecords.isTimed(rec.boss) ? Format.amount(rec.mostDamage) + " damage"
-			: Format.duration(rec.fastestMs);
+			: Format.preciseDuration(rec.fastestMs);
 		card.add(line("  " + label + " PB", best + (rec.bestDps > 0 ? "  (" + Format.dps(rec.bestDps) + " DPS)" : "")));
 	}
 

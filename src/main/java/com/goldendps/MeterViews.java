@@ -150,14 +150,14 @@ class MeterViews
 			if (kill != null)
 			{
 				tag = kill.newFastest && kill.before != null ? "NEW PB!"
-					: kill.before != null ? "PB " + Format.duration(kill.before.fastestMs) : "";
+					: kill.before != null ? "PB " + Format.preciseDuration(kill.before.fastestMs) : "";
 			}
 			else
 			{
 				BossRecords.Record pb = storage.record(report.getTitle(), BossRecords.isParty(report));
-				tag = pb != null ? "PB " + Format.duration(pb.fastestMs) : "";
+				tag = pb != null ? "PB " + Format.preciseDuration(pb.fastestMs) : "";
 			}
-			out.add(new String[]{report.getTitle(), Format.duration(report.getDurationMs()), tag});
+			out.add(new String[]{report.getTitle(), Format.preciseDuration(report.getDurationMs()), tag});
 		}
 		return out;
 	}

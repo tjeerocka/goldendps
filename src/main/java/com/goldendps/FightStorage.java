@@ -157,6 +157,26 @@ class FightStorage
 		}
 	}
 
+	/** The game told the real time of a fight that already ended: its personal best gets that time. */
+	void gameTimeChanged(Fight fight)
+	{
+		dirty = true;
+		if (account != -1)
+		{
+			addToStats(() -> retimeRecord(fight));
+		}
+	}
+
+	private void retimeRecord(Fight fight)
+	{
+		BossRecords.Compare compare = killCompares.get(fight.id);
+		BossRecords.Kill kill = BossRecords.record(fight);
+		if (compare != null && kill != null)
+		{
+			records.retime(compare, kill.timeMs);
+		}
+	}
+
 	/** Saves a running fight now and then, so a crash loses little. */
 	void tick(long now)
 	{

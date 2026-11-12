@@ -62,8 +62,8 @@ public class MonsterStatsTest
 		assertEquals(8, m.attacks.hits);
 		assertEquals(30 + 60 + 80, m.attacks.damage);
 		assertEquals(6, m.weapons.get("Bow").hits);
-		// the respawn's time is not known: it shares the first monster's first hit
-		assertEquals(1, m.timedKills);
+		// the respawn's time starts at its own first hit
+		assertEquals(2, m.timedKills);
 		assertEquals(9600, m.averageMs());
 	}
 

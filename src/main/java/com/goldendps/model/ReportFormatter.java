@@ -56,7 +56,7 @@ public final class ReportFormatter
 		{
 			header.append(" - ").append(title);
 		}
-		header.append(' ').append(Format.duration(report.getDurationMs()));
+		header.append(' ').append(Format.preciseDuration(report.getDurationMs()));
 		if (!rows.isEmpty())
 		{
 			header.append(" - total ").append(withKills ? killsText(report, mode, total) : totalText(report, mode, total));

@@ -111,9 +111,9 @@ public class FightReport
 		r.title = fight.title(bossOnly && fight.hasBossTarget());
 		for (TargetStats t : fight.targets.values())
 		{
-			if (t.engaged && t.died && (!bossOnly || t.boss))
+			if (t.engaged && (!bossOnly || t.boss))
 			{
-				r.kills++;
+				r.kills += t.killCount();
 			}
 		}
 

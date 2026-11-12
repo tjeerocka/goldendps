@@ -49,12 +49,14 @@ public class FightTracker
 		this.listener = listener;
 	}
 
-	public void setIdleTimeoutMs(long idleTimeoutMs)
+	/** For tests: the plugin keeps the default (5 minutes). */
+	void setIdleTimeoutMs(long idleTimeoutMs)
 	{
 		this.idleTimeoutMs = Math.max(1000, idleTimeoutMs);
 	}
 
-	public void setPauseAfterMs(long pauseAfterMs)
+	/** For tests: the plugin keeps the default (10 seconds). */
+	void setPauseAfterMs(long pauseAfterMs)
 	{
 		this.pauseAfterMs = Math.max(0, pauseAfterMs);
 		if (current != null && current.raid == null)
@@ -63,7 +65,8 @@ public class FightTracker
 		}
 	}
 
-	public void setMaxHistory(int maxHistory)
+	/** For tests: the plugin keeps the default (200 fights). */
+	void setMaxHistory(int maxHistory)
 	{
 		this.maxHistory = Math.max(1, maxHistory);
 		trimHistory();
@@ -93,13 +96,7 @@ public class FightTracker
 		}
 		for (Fight f : fightAndBossPart(now, boss))
 		{
-			TargetStats t = f.target(targetKey, npcId, npcName, boss);
-			t.engaged = true;
-			if (t.firstMs == 0)
-			{
-				t.firstMs = now;
-			}
-			t.lastMs = Math.max(t.lastMs, now);
+			f.target(targetKey, npcId, npcName, boss).hitAt(now);
 			f.player(player, kind).addHit(targetKey, amount, miss, source);
 			f.activity(now);
 		}
@@ -213,8 +210,7 @@ public class FightTracker
 			TargetStats bt = bossPart.targets.get(targetKey);
 			if (bt != null)
 			{
-				bt.died = true;
-				bt.diedMs = now;
+				bt.diedAt(now);
 				if ((boss || bt.boss) && bt.engaged && allBossesDead(bossPart))
 				{
 					endBossPart(now, "Boss died");
@@ -226,8 +222,7 @@ public class FightTracker
 		{
 			return;
 		}
-		t.died = true;
-		t.diedMs = now;
+		t.diedAt(now);
 		if (!(boss || t.boss) || !t.engaged || raid != null)
 		{
 			// a raid fight lasts until the raid is left
@@ -305,6 +300,57 @@ public class FightTracker
 		{
 			listener.fightEnded(f);
 		}
+	}
+
+	// ---- game times ----
+
+	/** A game time can come a little after the boss died and its fight ended. */
+	static final long GAME_TIME_NEAR_MS = 10_000;
+
+	/**
+	 * The game printed the time of a boss or a raid: it becomes the time of that fight.
+	 * Returns the fight if it had already ended (its personal best then needs the new time), else null.
+	 */
+	public Fight gameTime(long now, GameTimes.Time time)
+	{
+		Fight running = time.raid ? (raid != null ? current : null) : runningBossFight();
+		if (running != null)
+		{
+			running.gameTimeMs = time.ms;
+			return null;
+		}
+		Fight ended = recentlyEnded(now, time.raid);
+		if (ended != null)
+		{
+			ended.gameTimeMs = time.ms;
+		}
+		return ended;
+	}
+
+	private Fight runningBossFight()
+	{
+		if (bossPart != null)
+		{
+			return bossPart;
+		}
+		return raid == null && current != null && current.hasBossTarget() ? current : null;
+	}
+
+	/** The last whole raid, or the last boss kill, that ended just now; or null. */
+	private Fight recentlyEnded(long now, boolean wholeRaid)
+	{
+		for (Fight f : history)
+		{
+			if (now - f.endMs > GAME_TIME_NEAR_MS)
+			{
+				return null;
+			}
+			if (f.isWholeRaid() == wholeRaid && !f.run && (wholeRaid || f.bossDiedMs() > 0))
+			{
+				return f;
+			}
+		}
+		return null;
 	}
 
 	// ---- raids ----
@@ -411,7 +457,8 @@ public class FightTracker
 		return f.id + "/" + targetKey;
 	}
 
-	public String getRaid()
+	/** For tests. */
+	String getRaid()
 	{
 		return raid;
 	}
@@ -434,7 +481,8 @@ public class FightTracker
 		return parts;
 	}
 
-	public Fight getBossPart()
+	/** For tests. */
+	Fight getBossPart()
 	{
 		return bossPart;
 	}

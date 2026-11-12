@@ -1,14 +1,6 @@
 rootProject.name = 'goldendps'
 
-// "GoldenDPS + Runecraft Companion" launcher: use the Runecraft Companion project folder next to
-// this one (for example IdeaProjects\runecraft-companion and IdeaProjects\goldendps).
-// Other place? Set companionDir=C:/path/to/runecraft-companion in %USERPROFILE%\.gradle\gradle.properties
-def companionPath = providers.gradleProperty('companionDir').getOrNull()
-def companionDir = companionPath != null ? file(companionPath)
-    : ['../runecraft-companion', '../RunecraftCompanion', '../Runecraft Companion']
-        .collect { file(it) }
-        .find { new File(it, 'settings.gradle').exists() }
-if (companionDir != null && new File(companionDir, 'settings.gradle').exists()) {
-    includeBuild(companionDir)
-    gradle.ext.hasCompanion = true
+// dev only: the "GoldenDPS + Runecraft Companion" launcher (not in the public repo)
+if (file('companion.settings.gradle').exists()) {
+    apply from: 'companion.settings.gradle'
 }

@@ -52,7 +52,7 @@ public class KillCounts
 	/** A game message. */
 	public void message(long now, String text)
 	{
-		Matcher m = COUNT.matcher(text.replaceAll("<[^>]*>", ""));
+		Matcher m = COUNT.matcher(ChatText.withoutTags(text));
 		if (m.find())
 		{
 			int value = Integer.parseInt(m.group(2).replace(",", ""));

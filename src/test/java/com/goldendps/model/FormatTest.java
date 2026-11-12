@@ -21,4 +21,12 @@ public class FormatTest
 		assertEquals("12:05", Format.duration(725_000));
 		assertEquals("1:02:03", Format.duration(3_723_000));
 	}
+
+	@Test
+	public void preciseDurations()
+	{
+		assertEquals("0:54.60", Format.preciseDuration(54_600));
+		assertEquals("0:55.00", Format.preciseDuration(54_996));
+		assertEquals("1:02:03.40", Format.preciseDuration(3_723_400));
+	}
 }

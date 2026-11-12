@@ -17,7 +17,7 @@ public class RaidPoints
 	/** A game message. */
 	public void message(long now, String text)
 	{
-		Matcher m = POINTS.matcher(text.replaceAll("<[^>]*>", ""));
+		Matcher m = POINTS.matcher(ChatText.withoutTags(text));
 		if (m.find())
 		{
 			total = Long.parseLong(m.group(1).replace(",", ""));

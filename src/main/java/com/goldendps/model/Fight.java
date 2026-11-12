@@ -9,8 +9,10 @@ import java.util.Map;
 /** One fight, or a merged total of several fights. Plain fields for Gson. */
 public class Fight
 {
+	/** One game tick. The game counts its timers in ticks. */
+	public static final long TICK_MS = 600;
 	/** Shortest duration used for DPS: one game tick. */
-	public static final long MIN_DURATION_MS = 600;
+	public static final long MIN_DURATION_MS = TICK_MS;
 
 	public String id;
 	public String sessionId;
@@ -37,6 +39,11 @@ public class Fight
 	 * Its kills are already counted in those fights.
 	 */
 	public boolean run;
+	/**
+	 * The time the game printed in the chat ("Fight duration: 0:54.60"), 0 = none. For a whole raid it
+	 * is the raid time, else the boss time. It wins over our own clock.
+	 */
+	public long gameTimeMs;
 
 	public Map<String, PlayerStats> players = new LinkedHashMap<>();
 	public Map<String, TargetStats> targets = new LinkedHashMap<>();
@@ -56,7 +63,7 @@ public class Fight
 	/** A whole raid in which every boss died, or a finished run. */
 	public boolean isCompleteRaid()
 	{
-		return raid != null && partOf == null && endMs > 0 && (run || bossDiedMs() > 0);
+		return isWholeRaid() && endMs > 0 && (run || bossDiedMs() > 0);
 	}
 
 	public boolean isActive()
@@ -127,12 +134,28 @@ public class Fight
 		return active;
 	}
 
+	/** A time rounded to whole game ticks, like the game's own timers. */
+	public static long wholeTicks(long ms)
+	{
+		return Math.round(ms / (double) TICK_MS) * TICK_MS;
+	}
+
+	/** The fight of a whole raid (not one of its boss fights). */
+	public boolean isWholeRaid()
+	{
+		return raid != null && partOf == null;
+	}
+
 	public long durationMs(long nowMs)
 	{
 		long d;
 		if (mergedFights > 0)
 		{
 			d = mergedDurationMs;
+		}
+		else if (gameTimeMs > 0 && isWholeRaid())
+		{
+			d = gameTimeMs;
 		}
 		else if (endMs > 0)
 		{
@@ -142,7 +165,7 @@ public class Fight
 		{
 			d = activeBetween(startMs, clockNow(nowMs));
 		}
-		return Math.max(MIN_DURATION_MS, d);
+		return Math.max(MIN_DURATION_MS, wholeTicks(d));
 	}
 
 	/** Active time from the first boss hit to the last boss death (or now). 0 without bosses. */
@@ -151,6 +174,10 @@ public class Fight
 		if (mergedFights > 0)
 		{
 			return mergedBossMs;
+		}
+		if (gameTimeMs > 0 && !isWholeRaid())
+		{
+			return gameTimeMs;
 		}
 		long start = 0;
 		long end = 0;
@@ -180,7 +207,7 @@ public class Fight
 		{
 			end = Math.max(end, clockNow(nowMs));
 		}
-		return Math.max(MIN_DURATION_MS, activeBetween(start, end));
+		return Math.max(MIN_DURATION_MS, wholeTicks(activeBetween(start, end)));
 	}
 
 	/** Time of the last boss death once every engaged boss is dead, else 0. */
@@ -277,7 +304,7 @@ public class Fight
 
 	public String title(boolean bossOnly)
 	{
-		if (raid != null && partOf == null && !bossOnly)
+		if (isWholeRaid() && !bossOnly)
 		{
 			return raid;
 		}
@@ -369,6 +396,7 @@ public class Fight
 		c.raid = raid;
 		c.partOf = partOf;
 		c.run = run;
+		c.gameTimeMs = gameTimeMs;
 		if (pauses != null)
 		{
 			for (long[] p : pauses)

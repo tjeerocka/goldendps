@@ -56,13 +56,13 @@ public final class KillRates
 			}
 			if (f.isCompleteRaid())
 			{
-				add(rates, f.raid, f.run ? Kind.RUN : Kind.RAID, f.startMs, f.durationMs(f.endMs));
+				add(rates, f.raid, f.run ? Kind.RUN : Kind.RAID, f.startMs, 1, f.durationMs(f.endMs));
 			}
 			BossRecords.Kill kill = BossRecords.kill(f);
 			// Barrows brothers die once per chest: chests per hour says it
 			if (kill != null && !BarrowsRun.isBrother(kill.boss))
 			{
-				add(rates, kill.boss, Kind.BOSS, f.startMs, kill.timeMs);
+				add(rates, kill.boss, Kind.BOSS, f.startMs, 1, kill.timeMs);
 			}
 			if (f.partOf == null && !f.run)
 			{
@@ -85,17 +85,18 @@ public final class KillRates
 	{
 		for (TargetStats t : f.targets.values())
 		{
-			if (!t.boss && t.engaged && t.died && t.name != null && t.firstMs > 0 && t.diedMs >= t.firstMs)
+			if (!t.boss && t.engaged && t.killCount() > 0 && t.name != null && t.firstMs > 0)
 			{
-				add(rates, t.name, Kind.MONSTER, t.firstMs, t.diedMs - t.firstMs);
+				add(rates, t.name, Kind.MONSTER, t.firstMs, t.killCount(), t.kills > 0 ? t.killTimeMs : t.lastKillTimeMs());
 			}
 		}
 	}
 
-	private static void add(Map<String, Rate> rates, String name, Kind kind, long startMs, long timeMs)
+	/** @param timeMs the time of all these kills together */
+	private static void add(Map<String, Rate> rates, String name, Kind kind, long startMs, int kills, long timeMs)
 	{
 		Rate r = rates.computeIfAbsent(kind + "|" + name, k -> new Rate(name, kind));
-		r.kills++;
+		r.kills += kills;
 		r.firstStartMs = Math.min(r.firstStartMs, startMs);
 		r.totalMs += timeMs;
 	}

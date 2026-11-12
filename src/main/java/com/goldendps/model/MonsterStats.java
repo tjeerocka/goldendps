@@ -118,8 +118,8 @@ public class MonsterStats
 		Monster m = byName.computeIfAbsent(t.name, n -> new Monster());
 		m.name = t.name;
 		m.kills++;
-		long timeMs = t.diedMs - t.firstMs;
-		if (before == null && timeMs > 0)
+		long timeMs = killTimeMs(f, t);
+		if (timeMs > 0)
 		{
 			m.timedKills++;
 			m.totalMs += timeMs;
@@ -135,6 +135,16 @@ public class MonsterStats
 				m.weapons.computeIfAbsent(w.getKey(), k -> new TargetDamage()).merge(newHits);
 			}
 		}
+	}
+
+	/** The boss time the game printed, else the time from the first hit to the death in whole ticks. */
+	private static long killTimeMs(Fight f, TargetStats t)
+	{
+		if (t.boss && f.gameTimeMs > 0 && !f.isWholeRaid())
+		{
+			return f.gameTimeMs;
+		}
+		return Fight.wholeTicks(t.lastKillTimeMs());
 	}
 
 	/** Copies of your hits per weapon on one target. */

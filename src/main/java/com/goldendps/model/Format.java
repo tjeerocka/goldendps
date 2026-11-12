@@ -53,4 +53,11 @@ public final class Format
 		}
 		return String.format(Locale.US, "%d:%02d", m, sec);
 	}
+
+	/** Like the game's own timers, to a hundredth of a second: 0:54.60, 12:05.40, 1:02:03.00 */
+	public static String preciseDuration(long ms)
+	{
+		long hundredths = Math.round(ms / 10.0);
+		return duration(hundredths / 100 * 1000) + String.format(Locale.US, ".%02d", hundredths % 100);
+	}
 }

@@ -267,7 +267,7 @@ class GoldenDpsPanel extends PluginPanel
 	{
 		String time = new SimpleDateFormat("HH:mm").format(new Date(f.startMs));
 		// bosses inside a raid are listed under the raid
-		return time + "  " + (f.partOf != null ? "> " : "") + f.title() + "  " + Format.duration(f.durationMs(now));
+		return time + "  " + (f.partOf != null ? "> " : "") + f.title() + "  " + Format.preciseDuration(f.durationMs(now));
 	}
 
 	private JComponent tabBar()

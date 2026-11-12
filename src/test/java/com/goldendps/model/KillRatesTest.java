@@ -2,6 +2,7 @@ package com.goldendps.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
@@ -95,5 +96,37 @@ public class KillRatesTest
 		// 2 cows in 8 s = 900 per hour
 		assertEquals(900.0, cow.perHour, D);
 		assertEquals("the goblin did not die", 1, rates.size());
+	}
+
+	@Test
+	public void monstersThatRespawnAtTheSameIndexCountEveryKill()
+	{
+		FightTracker t = new FightTracker();
+		for (int kill = 0; kill < 13; kill++)
+		{
+			long start = 1000 + kill * 30_000L;
+			t.playerHit(start, "Me", PlayerKind.LOCAL, "1:7", 2, "Frost dragon", false, 50, false);
+			t.playerHit(start + 12_000, "Me", PlayerKind.LOCAL, "1:7", 2, "Frost dragon", false, 50, false);
+			t.npcDied(start + 12_000, "1:7", false);
+		}
+		// the fight is still running, like in the panel
+		KillRates.Rate r = KillRates.of(Collections.singletonList(t.getCurrent()), 391_000).get(0);
+		assertEquals(13, r.kills);
+		assertEquals(12_000, r.averageMs);
+		// 13 kills in 6.5 minutes
+		assertEquals(120.0, r.perHour, D);
+		assertEquals(13, FightReport.of(t.getCurrent(), false, 391_000).getKills());
+	}
+
+	@Test
+	public void aLatePartyHitDoesNotStartANewMonster()
+	{
+		FightTracker t = new FightTracker();
+		t.playerHit(1000, "Me", PlayerKind.LOCAL, "1:7", 2, "Frost dragon", false, 50, false);
+		t.npcDied(5000, "1:7", false);
+		t.playerHit(6000, "Friend", PlayerKind.PARTY, "1:7", 2, "Frost dragon", false, 50, false);
+		TargetStats dragon = t.getCurrent().targets.get("1:7");
+		assertTrue(dragon.died);
+		assertEquals(1, dragon.killCount());
 	}
 }
