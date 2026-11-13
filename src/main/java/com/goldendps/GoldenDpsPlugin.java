@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.DefenceDrains;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
@@ -8,15 +9,19 @@ import com.goldendps.model.HealType;
 import com.goldendps.model.HealthWatcher;
 import com.goldendps.model.HistoryStore;
 import com.goldendps.model.KillCounts;
-import com.goldendps.model.RaidPoints;
 import com.goldendps.model.MeterMode;
+import com.goldendps.model.NpcStats;
 import com.goldendps.model.PlayerKind;
+import com.goldendps.model.RaidPoints;
 import com.goldendps.model.TargetMatcher;
+import com.goldendps.model.WeaponStyles;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,11 +39,13 @@ import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GraphicChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.OverheadTextChanged;
+import net.runelite.api.events.ProjectileMoved;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.client.callback.ClientThread;
@@ -46,11 +53,15 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ClientShutdown;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.party.WSClient;
 import net.runelite.client.party.events.UserPart;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.slayer.SlayerPlugin;
+import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -71,6 +82,8 @@ import net.runelite.client.util.Text;
 	// fights and personal bests used to be saved in .runelite/goldendps
 	legacyDataDirectory = "goldendps"
 )
+// the hit chance counts the slayer helmet on the task that RuneLite's Slayer plugin knows
+@PluginDependency(SlayerPlugin.class)
 public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 {
 	private static final int PANEL_EVERY_TICKS = 2;
@@ -96,6 +109,15 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 	@Inject
 	private HeadIconOverlay headIconOverlay;
+
+	@Inject
+	private DefenceOverlay defenceOverlay;
+
+	@Inject
+	private ItemManager itemManager;
+
+	@Inject
+	private SlayerPluginService slayer;
 
 	@Inject
 	private ClientToolbar clientToolbar;
@@ -139,12 +161,18 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private RaidFights raids;
 	private PartyReports reports;
 	private MeterViews views;
+	private DefenceDrains defence;
+	private TargetHitChance hitChance;
+	/** Your hit chance on the monster you attack, null when unknown; read by the panel. */
+	private volatile TargetHitChance.Result hitChanceCache;
 
 	private GoldenDpsPanel panel;
 	private NavigationButton navButton;
 	private int ticks;
 	private volatile FightReport overlayCache;
 	private volatile BossMeter bossCache;
+	/** Target key to the lines above that NPC. */
+	private volatile Map<String, String[]> defenceCache = Collections.emptyMap();
 	/** Worked out on the client thread: the overlay must not read the fight history. */
 	private volatile boolean overallGoingOn;
 	private volatile boolean overallPaused;
@@ -163,6 +191,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 
 		overlayManager.add(overlay);
 		overlayManager.add(headIconOverlay);
+		overlayManager.add(defenceOverlay);
 		wsClient.registerMessage(GoldenDpsUpdate.class);
 		wsClient.registerMessage(GoldenDpsPartyMessage.class);
 
@@ -192,12 +221,16 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			refreshOverlay();
 			updatePanel();
 		});
-		partyUpdates = new PartyUpdates(client, partyService, party, config, tracker, bosses, matcher);
+		NpcStats npcStats = NpcStats.load();
+		defence = new DefenceDrains(npcStats);
+		partyUpdates = new PartyUpdates(client, partyService, party, config, tracker, bosses, matcher, defence);
 		combat = new CombatEvents(client, partyService, config, tracker, bosses, matcher, healing, barrows, party,
-			partyUpdates);
+			partyUpdates, defence);
+		hitChance = new TargetHitChance(client, itemManager, slayer, npcStats, WeaponStyles.load(), defence, tracker,
+			combat);
 		raids = new RaidFights(client, chat, tracker);
 		reports = new PartyReports(config, partyService, party, chat, storage, killCounts, raidPoints);
-		views = new MeterViews(config, tracker, storage, new BossHealth(client), barrows, party, fun);
+		views = new MeterViews(config, tracker, storage, new BossHealth(client), barrows, party, fun, defence);
 	}
 
 	@Override
@@ -211,6 +244,9 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			tracker.clearHistory();
 			overlayCache = null;
 			bossCache = null;
+			hitChanceCache = null;
+			defence.clear();
+			defenceCache = Collections.emptyMap();
 			reports.clear();
 			healing.reset();
 			partyUpdates.clear();
@@ -219,6 +255,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		wsClient.unregisterMessage(GoldenDpsPartyMessage.class);
 		overlayManager.remove(overlay);
 		overlayManager.remove(headIconOverlay);
+		overlayManager.remove(defenceOverlay);
 		clientToolbar.removeNavigation(navButton);
 		panel = null;
 		navButton = null;
@@ -247,6 +284,18 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	public void onHitsplatApplied(HitsplatApplied e)
 	{
 		combat.hitsplatApplied(e.getActor(), e.getHitsplat());
+	}
+
+	@Subscribe
+	public void onGraphicChanged(GraphicChanged e)
+	{
+		combat.graphicChanged(e.getActor());
+	}
+
+	@Subscribe
+	public void onProjectileMoved(ProjectileMoved e)
+	{
+		combat.projectileMoved(e.getProjectile());
 	}
 
 	@Subscribe
@@ -342,9 +391,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	public void onNpcDespawned(NpcDespawned e)
 	{
 		NPC npc = e.getNpc();
+		String key = TargetMatcher.key(client.getWorld(), npc.getIndex());
+		defence.remove(key);
 		if (npc.isDead())
 		{
-			String key = TargetMatcher.key(client.getWorld(), npc.getIndex());
 			// the fight may end with this death, so take it before
 			Fight fight = tracker.getCurrent();
 			tracker.npcDied(System.currentTimeMillis(), key, bosses.isBoss(npc.getId(), Names.clean(npc.getName())));
@@ -367,6 +417,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			raids.gameMessage(now, e.getMessage());
 			barrows.gameMessage(now, e.getMessage(), tracker);
 			takeGameTime(now, e.getMessage());
+			combat.gameMessage(e.getMessage());
 		}
 	}
 
@@ -442,6 +493,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			healing.reset();
 			combat.reset();
 			matcher.clear();
+			defence.clear();
 			raids.reset();
 			barrows.loggedOut(now);
 			partyUpdates.clear();
@@ -548,6 +600,14 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		overallPaused = running != null ? running.isPaused(now) : overallGoingOn;
 		views.updateFun(now);
 		bossCache = views.bossMeter(now);
+		hitChanceCache = config.showHitChance() ? hitChance.now() : null;
+		defenceCache = views.defenceLabels(config.showDefence(), hitChanceCache);
+	}
+
+	/** Target key to the lines above that NPC; read by the defence overlay. */
+	Map<String, String[]> defenceLabels()
+	{
+		return defenceCache;
 	}
 
 	FunEffects fun()
@@ -563,7 +623,8 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		{
 			return;
 		}
-		GoldenDpsPanel.Data data = views.panelData(p.getSelectedId(), localName(), System.currentTimeMillis());
+		GoldenDpsPanel.Data data = views.panelData(p.getSelectedId(), localName(), System.currentTimeMillis(),
+			hitChanceCache);
 		SwingUtilities.invokeLater(() -> p.update(data));
 	}
 

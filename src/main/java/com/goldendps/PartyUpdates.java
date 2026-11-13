@@ -1,5 +1,6 @@
 package com.goldendps;
 
+import com.goldendps.model.DefenceDrains;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightTracker;
 import com.goldendps.model.HealType;
@@ -29,11 +30,12 @@ class PartyUpdates
 	private final FightTracker tracker;
 	private final Bosses bosses;
 	private final TargetMatcher matcher;
+	private final DefenceDrains defence;
 
 	private GoldenDpsUpdate outgoing = new GoldenDpsUpdate();
 
 	PartyUpdates(Client client, PartyService partyService, PartyManager party, GoldenDpsConfig config,
-		FightTracker tracker, Bosses bosses, TargetMatcher matcher)
+		FightTracker tracker, Bosses bosses, TargetMatcher matcher, DefenceDrains defence)
 	{
 		this.client = client;
 		this.partyService = partyService;
@@ -42,6 +44,7 @@ class PartyUpdates
 		this.tracker = tracker;
 		this.bosses = bosses;
 		this.matcher = matcher;
+		this.defence = defence;
 	}
 
 	void addHit(GoldenDpsUpdate.Hit hit)
@@ -131,8 +134,13 @@ class PartyUpdates
 				}
 				counted = true;
 				String source = hit.source == null || hit.source.length() > MAX_SOURCE_LENGTH ? null : hit.source;
-				tracker.playerHit(now, name, PlayerKind.PARTY, partyTargetKey(update.world, hit, name), hit.npcId,
-					npcName, boss, hit.amount, hit.miss, source);
+				String targetKey = partyTargetKey(update.world, hit, name);
+				tracker.playerHit(now, name, PlayerKind.PARTY, targetKey, hit.npcId, npcName, boss, hit.amount, hit.miss,
+					source);
+				if (!tracker.isInRaid())
+				{
+					defence.hit(client.getTickCount(), targetKey, hit.npcId, npcName, name, source, hit.amount, hit.miss);
+				}
 			}
 		}
 		Fight current = tracker.getCurrent();

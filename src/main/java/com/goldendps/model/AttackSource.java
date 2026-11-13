@@ -5,7 +5,8 @@ package com.goldendps.model;
  * Used for the damage breakdown per weapon, special attack and spell.
  * <ul>
  * <li>An attack animation saves the weapon you hold (or the spell you clicked just before).</li>
- * <li>Spec energy going down marks the next hits (that tick and the one after, for claws) as "(spec)".</li>
+ * <li>Spec energy going down marks the next hits on your target (that tick and the one after, for claws)
+ * as "(spec)".</li>
  * <li>Hits use the last attack; without a recent attack, the weapon you hold now.</li>
  * </ul>
  */
@@ -22,6 +23,7 @@ public class AttackSource
 	private String spell;
 	private int spellTick = -1;
 	private String lastAttack;
+	private boolean lastAttackWasSpell;
 	private int attackTick = -1;
 	private String specWeapon;
 	private int specTick = -1;
@@ -37,16 +39,23 @@ public class AttackSource
 	/** Your attack animation started. */
 	public void attack(int tick, String weapon)
 	{
-		if (spell != null && tick - spellTick <= SPELL_TICKS && tick >= spellTick)
-		{
-			lastAttack = spell;
-		}
-		else
-		{
-			lastAttack = weaponName(weapon);
-		}
+		lastAttackWasSpell = spell != null && tick - spellTick <= SPELL_TICKS && tick >= spellTick;
+		lastAttack = lastAttackWasSpell ? spell : weaponName(weapon);
 		spell = null;
 		attackTick = tick;
+	}
+
+	/**
+	 * The spell you cast by clicking it: the one you just clicked, or the one of your last attack while you
+	 * keep casting; null when you attack with your weapon (or autocast).
+	 */
+	public String clickedSpell(int tick)
+	{
+		if (spell != null && tick - spellTick <= SPELL_TICKS && tick >= spellTick)
+		{
+			return spell;
+		}
+		return lastAttackWasSpell && tick - attackTick <= ATTACK_TICKS ? lastAttack : null;
 	}
 
 	/** Your spec energy went down. */
@@ -57,10 +66,13 @@ public class AttackSource
 		specHitTick = -1;
 	}
 
-	/** The source of a hitsplat of yours that shows now. */
-	public String sourceForHit(int tick, String weaponNow)
+	/**
+	 * The source of a hitsplat of yours that shows now.
+	 * @param onYourTarget false for a hit on another NPC (your cannon, thrall or chinchompa splash): never the spec
+	 */
+	public String sourceForHit(int tick, String weaponNow, boolean onYourTarget)
 	{
-		if (specTick >= 0)
+		if (specTick >= 0 && onYourTarget)
 		{
 			int since = tick - specTick;
 			if (since >= 0 && since <= SPEC_TICKS && (specHitTick < 0 || tick <= specHitTick + 1))

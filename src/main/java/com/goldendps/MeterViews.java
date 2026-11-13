@@ -1,13 +1,17 @@
 package com.goldendps;
 
 import com.goldendps.model.BossRecords;
+import com.goldendps.model.DefenceDrains;
 import com.goldendps.model.Fight;
 import com.goldendps.model.FightReport;
 import com.goldendps.model.FightTracker;
 import com.goldendps.model.Format;
 import com.goldendps.model.KillRates;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /** Turns the tracked fights into what the overlays and the panel show. Client thread only. */
 class MeterViews
@@ -19,9 +23,10 @@ class MeterViews
 	private final BarrowsTracker barrows;
 	private final PartyManager party;
 	private final FunEffects fun;
+	private final DefenceDrains defence;
 
 	MeterViews(GoldenDpsConfig config, FightTracker tracker, FightStorage storage, BossHealth bossHealth,
-		BarrowsTracker barrows, PartyManager party, FunEffects fun)
+		BarrowsTracker barrows, PartyManager party, FunEffects fun, DefenceDrains defence)
 	{
 		this.config = config;
 		this.tracker = tracker;
@@ -30,6 +35,64 @@ class MeterViews
 		this.barrows = barrows;
 		this.party = party;
 		this.fun = fun;
+		this.defence = defence;
+	}
+
+	/**
+	 * Target key to the lines above that NPC: "Def 120 / 246  Hit chance 78%" and "DWH x2 -126, BGS -34".
+	 * @param showDefence false shows only the hit chance
+	 * @param hit your hit chance on the monster you attack, or null
+	 */
+	Map<String, String[]> defenceLabels(boolean showDefence, TargetHitChance.Result hit)
+	{
+		Map<String, String[]> labels = new HashMap<>();
+		if (showDefence)
+		{
+			defence.all().forEach((key, t) -> labels.put(key, new String[]{levels(t), t.summary()}));
+		}
+		if (hit != null)
+		{
+			String[] lines = labels.get(hit.targetKey);
+			String chance = (hit.spec ? "Spec hit chance " : "Hit chance ") + percent(hit.now);
+			labels.put(hit.targetKey, lines == null ? new String[]{chance} : new String[]{lines[0] + "  " + chance, lines[1]});
+		}
+		return labels;
+	}
+
+	/** "Def 120 / 246", plus "  Magic 120 / 150" when the magic level is lowered too. */
+	private static String levels(DefenceDrains.Target t)
+	{
+		String magic = t.getMagicCurrent() < t.magicBase ? "  Magic " + t.getMagicCurrent() + " / " + t.magicBase : "";
+		return "Def " + t.getCurrent() + " / " + t.base + magic;
+	}
+
+	private static String percent(double chance)
+	{
+		return Math.round(chance * 100) + "%";
+	}
+
+	/** {label, value} lines for the panel: each monster with lowered defence, then each special attack. */
+	private List<String[]> defenceLines(String localName, TargetHitChance.Result hit)
+	{
+		List<String[]> lines = new ArrayList<>();
+		if (hit != null)
+		{
+			String now = percent(hit.now);
+			String before = percent(hit.before);
+			String value = now.equals(before) ? now : now + " (was " + before + ")";
+			lines.add(new String[]{(hit.spec ? "Spec hit chance: " : "Hit chance: ") + hit.name, value});
+		}
+		for (DefenceDrains.Target t : defence.all().values())
+		{
+			lines.add(new String[]{t.name, levels(t)});
+			for (DefenceDrains.Drain d : t.getDrains())
+			{
+				String who = Objects.equals(d.player, localName) ? "you" : d.player;
+				lines.add(new String[]{"+ " + DefenceDrains.shortName(d.weapon) + " (" + who + ")",
+					"-" + d.amount + (d.magic ? " magic" : "")});
+			}
+		}
+		return lines;
 	}
 
 	/** The main overlay meter: the overall fights or the session; null when there is none. */
@@ -98,7 +161,8 @@ class MeterViews
 		return tracker.findFight(choiceId);
 	}
 
-	GoldenDpsPanel.Data panelData(String selectedId, String localName, long now)
+	/** @param hit your hit chance on the monster you attack, or null */
+	GoldenDpsPanel.Data panelData(String selectedId, String localName, long now, TargetHitChance.Result hit)
 	{
 		GoldenDpsPanel.Data data = new GoldenDpsPanel.Data();
 		data.choices.add(new GoldenDpsPanel.Choice(GoldenDpsPanel.LIVE_CHOICE,
@@ -131,6 +195,7 @@ class MeterViews
 		data.barrowsRunTime = barrows.liveTime();
 		data.barrowsRunPaused = barrows.isPaused();
 		data.party = party.view(localName);
+		data.defence = defenceLines(localName, hit);
 		return data;
 	}
 

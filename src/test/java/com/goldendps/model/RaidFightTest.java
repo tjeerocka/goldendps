@@ -1,6 +1,7 @@
 package com.goldendps.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -67,6 +68,17 @@ public class RaidFightTest
 		hit(t, 25_000, "301:7", "Tekton", true, 50);
 		assertEquals(5000, t.getCurrent().startMs);
 		assertEquals("from the game's start to the last hit", Fight.wholeTicks(20_000), t.getCurrent().durationMs(25_000));
+	}
+
+	@Test
+	public void knowsWhenARaidIsGoingOn()
+	{
+		FightTracker t = tracker();
+		assertFalse(t.isInRaid());
+		t.startRaid(0, TOB);
+		assertTrue(t.isInRaid());
+		t.endRaid(1000, "test");
+		assertFalse(t.isInRaid());
 	}
 
 	@Test

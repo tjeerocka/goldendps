@@ -272,6 +272,31 @@ public interface GoldenDpsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showDefence",
+		name = "Defence",
+		description = "Above a monster: its defence after special attacks that lower it (DWH, BGS, Elder maul, Arclight...)",
+		position = 7,
+		section = overlaySection
+	)
+	default boolean showDefence()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showHitChance",
+		name = "Hit chance",
+		description = "Above the monster you attack: your chance to hit it with a normal attack, from your levels, "
+			+ "prayers, gear and attack style",
+		position = 8,
+		section = overlaySection
+	)
+	default boolean showHitChance()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "mvpCrown",
 		name = "Crown on the MVP",
 		description = "A crown over the player with the most damage in a group fight",

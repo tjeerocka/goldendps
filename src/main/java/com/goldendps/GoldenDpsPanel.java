@@ -83,6 +83,8 @@ class GoldenDpsPanel extends PluginPanel
 		List<String[]> killLines = new ArrayList<>();
 		/** In a raid: {boss, time, "PB 1:50" / "NEW PB!" / ""} for every boss so far. */
 		List<String[]> bossTimes = new ArrayList<>();
+		/** {label, value} lines of the monsters whose defence special attacks lowered. */
+		List<String[]> defence = new ArrayList<>();
 		/** Every monster, raid and Barrows run with its personal bests and stats, last kill first. */
 		List<MonsterStats.Entry> monsters = new ArrayList<>();
 		List<KillRates.Rate> killRates = new ArrayList<>();
@@ -101,6 +103,7 @@ class GoldenDpsPanel extends PluginPanel
 		MONSTERS(false),
 		FIGHT(true),
 		BOSS_TIMES(true),
+		DEFENCE(true),
 		PLAYERS(true),
 		TARGETS(false),
 		MONSTER_STATS(false);
@@ -380,6 +383,11 @@ class GoldenDpsPanel extends PluginPanel
 		{
 			content.add(Box.createVerticalStrut(4));
 			content.add(FightCards.bossTimes(d.bossTimes));
+		}
+		if (!d.defence.isEmpty() && addHeading("Defence", Part.DEFENCE, 0))
+		{
+			content.add(Box.createVerticalStrut(4));
+			content.add(FightCards.lines(d.defence));
 		}
 
 		List<FightReport.PlayerRow> rows = new ArrayList<>(r.getRows());

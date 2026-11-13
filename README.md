@@ -16,7 +16,7 @@ A DPS, damage and healing meter for groups and individuals.
   boss lives it shows your PB pace ("-0:03" green = faster than your PB), worked out from its health bar. It
   pauses when nobody hits the boss for 10 seconds and stays until the next boss fight.
 - **Side panel** with kills per hour at the top, then every fight; click a heading to show or hide it: per-player details (accuracy, biggest hit, healing by source,
-  overhealing, damage taken), damage per target, and a breakdown per weapon, special attack and spell.
+  overhealing, damage taken), damage per target, and a breakdown per weapon, special attack and spell (your cannon has its own line).
 - **Overhealing**: wasted food and potions, shown as a percentage of all healing. Lifesteal past full
   health is not counted, since you cannot avoid it.
 - **Accuracy** per player, per target, and per weapon: click a weapon in the breakdown to see it.
@@ -32,6 +32,27 @@ A DPS, damage and healing meter for groups and individuals.
   logged out and after 10 minutes without a brother hit. The run counts only damage on the brothers. The
   overlay shows the run time while a run is going on, a run survives a client restart, and the panel
   shows chests per hour and your fastest run.
+- **Defence**: after a special attack that lowers defence (Dragon warhammer, Elder maul, Bandos godsword,
+  Arclight, Emberlight, Accursed sceptre, Bone dagger, Dorgeshuun crossbow, Barrelchest anchor) or the
+  magic level (Seercull, Accursed sceptre), the monster or boss shows it above its head
+  ("Def 120 / 246") with the specs that lowered it. Party members' specs count too when they run GoldenDPS.
+  The panel lists every spec under "Defence". Drained stats come back 1 level a minute, like in the game.
+  Not yet in raids. Setting **Defence**.
+- **Hit chance**: above the monster you attack, your chance to hit it ("Hit chance 78%"), with the game's
+  formula: your levels and boosts, prayers, gear bonuses, attack style (stab, slash, crush, ranged or magic)
+  and the monster's defence after specs. With your special attack turned on it shows "Spec hit chance"
+  (godswords, Elder maul, claws and more have their own accuracy or hit another defence; Dragon claws hit
+  when any of their four rolls hits). A spell you click
+  counts as magic. Counts Void, salve amulets, the slayer helmet or black mask on task (the task comes from
+  RuneLite's Slayer plugin, so keep that plugin on), Arclight and Emberlight on demons, dragon hunter
+  weapons, the Twisted bow, Tumeken's shadow, Inquisitor's, Keris partisan of breaching, obsidian with
+  TzHaar weapons, revenant weapons in the Wilderness, crystal armour with a crystal bow, smoke staves,
+  Osmumten's fang (two accuracy rolls), the brimstone ring, Silverlight, Darklight, bone and burning claws,
+  the scorching bow and demonbane spells (with Mark of Darkness and the purging staff) on demons, the
+  granite hammer on golems, the amulet of avarice on revenants, vampyre weapons and Efaritay's aid, the
+  tome of water, the Soulreaper axe's soul stacks for its spec, monsters that are always hit, and
+  elemental weakness for strike, bolt, blast, wave and surge spells. Not counted: raids. The panel shows it under "Defence" with the chance before
+  any spec. Setting **Hit chance**.
 - **Report to party**: sends the top five of the overall damage, the boss damage or the healing to the
   RuneLite party chat. After every boss kill the party leader sends the boss report by itself (setting
   **Auto boss report**, on by default).
@@ -111,3 +132,6 @@ with the plugin, and `gradlew test` for the tests. `settings.gradle` explains ho
 another plugin project in one client.
 
 The boss id list is taken from RuneLite's DPS Counter plugin (BSD 2-Clause).
+
+Monster stats (`npc_stats.tsv`) come from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki)
+(CC BY-NC-SA 3.0), through the data of its DPS calculator.

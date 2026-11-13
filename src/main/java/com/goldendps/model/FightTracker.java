@@ -457,6 +457,12 @@ public class FightTracker
 		return f.id + "/" + targetKey;
 	}
 
+	/** Raids scale their monsters, so their defence is not known. */
+	public boolean isInRaid()
+	{
+		return raid != null;
+	}
+
 	/** For tests. */
 	String getRaid()
 	{

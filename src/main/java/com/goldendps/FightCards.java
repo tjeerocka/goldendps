@@ -43,6 +43,17 @@ final class FightCards
 		return card;
 	}
 
+	/** A card with {label, value} lines. */
+	static JPanel lines(List<String[]> lines)
+	{
+		JPanel card = section();
+		for (String[] l : lines)
+		{
+			card.add(line(l[0], l[1]));
+		}
+		return card;
+	}
+
 	static JPanel summary(GoldenDpsPanel.Data d)
 	{
 		FightReport r = d.report;

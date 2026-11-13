@@ -1,0 +1,2885 @@
+# Monster stats from the Old School RuneScape Wiki (CC BY-NC-SA 3.0). Made by tools/make_npc_stats.py
+# id	name	defence	magicLevel	magicAttack	defence bonuses: stab	slash	crush	magic	light	standard	heavy	attributes	weakness	rules	forName
+3477	A Doubt	85	1	0	0	0	0	0	0	0	0				1
+15165	A corpse	90	1	0	0	0	0	0	0	0	0		fire:50		1
+2	Aberrant spectre	90	105	0	20	20	20	0	15	-15	15	undead,spectral	air:50		1
+7402	Abhorrent spectre	180	300	0	40	40	40	0	30	-30	30	undead,spectral	air:50		1
+8260	Abomination	110	110	0	80	80	80	20	180	180	180				1
+5886	Abyssal Sire	250	200	0	40	60	50	20	60	60	60	demon			1
+5889	Abyssal Sire	250	200	0	40	60	50	20	60	60	60	demon			0
+5891	Abyssal Sire	250	200	0	40	60	50	20	60	60	60	demon			0
+5908	Abyssal Sire	250	200	0	20	30	25	-40	30	30	30	demon			0
+12372	Abyssal antibody	1	1	0	0	0	0	0	0	0	0				1
+415	Abyssal demon	135	1	0	20	20	20	0	20	20	20	demon			1
+7241	Abyssal demon	135	1	0	20	20	20	0	20	20	20	demon			0
+11239	Abyssal demon	135	1	0	20	20	20	0	20	20	20	demon			0
+2585	Abyssal guardian	30	1	0	70	70	0	150	0	70	0				1
+2584	Abyssal leech	25	1	0	50	50	0	50	0	10	0				1
+12366	Abyssal leech (The Scar)	1	1	0	0	0	0	0	0	0	0				1
+12391	Abyssal leech (The Scar)	30	1	0	50	50	100	50	10	10	10				0
+12393	Abyssal leech (The Scar)	1	1	0	50	50	10	50	10	10	10				0
+7533	Abyssal portal	176	176	0	0	0	0	60	140	140	110	xerician	fire:50		1
+2586	Abyssal walker	95	1	0	75	75	0	75	0	75	0				1
+12392	Abyssal walker (The Scar)	95	1	0	75	75	10	75	75	75	75				1
+12394	Abyssal walker (The Scar)	20	1	0	75	75	10	75	75	75	75				0
+13675	Acidic Araxyte	50	1	0	25	25	25	-10	25	25	25		fire:50		1
+9573	Acidic Bloodveld	2	1	0	-100	-100	-100	-100	-100	-100	-100				1
+13824	Adala	10	5	0	0	0	0	0	0	0	0				1
+8030	Adamant dragon	272	186	0	20	110	85	30	95	95	65	dragon,fiery	earth:50		1
+1293	Afflicted	40	1	0	0	0	0	0	0	0	0				1
+1294	Afflicted	38	1	0	0	0	0	0	0	0	0				0
+1297	Afflicted	36	1	0	0	0	0	0	0	0	0				0
+1298	Afflicted	34	1	0	0	0	0	0	0	0	0				0
+11727	Agile Scarab	5	30	150	0	0	0	0	0	0	0	kalphite			1
+13483	Agile Warrior	80	1	0	0	0	0	0	0	0	0				1
+911	Agrith Naar	82	100	0	0	0	0	0	0	0	0	demon	water:25		1
+6327	Agrith Naar (Nightmare Zone)	82	220	0	0	0	0	0	0	0	0	demon	water:25		1
+6388	Agrith Naar (Nightmare Zone)	82	100	0	0	0	0	0	0	0	0	demon	water:25		0
+4880	Agrith-Na-Na	82	100	0	100	100	60	100	100	100	60				1
+6308	Agrith-Na-Na (Nightmare Zone)	82	200	0	100	100	60	100	100	100	60				1
+6369	Agrith-Na-Na (Nightmare Zone)	82	100	0	100	100	60	100	100	100	60				0
+1672	Ahrim the Blighted	100	100	73	103	85	117	73	0	0	0	spectral	air:50		1
+1369	Air elemental	30	40	0	0	0	0	0	0	0	0		air:30		1
+1559	Air wizard	10	10	0	0	0	0	15	0	0	0				1
+11789	Akkha	80	100	115	60	120	120	10	60	60	60				1
+11797	Akkha's Shadow	30	100	115	60	120	120	10	60	60	60		air:60		1
+3292	Al Kharid warrior	4	1	0	12	15	10	-1	12	12	12				1
+15224	Albatross	60	1	0	0	0	0	0	20	25	10				1
+1039	Albino bat	30	1	0	0	0	0	0	0	0	0		air:40		1
+8615	Alchemical Hydra	100	260	45	75	150	150	150	45	45	45	dragon	earth:50		1
+8619	Alchemical Hydra	100	260	45	75	150	150	150	45	45	45	dragon	earth:50		0
+8620	Alchemical Hydra	100	260	45	75	150	150	150	45	45	45	dragon	earth:50		0
+8621	Alchemical Hydra	100	260	45	75	150	150	150	45	45	45	dragon	earth:50		0
+2623	Alexis	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+3676	Alrik	1	1	0	0	0	0	0	0	0	0				1
+7799	Ammonite Crab	1	1	0	0	0	0	0	0	0	0		earth:25		1
+13685	Amoxliatl	80	170	160	100	100	40	100	200	200	200	spectral	fire:30		1
+13686	Amoxliatl	60	140	140	100	100	40	100	200	200	200	spectral	fire:30		0
+14520	Ancient Custodian	80	80	45	50	-30	80	0	-10	5	60		fire:30		1
+10654	Ancient Guardian	25	1	0	40	40	0	5	30	30	30				1
+10666	Ancient Guardian	25	1	0	40	40	0	5	30	30	30				0
+12336	Ancient Guardian (Desert Treasure II)	100	100	0	50	40	20	10	50	50	50	golem			1
+7307	Ancient Wizard	20	150	0	0	0	0	0	0	0	0				1
+7308	Ancient Wizard	20	80	0	0	0	0	0	0	0	0				0
+7309	Ancient Wizard	20	80	0	0	0	0	0	0	0	0				0
+7795	Ancient Wyvern	150	90	0	50	70	70	170	120	120	90	dragon	air:35		1
+7797	Ancient Zygomite	80	80	0	20	20	20	30	30	30	30		fire:40		1
+15760	Ancient feral vyre	88	1	0	0	20	20	0	0	0	0	vampyre3			1
+16230	Ancient feral vyre	88	1	0	0	20	20	0	0	0	0	vampyre3			0
+16231	Ancient feral vyre	88	1	0	0	20	20	0	0	0	0	vampyre3			0
+16232	Ancient feral vyre	88	1	0	0	20	20	0	0	0	0	vampyre3			0
+5563	Angry barbarian spirit	100	1	0	0	3	2	-3	2	2	2	spectral	air:30		1
+1060	Angry bear	38	1	0	0	0	0	0	0	0	0				1
+4692	Angry bear	38	1	0	0	0	0	0	0	0	0				0
+1062	Angry giant rat	38	1	0	0	0	0	0	0	0	0				1
+4689	Angry giant rat	38	1	0	0	0	0	0	0	0	0				0
+1065	Angry goblin	38	1	0	0	0	0	0	0	0	0				1
+4691	Angry goblin	38	1	0	0	0	0	0	0	0	0				0
+15170	Angry tortugan	50	40	0	80	80	50	30	80	80	80				1
+1061	Angry unicorn	38	1	0	0	0	0	0	0	0	0				1
+4688	Angry unicorn	38	1	0	0	0	0	0	0	0	0				0
+2455	Animated Adamant Armour	99	1	0	50	25	19	400	400	400	400		earth:30		1
+2453	Animated Black Armour	60	1	0	50	25	19	400	400	400	400		earth:30		1
+2450	Animated Bronze Armour	10	1	0	50	25	19	400	400	400	400		earth:30		1
+2451	Animated Iron Armour	20	1	0	50	25	19	400	400	400	400		earth:30		1
+2454	Animated Mithril Armour	80	1	0	50	25	19	400	400	400	400		earth:30		1
+2456	Animated Rune Armour	120	1	0	50	25	19	400	400	400	400		earth:30		1
+2452	Animated Steel Armour	40	1	0	50	25	19	400	400	400	400		earth:30		1
+6470	Animated spade	40	1	0	15	10	5	5	10	10	10		earth:25		1
+6438	Animated steel armour (Tarn's Lair)	2	2	0	50	25	25	400	400	400	400		earth:30		1
+3285	Anja	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+2514	Ankou	60	1	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+2515	Ankou	70	1	0	0	0	0	0	0	0	0	undead,spectral	air:40		0
+2516	Ankou	80	1	0	0	0	0	0	0	0	0	undead,spectral	air:40		0
+7257	Ankou	100	1	0	0	0	0	0	0	0	0	undead,spectral	air:40		0
+7864	Ankou	80	1	0	0	0	0	0	0	0	0	undead,spectral	air:40		0
+4195	Apparition	40	1	0	0	0	0	0	0	0	0		air:40		1
+4196	Apparition	40	85	0	65	65	65	50	0	0	0		air:40		0
+4197	Apparition	40	1	0	30	30	30	0	70	70	70		air:40		0
+4198	Apparition	40	40	0	15	15	15	70	70	70	70		air:40		0
+15497	Aquanite	70	170	50	60	80	80	140	100	100	100				1
+15498	Aquanite	70	170	50	10	80	80	140	100	100	100				0
+13668	Araxxor	135	190	260	160	75	15	237	218	218	218		fire:50		1
+11175	Araxyte	60	60	0	60	30	20	20	20	20	20		fire:50		1
+11176	Araxyte	70	80	0	60	30	20	20	20	20	20		fire:50		0
+11726	Arcane Scarab	80	100	250	15	250	30	75	50	50	50	kalphite	fire:50		1
+3301	Archer (Ardougne)	20	1	0	18	23	27	10	19	19	19				1
+4096	Archer (Burthorpe)	40	1	0	39	50	49	18	45	45	45				1
+16659	Archive Guardian	260	250	350	120	110	20	130	55	120	50	flying	fire:80		1
+8865	Arianwyn	102	102	0	80	80	80	260	180	180	180				1
+9246	Arianwyn (Nightmare Zone)	102	102	0	80	80	80	260	180	180	180				1
+9248	Arianwyn (Nightmare Zone)	102	102	0	80	80	80	260	180	180	180				0
+6587	Armadylean guard	82	80	0	0	0	0	3	0	0	0	flying	air:30		1
+15210	Armoured kraken	150	175	0	0	0	0	-63	175	125	125		earth:50		1
+12730	Armoured zombie (Defender of Varrock)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		1
+12735	Armoured zombie (Defender of Varrock)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14135	Armoured zombie (The Curse of Arrav)	10	1	0	5	5	5	-50	-100	-100	-100	undead	fire:50		1
+14136	Armoured zombie (The Curse of Arrav)	10	1	0	5	5	5	-50	-100	-100	-100	undead	fire:50		0
+12720	Armoured zombie (Zemouregal's Base)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		1
+12725	Armoured zombie (Zemouregal's Base)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14113	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		1
+14114	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14115	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14116	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14117	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14118	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14119	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14120	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14121	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14122	Armoured zombie (Zemouregal's Fort)	68	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+14132	Arrav	150	150	0	80	80	40	160	80	80	80	undead			1
+643	Arrg	40	0	0	35	60	35	200	200	200	200		earth:50		1
+6331	Arrg (Nightmare Zone)	40	0	0	35	60	35	200	200	200	200		earth:50		1
+6392	Arrg (Nightmare Zone)	40	0	0	35	60	35	200	200	200	200		earth:50		0
+11992	Artio	150	90	0	125	110	110	0	40	40	40				1
+1233	Arzinian Avatar of Magic	130	150	0	0	0	0	0	0	0	0				1
+1234	Arzinian Avatar of Magic	120	120	0	80	80	80	20	15	15	15				0
+1235	Arzinian Avatar of Magic	75	75	0	40	40	40	15	10	10	10				0
+1230	Arzinian Avatar of Ranging	130	0	0	0	0	0	0	0	0	0				1
+1231	Arzinian Avatar of Ranging	120	0	0	15	15	15	80	20	20	20				0
+1232	Arzinian Avatar of Ranging	75	0	0	10	10	10	40	15	15	15				0
+1227	Arzinian Avatar of Strength	120	0	0	0	0	0	0	0	0	0				1
+1228	Arzinian Avatar of Strength	95	0	0	20	20	20	15	80	80	80				0
+1229	Arzinian Avatar of Strength	50	0	0	15	15	15	10	40	40	40				0
+12062	Assassin	140	140	0	60	30	80	200	50	50	50				1
+10940	Assassin (A Kingdom Divided)	92	92	0	50	50	50	20	50	50	50				1
+10941	Assassin (A Kingdom Divided)	92	92	0	50	50	50	20	50	50	50				0
+13514	Assassin (While Guthix Sleeps)	70	30	0	10	10	15	30	60	20	30				1
+13515	Assassin (While Guthix Sleeps)	70	30	0	10	10	15	30	60	20	30				0
+1283	Asyn Shade	70	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+1284	Asyn Shade	70	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
+5632	Asyn shadow (Temple Trekking)	80	50	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+10531	Avatar of Creation	10	10	0	20	20	20	20	20	20	20				1
+10532	Avatar of Destruction	10	10	0	20	20	20	20	20	20	20				1
+3169	Aviansie	70	1	0	0	0	0	0	-20	0	0	flying	air:45		1
+3170	Aviansie	70	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3171	Aviansie	70	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3172	Aviansie	100	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3173	Aviansie	100	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3174	Aviansie	100	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3175	Aviansie	160	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3176	Aviansie	160	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3177	Aviansie	55	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3178	Aviansie	55	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3179	Aviansie	55	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3180	Aviansie	115	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3181	Aviansie	115	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3182	Aviansie	115	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+3183	Aviansie	175	1	0	0	0	0	0	-20	0	0	flying	air:45		0
+7288	Awakened Altar	1	1	0	0	0	0	0	0	0	0	demon			1
+11778	Ba-Ba	80	100	0	80	160	240	280	200	200	120				1
+11781	Baboon	50	50	0	10	50	50	50	50	50	50				1
+11709	Baboon Brawler	12	40	20	900	900	900	-60	900	900	900				1
+11712	Baboon Brawler	20	60	25	900	900	900	-60	900	900	900				0
+11711	Baboon Mage	12	40	20	900	900	900	900	-50	-50	-50				1
+11714	Baboon Mage	20	60	25	900	900	900	900	-50	-50	-50				0
+11715	Baboon Shaman	20	60	25	900	900	900	900	-50	-50	-50				1
+11718	Baboon Thrall	12	40	20	0	0	0	0	0	0	0				1
+11710	Baboon Thrower	12	40	20	-50	-50	-50	900	900	900	900				1
+11713	Baboon Thrower	20	60	25	-50	-50	-50	900	900	900	900				0
+762	Baby Roc	70	1	0	0	0	0	150	0	0	0		air:30		1
+1871	Baby black dragon	70	1	0	0	50	50	40	30	30	5	dragon	water:50		1
+7955	Baby black dragon	70	1	0	0	50	50	40	30	30	5	dragon			0
+241	Baby blue dragon	40	1	0	0	50	50	40	30	30	5	dragon	water:50		1
+242	Baby blue dragon	40	1	0	0	50	50	40	30	30	5	dragon	water:50		0
+243	Baby blue dragon	40	1	0	0	50	50	40	30	30	5	dragon	water:50		0
+14105	Baby blue dragon	40	1	0	0	50	50	40	30	30	5	dragon	fire:50		0
+14106	Baby blue dragon	40	1	0	0	50	50	40	30	30	5	dragon	fire:50		0
+5194	Baby green dragon	40	1	0	0	50	50	40	30	30	30	dragon	water:50		1
+5872	Baby green dragon	40	1	0	0	50	50	40	30	30	30	dragon	water:50		0
+5873	Baby green dragon	40	1	0	0	50	50	40	30	30	30	dragon	water:50		0
+1635	Baby impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
+1645	Baby impling	0	1	0	-10	-10	-10	10	-10	-10	-10				0
+244	Baby red dragon	40	1	0	0	50	50	40	30	30	10	dragon	water:50		1
+245	Baby red dragon	40	1	0	0	50	50	40	30	30	10	dragon	water:50		0
+246	Baby red dragon	40	1	0	0	50	50	40	30	30	10	dragon	water:50		0
+137	Baby red dragon (Construction)	55	1	0	30	50	50	40	30	30	30	dragon	water:50		1
+5853	Baby tanglefoot	40	1	0	0	0	0	0	0	0	0		fire:20		1
+5854	Baby tanglefoot	40	1	0	0	0	0	0	0	0	0		fire:20		0
+13528	Balance Elemental	275	275	0	5	0	-40	-40	5	0	-40				1
+13529	Balance Elemental	275	275	0	5	0	-40	-40	5	0	-40				0
+13530	Balance Elemental	275	275	0	5	0	-40	-40	5	0	-40				0
+3132	Balfrug Kreeyath	153	150	0	0	0	0	10	0	0	0	demon	water:25		1
+1026	Bandit	17	1	0	0	3	2	0	0	0	0				1
+6605	Bandit	57	1	0	0	23	22	0	0	0	0				0
+690	Bandit (Bandit Camp)	65	1	0	0	0	0	0	0	0	0				1
+695	Bandit (Bandit Camp)	50	1	0	0	0	0	0	0	0	0				0
+734	Bandit (Pollnivneach)	30	1	0	0	9	8	10	0	0	0				1
+736	Bandit (Pollnivneach)	20	1	0	0	9	8	10	0	0	0				0
+11063	Bandit (Shayzien)	17	1	0	4	8	5	1	4	4	4				1
+11064	Bandit (Shayzien)	17	1	0	4	8	5	1	4	4	4				0
+11065	Bandit (Shayzien)	17	1	0	4	8	5	1	4	4	4				0
+13283	Bandit (Varlamore)	17	1	0	4	8	5	1	4	4	4				1
+738	Bandit champion	50	0	0	9	8	10	0	0	0	0				1
+6588	Bandosian guard	80	1	0	12	14	13	5	13	13	13				1
+414	Banshee	22	1	0	5	5	5	0	5	5	5	undead,spectral	air:30		1
+3055	Barbarian	10	1	0	0	3	2	-3	2	2	2				1
+3056	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3057	Barbarian	10	1	0	0	3	2	-3	2	2	2				0
+3058	Barbarian	10	1	0	0	3	2	-3	2	2	2				0
+3059	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3060	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3061	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3062	Barbarian	10	1	0	0	3	2	-3	2	2	2				0
+3064	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3065	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3066	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3067	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3068	Barbarian	10	1	0	0	3	2	-3	2	2	2				0
+3069	Barbarian	10	1	0	0	3	2	-3	2	2	2				0
+3070	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3071	Barbarian	3	1	0	0	3	2	-3	2	2	2				0
+3072	Barbarian	3	1	0	9	10	10	-3	5	5	5				0
+3262	Barbarian	5	1	0	1	1	0	0	0	0	0				0
+10984	Barbarian (Barbarian Camp)	3	1	0	0	3	2	-3	2	2	2				1
+10985	Barbarian (Barbarian Camp)	3	1	0	0	3	2	-3	2	2	2				0
+10986	Barbarian (Barbarian Camp)	10	1	0	0	3	2	-3	2	2	2				0
+10987	Barbarian (Barbarian Camp)	3	1	0	0	3	2	-3	2	2	2				0
+10988	Barbarian (Barbarian Camp)	3	1	0	0	10	10	-3	5	5	5				0
+10989	Barbarian Warlord	50	40	0	15	20	15	0	10	10	10				1
+2648	Bark Blamish Snail	20	1	0	5	5	30	5	30	30	30		earth:30		1
+600	Barrelchest	140	90	0	0	0	0	0	0	0	0				1
+1126	Barrelchest (Nightmare Zone)	140	162	0	0	0	0	0	0	0	0				1
+6342	Barrelchest (Nightmare Zone)	140	90	0	0	0	0	0	0	0	0				0
+417	Basilisk	75	1	0	20	20	0	20	0	0	0		earth:40		1
+9283	Basilisk (The Fremennik Exiles)	75	1	0	20	20	0	20	0	0	0		earth:40		1
+9285	Basilisk (The Fremennik Exiles)	75	1	0	20	20	0	20	0	0	0		earth:40		0
+418	Basilisk (unused)	75	1	0	20	20	0	20	0	0	0		earth:40		1
+9293	Basilisk Knight	186	186	0	30	30	-15	30	20	20	-15		earth:40		1
+9258	Basilisk Sentinel	274	274	0	50	50	10	50	10	10	10		earth:40		1
+9282	Basilisk Youngling	70	1	0	20	20	0	20	0	0	0		earth:40		1
+2827	Bat	5	1	0	2	2	5	2	0	0	0		air:35		1
+1610	Battle mage	1	50	0	0	0	0	0	0	0	0				1
+1611	Battle mage	1	50	0	0	0	0	0	0	0	0				0
+1612	Battle mage	1	50	0	0	0	0	0	0	0	0				0
+3908	Bear Cub	10	1	0	0	0	0	0	0	0	0		fire:25		1
+4655	Bedabin Nomad Fighter	60	0	0	0	0	0	0	0	0	0				1
+4132	Berry	25	0	0	0	0	10	200	200	200	200		earth:20		1
+4134	Berry	25	0	0	0	0	10	200	200	200	200		earth:20		0
+5565	Berserk barbarian spirit	100	1	0	0	3	2	-3	2	2	2	spectral	air:25		1
+15547	Big Evil Chicken	25	300	0	25	25	25	255	0	0	0				1
+2978	Big Snake	60	1	0	0	0	0	0	0	0	0				1
+109	Big Wolf	62	1	0	0	0	0	0	0	0	0		fire:20		1
+115	Big Wolf	62	1	0	0	0	0	0	0	0	0		fire:20		0
+478	Big frog	15	1	0	0	0	0	0	0	0	0		earth:25		1
+8701	Big frog	4	1	0	0	0	0	0	0	0	0		earth:25		0
+1794	Billy Goat	29	1	0	10	10	0	0	10	10	10		fire:10		1
+1797	Billy Goat	29	1	0	10	10	0	0	10	10	10		fire:10		0
+5240	Bird	10	10	0	0	0	0	0	0	0	0		air:25		1
+5241	Bird	5	5	0	0	0	0	0	0	0	0		air:25		0
+15025	Black Eye Bethel	56	45	0	20	40	20	10	20	20	20		fire:50		1
+1409	Black Guard	20	1	0	3	4	4	2	3	3	3				1
+1410	Black Guard	20	1	0	3	4	4	2	3	3	3				0
+1411	Black Guard	20	1	0	3	4	4	2	3	3	3				0
+1412	Black Guard	20	1	0	3	4	4	2	3	3	3				0
+6046	Black Guard	45	1	0	40	40	40	0	40	40	40				0
+6047	Black Guard	45	1	0	40	40	40	0	40	40	40				0
+6048	Black Guard	45	1	0	40	40	40	0	40	40	40				0
+6049	Black Guard	45	1	0	40	40	40	0	40	40	40				0
+6050	Black Guard Berserker	60	1	0	60	60	60	0	60	60	60				1
+6051	Black Guard Berserker	60	1	0	60	60	60	0	60	60	60				0
+6052	Black Guard Berserker	60	1	0	60	60	60	0	60	60	60				0
+301	Black Heather	27	1	0	9	8	10	0	0	0	0				1
+516	Black Knight	25	1	0	73	76	70	-11	72	72	72				1
+517	Black Knight	25	1	0	73	76	70	-11	72	72	72				0
+11952	Black Knight	25	1	0	73	76	70	-11	72	72	72				0
+11953	Black Knight	25	1	0	73	76	70	-11	72	72	72				0
+4934	Black Knight (Wanted!)	25	1	0	73	76	70	-11	72	72	72				1
+4067	Black Knight Titan	91	1	0	18	27	18	1000	1000	1000	1000				1
+6299	Black Knight Titan (Nightmare Zone)	91	1	0	18	27	18	1000	1000	1000	1000				1
+6360	Black Knight Titan (Nightmare Zone)	91	1	0	18	27	18	1000	1000	1000	1000				0
+2839	Black bear	13	1	0	0	0	0	0	0	0	0		fire:30		1
+2912	Black chinchompa (Hunter)	2	2	0	0	0	0	0	0	0	0				1
+240	Black demon	152	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+7242	Black demon	162	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7243	Black demon	175	1	0	0	0	0	-5	0	0	0	demon	water:40		0
+7874	Black demon	152	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+6295	Black demon (Nightmare Zone)	152	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+6357	Black demon (Nightmare Zone)	152	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+1432	Black demon (The Grand Tree)	152	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+12385	Black demon (The Scar)	152	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+252	Black dragon	200	100	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+7861	Black dragon	200	150	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+4742	Black golem	80	1	0	300	300	1	300	300	300	300	golem			1
+12978	Black jaguar	55	1	0	0	0	0	0	0	0	0		fire:30		1
+14512	Black jaguar (Scrambled!)	75	1	0	0	0	0	0	0	0	0		fire:30		1
+1545	Black knight (Port Sarim jail)	25	1	0	73	76	70	-11	72	72	72				1
+2849	Black unicorn	23	1	0	0	0	0	0	0	0	0				1
+3911	Black unicorn Foal	18	1	0	0	0	0	0	0	0	0				1
+4534	Blessed giant rat	1	1	0	-24	-24	-24	-24	-24	-24	-24	rat			1
+4535	Blessed giant rat	1	1	0	-24	-24	-24	-24	-24	-24	-24	rat			0
+4533	Blessed spider	35	1	0	15	16	7	12	16	16	16		fire:50		1
+8978	Blessed spider	35	1	0	15	16	7	12	16	16	16		fire:50		0
+16598	Blink	99	0	0	0	0	0	0	0	0	0				1
+16625	Blink	1	0	0	0	0	0	0	0	0	0				0
+2645	Blood Blamish Snail	45	1	0	5	5	30	5	50	50	50		earth:30		1
+2650	Blood Blamish Snail	30	1	0	5	5	30	5	50	50	50		earth:30		0
+13011	Blood Moon	60	100	0	100	0	100	500	500	500	500		air:15		1
+11293	Blood Reaver	100	190	0	20	80	120	300	55	55	55	demon			1
+11294	Blood Reaver	100	190	0	20	80	120	300	55	55	55	demon			0
+13021	Blood jaguar	28	1	0	0	0	0	0	0	0	0		earth:15		1
+8367	Blood spawn	0	0	0	0	0	0	0	0	0	0		earth:50		1
+15770	Blood-starved venator	120	100	0	-5	60	130	110	-5	-5	-5	vampyre3			1
+484	Bloodveld	30	1	0	0	0	0	0	0	0	0	demon			1
+3138	Bloodveld	30	1	0	0	0	0	0	0	0	0	demon			0
+1678	Bloodworm	35	1	0	0	0	0	0	0	0	0				1
+15682	Bloody Jack	65	60	13	35	11	40	70	21	33	40				1
+13013	Blue Moon	60	100	0	100	100	0	500	500	500	500		air:15		1
+15166	Blue dagannoth	81	1	0	150	150	150	50	50	50	50		earth:35		1
+265	Blue dragon	95	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+266	Blue dragon	95	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+267	Blue dragon	95	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+268	Blue dragon	95	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+269	Blue dragon	95	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+5878	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	water:50		0
+5879	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	water:50		0
+5880	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	water:50		0
+5881	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	water:50		0
+5882	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	water:50		0
+14103	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	fire:50		0
+14104	Blue dragon	95	1	0	0	70	70	60	50	50	15	dragon,fiery	fire:50		0
+11066	Boar	3	1	0	0	0	0	0	0	0	0		fire:20		1
+11067	Boar	4	1	0	0	0	0	0	0	0	0		fire:20		0
+15678	Boatswain Bill Teak	65	60	13	35	11	40	70	21	33	40				1
+10691	Body Golem	45	1	0	5	5	0	2	10	10	10	golem	earth:35		1
+10692	Body Golem	45	1	0	5	5	0	2	10	10	10		earth:35		0
+2613	Boris	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+16640	Bork	300	90	0	140	130	10	300	80	50	5		earth:40		1
+3939	Borrokar	40	1	0	0	0	0	0	0	0	0				1
+1224	Bouncer	120	1	0	0	0	0	0	0	0	0	demon			1
+6293	Bouncer (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0	demon			1
+6355	Bouncer (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0	demon			0
+3508	Bouncer (ghost)	145	1	0	0	0	0	0	0	0	0		air:15		1
+12596	Branda the Fire Queen	100	100	100	12	12	0	700	700	700	700	fiery	water:50		1
+7310	Brassican Mage	80	170	0	0	0	0	0	0	0	0				1
+1734	Brawler	43	0	0	0	0	0	0	0	0	0				1
+1735	Brawler	67	0	0	0	0	0	0	0	0	0				0
+1736	Brawler	93	0	0	0	0	0	0	0	0	0				0
+1737	Brawler	118	0	0	0	0	0	0	0	0	0				0
+1738	Brawler	143	0	0	0	0	0	0	0	0	0				0
+2208	Bree	130	80	0	12	14	14	18	5	5	5				1
+4107	Breoca	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+4501	Brine rat	40	1	0	0	0	0	0	0	0	0	rat			1
+3685	Broddi	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+270	Bronze dragon	112	100	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		1
+7253	Bronze dragon	112	130	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		0
+6408	Broodoo victim	26	60	25	20	20	20	0	0	0	0				1
+6410	Broodoo victim	26	60	25	20	20	20	0	0	0	0				0
+6412	Broodoo victim	26	60	25	20	20	20	0	0	0	0				0
+2647	Bruise Blamish Snail	40	1	0	5	5	30	5	50	50	50		earth:25		1
+2652	Bruise Blamish Snail	27	1	0	5	5	30	5	50	50	50		earth:25		0
+7275	Brutal black dragon	258	250	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+7273	Brutal blue dragon	198	198	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+13795	Brutal blue dragon	198	198	0	0	70	70	60	50	50	10	dragon,fiery	fire:50		0
+2918	Brutal green dragon	168	168	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+7274	Brutal red dragon	198	250	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+15625	Brutus	10	8	0	-7	-7	-7	-3	-7	-7	-7		earth:25		0
+15626	Brutus	10	8	0	-7	-7	-7	-3	-7	-7	-7		earth:25		1
+15627	Brutus	10	0	0	-7	-7	-7	-3	-7	-7	-7		earth:25		0
+8195	Bryophyta	100	90	0	0	0	0	0	0	0	0		fire:50		1
+13004	Buffalo	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+15194	Bull shark	20	1	0	0	0	0	0	100	20	40				1
+3902	Bunny	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+3903	Bunny	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6102	Bush snake	50	1	0	0	0	0	0	0	0	0				1
+15216	Butterfly ray	15	1	0	0	0	0	0	50	50	20				1
+6609	Callisto	225	140	0	150	130	125	0	50	50	50		fire:30		1
+11993	Calvar'ion	225	178	0	130	128	-10	198	211	211	211	undead			1
+11994	Calvar'ion	225	178	0	130	128	-10	198	211	211	211	undead			0
+1379	Camp dweller	25	1	0	0	0	0	0	0	0	0				1
+1380	Camp dweller	25	1	0	0	0	0	0	0	0	0				0
+1381	Camp dweller	25	1	0	0	0	0	0	0	0	0				0
+1382	Camp dweller	25	1	0	0	0	0	0	0	0	0				0
+1383	Camp dweller	20	1	0	0	0	0	0	0	0	0				0
+15451	Captain Cotus	65	60	13	35	11	40	70	0	0	0				1
+15457	Captain Darvald	200	1	0	120	140	137	0	0	0	0				1
+15684	Captain Jack	75	65	13	35	11	40	70	21	33	40				1
+15683	Captain Ruban Acer	75	65	13	35	11	40	70	21	33	40				1
+2911	Carnivorous chinchompa	2	2	0	0	0	0	0	0	0	0				1
+2474	Catablepon	40	60	0	40	30	20	20	40	40	40				1
+2475	Catablepon	50	45	0	50	40	30	30	50	50	50				0
+2476	Catablepon	60	60	0	50	40	30	30	50	50	50				0
+7401	Cave abomination	142	230	0	0	0	0	0	0	0	0				1
+481	Cave bug	6	1	0	10	10	5	5	10	10	10		fire:50		1
+483	Cave bug	84	1	0	72	59	35	25	95	95	95		fire:50		0
+406	Cave crawler	18	1	0	10	10	5	5	10	10	10				1
+407	Cave crawler	18	1	0	10	10	5	5	10	10	10				0
+408	Cave crawler	18	1	0	10	10	5	5	10	10	10				0
+409	Cave crawler	18	1	0	10	10	5	5	10	10	10				0
+13800	Cave crawler	18	1	0	10	10	5	5	10	10	10		fire:50		0
+13801	Cave crawler	18	1	0	10	10	5	5	10	10	10		fire:50		0
+6434	Cave goblin (monster)	1	1	0	0	0	0	0	0	0	0		fire:40		1
+6435	Cave goblin (monster)	1	1	0	0	0	0	0	0	0	0		fire:40		0
+6436	Cave goblin (monster)	1	1	0	0	0	0	0	0	0	0		fire:40		0
+6437	Cave goblin (monster)	1	1	0	0	0	0	0	0	0	0		fire:40		0
+5334	Cave goblin guard	25	1	0	1	16	19	-3	12	12	12				1
+5335	Cave goblin guard	22	1	-4	0	15	19	-3	12	12	12		fire:40		0
+5330	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		1
+5331	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+5332	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+5333	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+5336	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+5337	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+5338	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+5339	Cave goblin miner	7	1	0	0	0	0	0	0	0	0		fire:40		0
+1047	Cave horror	62	80	0	0	0	0	0	0	0	0		fire:30		1
+1048	Cave horror	62	80	0	0	0	0	0	0	0	0		fire:30		0
+1049	Cave horror	62	80	0	0	0	0	0	0	0	0		fire:30		0
+1050	Cave horror	62	80	0	0	0	0	0	0	0	0		fire:30		0
+1051	Cave horror	62	80	0	0	0	0	0	0	0	0		fire:30		0
+492	Cave kraken	150	120	0	0	0	0	-63	100	100	100		earth:50		1
+493	Cave kraken	150	120	0	0	0	0	-63	100	100	100				0
+7424	Cave lizard	35	1	0	5	15	15	0	5	5	5				1
+480	Cave slime	35	13	0	0	0	0	0	0	0	0		earth:50		1
+4111	Ceolburg	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+5862	Cerberus	100	220	50	50	100	25	65	100	100	100	demon	water:40		1
+11482	Champion of Scabaras	160	160	28	120	160	160	340	5	5	5	kalphite	fire:35		1
+2054	Chaos Elemental	270	270	0	70	70	70	70	70	70	70		air:50		1
+6619	Chaos Fanatic	220	200	0	260	260	250	280	80	50	80				1
+10689	Chaos Golem	59	1	0	5	5	0	2	10	10	10	golem	earth:35		1
+10690	Chaos Golem	59	1	0	5	5	0	2	10	10	10		earth:35		0
+520	Chaos druid	12	10	0	0	0	0	0	0	0	0				1
+532	Chaos druid warrior	25	1	0	13	17	14	-4	14	14	14				1
+291	Chaos dwarf	28	1	0	40	34	25	10	35	35	35				1
+6716	Chaotic death spawn	70	380	0	0	0	0	0	0	0	0				1
+6723	Chaotic death spawn	70	380	0	0	0	0	0	0	0	0				0
+7649	Chaotic death spawn	70	380	0	0	0	0	0	0	0	0				0
+7389	Chasm Crawler	55	1	0	41	43	23	24	40	20	40				1
+14031	Chasm Crawler	55	1	0	41	43	23	24	40	20	40		fire:50		0
+1173	Chicken	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+2804	Chicken	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+3661	Chicken	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+10495	Chicken	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+3316	Chicken (Tutorial Island)	1	1	0	0	0	0	0	0	0	0				1
+13799	Chilled jelly	70	95	0	0	0	0	0	0	0	0		fire:50		1
+14362	Chimalli	70	60	0	70	80	80	120	120	120	120				1
+2910	Chinchompa (Hunter)	1	1	0	0	0	0	0	0	0	0				1
+7404	Choke devil	120	1	0	0	0	0	0	0	0	0		air:25		1
+1475	Chompy bird	3	0	0	0	0	0	0	0	0	0				1
+4987	Chronozon	173	1	0	0	0	0	0	0	0	0	demon	water:25		1
+6292	Chronozon (Nightmare Zone)	173	1	0	0	0	0	0	0	0	0	demon	water:25		1
+6354	Chronozon (Nightmare Zone)	173	1	0	0	0	0	0	0	0	0	demon	water:25		0
+15169	Chuck up	90	0	0	0	0	0	200	200	120	200		earth:20		1
+4373	City guard	70	1	0	13	24	19	0	0	0	0				1
+1206	Clivet	4	1	0	5	6	8	0	0	0	0				1
+7393	Cockathrice	78	1	0	20	20	0	20	0	0	0				1
+419	Cockatrice	37	1	0	10	10	0	10	0	0	0				1
+420	Cockatrice (unused)	37	1	0	10	10	0	10	0	0	0				1
+4406	Colonel Radick	25	1	0	39	31	34	0	0	0	0				1
+10402	Colossal Hydra	100	250	0	100	200	200	200	20	20	20	dragon			1
+2205	Commander Zilyana	300	300	200	100	100	100	100	100	100	75				1
+2920	Confused barbarian	110	1	0	0	3	2	-3	2	2	2				1
+1067	Confusion beast	40	1	0	0	0	0	0	0	0	0				1
+1068	Confusion beast	40	1	0	0	0	0	0	0	0	0				0
+4694	Confusion beast	52	1	0	0	0	0	0	0	0	0				0
+319	Corporeal Beast	310	350	0	25	200	100	150	230	230	100		earth:10		1
+16687	Corpse (Xarth)	100	100	0	100	100	100	0	-20	80	80		water:40		1
+16688	Corpse (Xarth)	100	100	0	-20	-20	-20	0	-20	80	80		fire:100		0
+8000	Corrupt Lizardman	38	1	0	-10	25	0	0	0	0	0				1
+7996	Corrupt Lizardman (Nightmare Zone)	38	1	0	-10	25	0	0	0	0	0				1
+7997	Corrupt Lizardman (Nightmare Zone)	38	1	0	-10	25	0	0	0	0	0				0
+9042	Corrupted Bat	4	2	0	0	0	0	0	0	0	0				1
+9046	Corrupted Bear	98	98	0	0	0	0	0	0	0	0				1
+9048	Corrupted Dark Beast	98	98	0	0	0	0	0	0	0	0				1
+9047	Corrupted Dragon	98	98	146	0	0	0	0	0	0	0				1
+9035	Corrupted Hunllef	240	240	90	20	20	20	20	20	20	20				1
+9040	Corrupted Rat	4	6	0	0	0	0	0	0	0	0				1
+9044	Corrupted Scorpion	18	18	0	0	0	0	0	0	0	0				1
+9041	Corrupted Spider	4	4	0	0	0	0	0	0	0	0				1
+9043	Corrupted Unicorn	18	24	0	0	0	0	0	0	0	0				1
+9045	Corrupted Wolf	18	22	0	0	0	0	0	0	0	0				1
+7948	Corsair Traitor	80	90	0	0	0	0	0	0	0	0				1
+7949	Corsair Traitor	30	30	0	0	0	0	0	0	0	0				0
+3481	Count Draynor	30	1	0	2	1	3	0	0	0	0	vampyre1			1
+6332	Count Draynor (Nightmare Zone)	30	1	0	2	1	3	0	0	0	0	vampyre1			1
+6393	Count Draynor (Nightmare Zone)	30	1	0	2	1	3	0	0	0	0	vampyre1			0
+2790	Cow	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+2791	Cow	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+2793	Cow	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+2795	Cow	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+5842	Cow	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+6340	Cow (Nightmare Zone)	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+6401	Cow (Nightmare Zone)	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+2792	Cow calf	1	1	0	-26	-26	-26	-26	-26	-26	-26				1
+2794	Cow calf	1	1	0	-26	-26	-26	-26	-26	-26	-26				0
+2801	Cow calf	1	1	0	-26	-26	-26	-26	-26	-26	-26				0
+4819	Crab	26	1	0	0	0	0	0	0	0	0		earth:20		1
+4822	Crab	22	1	0	0	0	0	0	0	0	0		earth:20		0
+448	Crawling Hand	4	1	0	0	0	0	0	0	0	0	undead			1
+449	Crawling Hand	4	1	0	0	0	0	0	0	0	0	undead			0
+450	Crawling Hand	3	1	0	0	0	0	0	0	0	0	undead			0
+451	Crawling Hand	4	1	0	0	0	0	0	0	0	0	undead			0
+452	Crawling Hand	4	1	0	0	0	0	0	0	0	0	undead			0
+453	Crawling Hand	7	1	0	0	0	0	0	0	0	0	undead			0
+454	Crawling Hand	7	1	0	0	0	0	0	0	0	0	undead			0
+455	Crawling Hand	6	1	0	0	0	0	0	0	0	0	undead			0
+456	Crawling Hand	9	1	0	0	0	0	0	0	0	0	undead			0
+457	Crawling Hand	10	1	0	0	0	0	0	0	0	0	undead			0
+6618	Crazy archaeologist	240	1	0	5	5	30	250	250	250	250				1
+12369	Crimson sanguisphera	1	1	0	0	0	0	0	0	0	0				1
+4184	Crocodile	54	1	0	20	12	22	10	20	20	20		earth:40		1
+11581	Crocodile	54	1	0	20	12	22	10	20	20	20		earth:40		0
+11582	Crocodile	54	1	0	20	12	22	10	20	20	20		earth:40		0
+11705	Crocodile (Tombs of Amascut)	100	30	0	150	350	350	5	150	150	150		earth:40		1
+11285	Cruor	200	200	0	100	25	100	150	50	50	50				1
+7388	Crushing hand	14	1	0	0	0	0	0	0	0	0	undead			1
+1679	Crypt rat	20	1	0	0	0	0	0	0	0	0	rat			1
+1683	Crypt spider	45	1	0	20	20	10	17	20	20	20		fire:50		1
+8741	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				1
+8742	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8743	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8744	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8745	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8746	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8747	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8748	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8749	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8750	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8751	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8752	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8753	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8754	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8755	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8756	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+8757	Crystal impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+9028	Crystalline Bat	4	2	0	0	0	0	0	0	0	0				1
+9032	Crystalline Bear	98	98	0	0	0	0	0	0	0	0				1
+9034	Crystalline Dark Beast	98	98	0	0	0	0	0	0	0	0				1
+9033	Crystalline Dragon	98	98	54	0	0	0	0	0	0	0				1
+9021	Crystalline Hunllef	240	240	76	20	20	20	20	20	20	20				1
+9026	Crystalline Rat	4	6	0	0	0	0	0	0	0	0				1
+9030	Crystalline Scorpion	18	18	0	0	0	0	0	0	0	0				1
+9027	Crystalline Spider	4	4	0	0	0	0	0	0	0	0				1
+9029	Crystalline Unicorn	18	24	0	0	0	0	0	0	0	0				1
+9031	Crystalline Wolf	18	22	0	0	0	0	0	0	0	0				1
+3279	Cuffs	3	1	0	5	5	5	5	5	5	5				1
+3400	Culinaromancer	10	1	0	-10	-10	-10	-10	-10	-10	-10				1
+6307	Culinaromancer (Nightmare Zone)	10	1	0	-10	-10	-10	-10	-10	-10	-10				1
+6368	Culinaromancer (Nightmare Zone)	10	1	0	-10	-10	-10	-10	-10	-10	-10				0
+12918	Cultist	30	1	0	20	20	30	10	20	20	20				1
+12919	Cultist	30	1	0	20	20	30	10	20	20	20				0
+12920	Cultist	30	1	0	20	20	30	10	20	20	20				0
+12921	Cultist	30	1	0	20	20	30	10	20	20	20				0
+12922	Cultist	30	1	0	20	20	30	10	20	20	20				0
+12923	Cultist	30	1	0	20	20	30	10	20	20	20				0
+11717	Cursed Baboon	20	60	25	900	900	900	-60	-50	-50	-50				1
+12957	Cuthbert	1	1	0	0	0	0	0	0	0	0				1
+2137	Cyclops	55	1	0	0	0	0	0	0	0	0				1
+2463	Cyclops	26	1	0	0	0	0	0	0	0	0				0
+2464	Cyclops	35	1	0	0	0	0	0	0	0	0				0
+2097	Cyclops (Ardougne Zoo)	46	1	0	0	0	0	0	0	0	0				1
+7270	Cyclops (Catacombs of Kourend)	35	1	0	0	0	0	0	0	0	0				1
+7271	Cyclops (Catacombs of Kourend)	26	1	0	0	0	0	0	0	0	0				0
+2235	Cyclops (God Wars Dungeon)	48	1	0	0	0	0	0	0	0	0				1
+2236	Cyclops (God Wars Dungeon)	48	1	0	0	0	0	0	0	0	0				0
+4130	Dad	50	0	0	25	25	40	200	200	200	200		earth:40		1
+6330	Dad (Nightmare Zone)	50	0	0	25	25	40	200	200	200	200		earth:40		1
+6391	Dad (Nightmare Zone)	50	0	0	25	25	40	200	200	200	200		earth:40		0
+15167	Daddy's special water	99	0	0	25	25	40	200	200	200	200		earth:40		1
+970	Dagannoth	50	1	0	0	0	0	0	0	0	0		earth:35		1
+973	Dagannoth	71	1	0	0	0	0	50	50	50	50		earth:35		0
+7259	Dagannoth	50	1	0	0	0	0	0	0	0	0		earth:35		0
+7260	Dagannoth	71	1	0	0	0	0	50	50	50	50		earth:35		0
+140	Dagannoth (Construction)	98	1	0	50	50	50	50	50	50	50		earth:35		1
+976	Dagannoth (Horror from the Deep)	81	1	0	0	0	0	0	0	0	0		earth:35		1
+2259	Dagannoth (Waterbirth Island)	75	1	0	10	10	90	200	150	150	150		earth:35		1
+3185	Dagannoth (Waterbirth Island)	65	1	0	50	50	50	50	50	50	50		earth:35		0
+2266	Dagannoth Prime	255	255	0	255	255	255	255	10	10	10		earth:35		1
+2267	Dagannoth Rex	255	0	0	255	255	255	10	255	255	255		earth:35		1
+2265	Dagannoth Supreme	128	255	0	10	10	10	255	550	550	550		earth:35		1
+2264	Dagannoth fledgeling	50	1	0	0	0	0	0	0	0	0		earth:35		1
+980	Dagannoth mother	81	1	0	150	150	150	50	50	50	50		earth:35		1
+6300	Dagannoth mother (Nightmare Zone)	81	1	0	150	150	150	50	50	50	50		earth:35		1
+6361	Dagannoth mother (Nightmare Zone)	81	1	0	150	150	150	50	50	50	50		earth:35		0
+3184	Dagannoth spawn	25	1	0	0	0	0	0	0	0	0		earth:35		1
+16643	Dagon'hai Elder	100	290	250	50	50	50	100	80	80	80				1
+16645	Dagon'hai Monk	100	290	250	50	50	50	100	80	80	80				1
+16647	Dagon'hai Monk	100	290	250	50	50	50	100	80	80	80				0
+9561	Damien Leucurte	160	160	18	30	30	30	30	30	30	30	vampyre3			1
+682	Damis	90	1	0	60	60	60	60	60	60	60				1
+683	Damis	160	1	0	100	100	100	80	120	120	120				0
+1134	Damis (Nightmare Zone)	90	1	0	60	60	60	60	60	60	60				1
+1135	Damis (Nightmare Zone)	160	1	0	100	100	100	80	120	120	120				0
+6346	Damis (Nightmare Zone)	90	1	0	60	60	60	60	60	60	60				0
+6347	Damis (Nightmare Zone)	160	1	0	100	100	100	80	120	120	120				0
+7296	Dark Ankou	100	1	0	0	0	0	0	0	0	0	undead,spectral			1
+4005	Dark beast	120	160	0	30	40	100	90	100	100	100		earth:60		1
+320	Dark energy core	20	1	0	10	10	10	-5	10	10	10				1
+531	Dark warrior	5	1	0	96	79	59	0	0	0	0				1
+6606	Dark warrior	55	1	0	106	109	139	0	0	0	0				0
+11109	Dark warrior	40	20	0	10	20	40	0	0	0	0				0
+11110	Dark warrior	30	15	0	10	20	40	0	0	0	0				0
+11111	Dark warrior	20	10	0	10	20	40	0	0	0	0				0
+510	Dark wizard	14	22	0	0	0	0	3	0	0	0				1
+512	Dark wizard	5	6	0	0	0	0	3	0	0	0				0
+2056	Dark wizard	20	25	0	0	0	0	5	0	0	0				0
+2057	Dark wizard	15	25	0	0	0	0	5	0	0	0				0
+2058	Dark wizard	10	10	0	0	0	0	5	0	0	0				0
+7852	Dawn	100	100	0	0	0	0	80	0	0	0	flying,golem	earth:70		1
+3021	Deadly red spider	30	1	0	15	16	7	12	16	16	16		fire:40		1
+10	Death spawn	30	1	0	20	20	20	0	20	20	20				1
+509	Death wing	70	1	0	0	0	0	0	0	0	0	spectral	air:20		1
+7560	Deathly mage	155	210	120	0	0	0	0	0	0	0	xerician			1
+7559	Deathly ranger	155	155	0	0	0	0	0	0	0	0	xerician			1
+1724	Defiler	17	0	0	0	0	0	0	0	0	0				1
+1726	Defiler	29	0	0	0	0	0	0	0	0	0				0
+1728	Defiler	41	0	0	0	0	0	0	0	0	0				0
+1729	Defiler	41	0	0	0	0	0	0	0	0	0				0
+1730	Defiler	53	0	0	0	0	0	0	0	0	0				0
+1732	Defiler	65	0	0	0	0	0	0	0	0	0				0
+5079	Delrith	27	1	0	0	0	0	0	0	0	0				1
+142	Demon (Construction)	71	1	0	0	0	0	-10	0	0	0				1
+15628	Demonic Brutus	200	272	0	182	65	216	520	460	418	110		earth:25		1
+15629	Demonic Brutus	200	272	0	182	65	216	520	460	418	110		earth:25		0
+7144	Demonic gorilla	200	195	40	0	0	0	20	0	0	0	demon	water:35		1
+7147	Demonic gorilla	200	195	40	0	0	0	20	0	0	0	demon	water:35		0
+7806	Deranged archaeologist	280	1	0	20	20	50	300	300	300	300				1
+7513	Derwen	100	80	180	200	200	200	-60	200	200	200				1
+459	Desert Lizard	20	1	0	5	15	15	0	5	5	5				1
+460	Desert Lizard	20	1	0	5	15	15	0	5	5	5				0
+461	Desert Lizard	20	1	0	5	15	15	0	5	5	5				0
+4649	Desert Wolf	22	0	0	0	0	0	0	0	0	0				1
+4650	Desert Wolf	22	0	0	0	0	0	0	0	0	0				0
+4651	Desert Wolf	22	0	0	0	0	0	0	0	0	0				0
+4883	Dessourt	99	1	0	10	150	150	0	0	0	0				1
+6311	Dessourt (Nightmare Zone)	99	1	0	10	150	150	0	0	0	0				1
+6372	Dessourt (Nightmare Zone)	99	1	0	10	150	150	0	0	0	0				0
+3459	Dessous	99	1	0	10	150	150	0	0	0	0	vampyre1			1
+1128	Dessous (Nightmare Zone)	99	1	0	10	150	150	0	0	0	0	vampyre1			1
+6344	Dessous (Nightmare Zone)	99	1	0	10	150	150	0	0	0	0	vampyre1			0
+7279	Deviant spectre	90	205	0	80	80	80	0	85	85	20	undead,spectral	air:30		1
+1673	Dharok the Wretched	100	1	-58	252	250	244	-11	249	249	249	spectral	air:50		1
+15171	Dinky the drink troll	40	0	0	0	0	0	0	0	0	0				1
+3426	Dire Wolf	75	1	0	0	0	0	0	0	0	0				1
+9181	Dire Wolf	62	1	0	0	0	0	0	0	0	0				0
+13813	Dire Wolf	70	1	0	0	0	0	0	0	0	0				0
+13812	Dire Wolf Alpha	80	40	0	0	0	0	0	0	0	0				1
+15757	Dire bat	160	160	0	15	15	10	20	10	10	10		air:40		1
+14859	Dire gryphon	100	60	0	10	20	40	150	60	60	60		air:50		1
+8997	Disciple of Iban	12	1	0	0	0	0	0	0	0	0				1
+15234	Dolphin	0	1	0	0	0	0	0	15	15	0				1
+8439	Don't Know What	160	60	0	0	0	0	200	0	0	0		fire:40		1
+302	Donny the lad	27	1	0	9	8	10	0	0	0	0				1
+14707	Doom of Mokhaiotl	90	275	125	300	300	60	160	160	160	160	demon			1
+8995	Doomion	77	1	0	0	0	0	-10	0	0	0	demon			1
+1777	Double agent	24	24	0	3	3	3	0	0	0	0				1
+1778	Double agent	80	80	0	20	20	20	0	0	0	0				0
+7312	Double agent	100	95	0	20	20	20	0	0	0	0				0
+1644	Dragon impling	0	1	0	-10	-10	-10	50	-10	-10	-10				1
+8612	Drake	120	112	0	5	60	60	20	100	100	0	dragon	water:50		1
+13680	Dreadborn Araxyte	100	100	0	60	30	0	10	100	100	100		fire:50		1
+16665	Dreadnoth the Jellied	125	220	0	15	20	5	20	100	80	80	demon	fire:85		1
+15164	Drink troll	9	1	0	0	0	0	0	0	0	0				1
+15175	Drink troll queen	155	205	0	0	0	0	-63	100	50	100		earth:50		1
+3258	Druid	32	25	0	0	0	0	0	0	0	0				1
+3263	Drunken man	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+1838	Duck	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+1839	Duck	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+2001	Duckling	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+5258	Duke (monkey)	130	130	0	0	0	0	0	0	0	0				1
+12191	Duke Sucellus	316	465	150	255	65	190	440	320	320	320	demon			1
+12195	Duke Sucellus	215	230	150	210	30	160	400	300	300	300	demon			0
+2865	Dungeon rat	10	1	0	0	0	0	0	0	0	0	rat			1
+2866	Dungeon rat	10	1	0	0	0	0	0	0	0	0	rat			0
+3607	Dungeon rat	10	1	0	0	0	0	0	0	0	0	rat			0
+7851	Dusk	100	140	0	0	0	0	0	0	0	0	golem	earth:40		1
+7887	Dusk	150	250	0	0	0	0	0	0	0	0	golem	earth:40		0
+423	Dust devil	40	1	0	0	0	0	0	0	0	0		air:35		1
+7249	Dust devil	40	1	0	0	0	0	0	0	0	0		air:35		0
+11238	Dust devil	40	1	0	0	0	0	0	0	0	0		air:35		0
+290	Dwarf	6	1	0	0	0	0	5	0	0	0				1
+292	Dwarf	16	1	0	0	0	0	5	0	0	0				0
+294	Dwarf	8	1	0	0	0	0	5	10	10	10				0
+295	Dwarf	8	1	0	0	0	0	10	0	0	0				0
+296	Dwarf	10	1	0	0	0	0	5	0	0	0				0
+1401	Dwarf	8	1	0	0	0	0	5	10	10	10				0
+1402	Dwarf	8	1	0	0	0	0	5	10	10	10				0
+1403	Dwarf	8	1	0	0	10	10	10	20	20	20				0
+1404	Dwarf	8	1	0	0	0	0	5	10	10	10				0
+1405	Dwarf	8	1	0	0	0	0	5	10	10	10				0
+1406	Dwarf	10	1	0	0	0	0	5	10	10	10				0
+1407	Dwarf	8	1	0	0	0	0	5	10	10	10				0
+1408	Dwarf	6	1	0	0	0	0	5	10	10	10				0
+8496	Dwarf	10	1	0	0	0	0	5	10	10	10				0
+1354	Dwarf gang member	35	1	0	7	7	0	0	7	7	7				1
+1355	Dwarf gang member	25	1	0	7	7	0	0	7	7	7				0
+1356	Dwarf gang member	57	1	0	7	7	0	0	7	7	7				0
+4095	Eadburg	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+15214	Eagle ray	0	1	0	0	0	0	0	50	50	20				1
+3328	Earth Warrior Champion	84	1	0	0	0	0	0	0	0	0				1
+1366	Earth elemental	35	10	0	0	0	0	0	0	0	0		earth:50		1
+1367	Earth elemental	35	10	0	0	0	0	0	0	0	0		earth:50		0
+1638	Earth impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
+2840	Earth warrior	42	1	0	30	40	20	10	30	30	30				1
+1558	Earth wizard	10	10	0	0	0	0	15	0	0	0				1
+14420	Earthen Nagua	40	40	0	30	50	50	60	150	150	150	spectral	air:15		1
+14421	Earthen Nagua	40	40	0	50	70	10	60	150	150	150	spectral	air:15		0
+1640	Eclectic impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
+13012	Eclipse Moon	60	100	0	0	100	100	500	500	500	500		air:15		1
+2618	Eduard	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+11728	Egg (Tombs of Amascut)	0	1	0	-100	-100	-100	-100	-100	-100	-100				1
+11729	Egg (Tombs of Amascut)	0	1	0	-100	-100	-100	-100	-100	-100	-100				0
+3675	Einar	1	1	0	0	0	0	0	0	0	0				1
+6607	Elder Chaos druid	65	110	0	0	0	0	0	0	0	0				1
+15502	Elder aquanite	180	330	0	60	80	80	140	100	100	100				1
+15503	Elder aquanite	180	330	0	10	80	80	140	100	100	100				0
+14704	Elder custodian stalker	45	75	25	30	-10	50	35	30	5	-10		fire:30		1
+14147	Eldric the Ice King	100	100	100	12	12	0	700	700	700	700		fire:50		1
+5295	Elf Archer	80	1	0	50	50	50	60	70	70	70				1
+5296	Elf Archer	80	1	0	50	50	50	60	70	70	70				0
+5293	Elf Warrior	80	1	0	50	70	70	60	50	50	50				1
+5294	Elf Warrior	80	1	0	50	70	70	60	50	50	50				0
+11753	Elidinis' Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		1
+11755	Elidinis' Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		0
+11761	Elidinis' Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
+11763	Elidinis' Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
+13463	Elite Black Knight	90	70	0	110	130	40	-5	140	135	60				1
+13464	Elite Black Knight	90	70	0	110	130	40	-5	140	135	60				0
+13469	Elite Dark Mage	80	80	80	5	10	15	50	5	0	10				1
+13470	Elite Dark Mage	80	80	80	5	10	15	50	5	0	10				0
+13467	Elite Dark Ranger	80	40	0	5	0	20	60	10	5	15				1
+13468	Elite Dark Ranger	80	40	0	5	0	20	60	10	5	15				0
+13465	Elite Dark Warrior	80	40	0	15	20	10	-10	40	30	15				1
+13466	Elite Dark Warrior	80	40	0	15	20	10	-10	40	30	15				0
+13531	Elite Khazard Guard	80	30	0	44	38	30	0	0	0	0				1
+13532	Elite Khazard Guard	80	30	0	44	38	30	0	0	0	0				0
+13533	Elite Khazard Guard	80	30	0	44	38	30	0	0	0	0				0
+13534	Elite Khazard Guard	80	30	0	44	38	30	0	0	0	0				0
+817	Elvarg	70	70	0	20	40	40	30	20	20	20		water:30		1
+6118	Elvarg (Nightmare Zone)	70	210	0	20	40	40	30	20	20	20		water:30		1
+6349	Elvarg (Nightmare Zone)	70	70	0	20	40	40	30	20	20	20		water:30		0
+13139	Embertailed jerboa	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+13732	Emissary Acolyte	30	1	0	20	20	30	10	20	20	20				1
+14407	Emissary Archer	70	15	0	10	10	5	20	15	15	15				1
+13744	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				1
+13745	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13746	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13747	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13748	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13749	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13750	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13751	Emissary Ascended	90	40	0	30	30	50	20	30	30	30				0
+13773	Emissary Brawler	70	15	0	30	30	20	5	30	30	30				1
+13775	Emissary Brawler	70	15	0	30	30	20	5	30	30	30				0
+13738	Emissary Chosen	60	20	0	25	25	40	15	25	25	25				1
+13739	Emissary Chosen	60	20	0	25	25	40	15	25	25	25				0
+13740	Emissary Chosen	60	20	0	25	25	40	15	25	25	25				0
+13741	Emissary Chosen	60	20	0	25	25	40	15	25	25	25				0
+13742	Emissary Chosen	60	20	0	25	25	40	15	25	25	25				0
+13743	Emissary Chosen	60	20	0	25	25	40	15	25	25	25				0
+13777	Emissary Conjurer	70	70	0	15	15	10	15	5	5	5				1
+13778	Emissary Conjurer	70	70	0	15	15	10	15	5	5	5				0
+14268	Emissary Enforcer	100	80	0	70	80	50	180	100	100	100				1
+4381	Enclave guard	70	1	0	13	24	19	0	0	0	0				1
+6624	Energy sprite	1	1	0	0	0	0	0	0	0	0				1
+14331	Ennius Tullus	75	75	0	70	60	50	100	80	80	80				1
+5534	Enormous Tentacle	1	1	0	0	0	0	-15	270	270	270				1
+5535	Enormous Tentacle	1	1	0	0	0	0	-15	270	270	270		earth:50		0
+11227	Enraged Boar	5	1	0	0	0	0	0	0	0	0				1
+5564	Enraged barbarian spirit	100	1	0	0	3	2	-3	2	2	2	spectral	air:15		1
+6594	Ent	75	1	0	50	70	70	40	30	30	30		fire:40		1
+7234	Ent	75	1	0	50	70	70	40	30	30	30		fire:40		0
+4927	Entrana firebird	1	1	0	-26	-26	-26	-26	-26	-26	-26		water:100		1
+1639	Essence impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
+8847	Essyllt	104	104	0	40	40	20	30	120	120	120				1
+9247	Essyllt (Nightmare Zone)	104	104	0	40	40	20	30	120	120	120				1
+9249	Essyllt (Nightmare Zone)	104	104	0	40	40	20	30	120	120	120				0
+12047	Evelot	120	80	0	70	60	40	0	40	40	40				1
+6739	Evil Chicken	126	200	0	0	0	0	0	0	0	0				1
+6306	Evil Chicken (Nightmare Zone)	126	400	0	0	0	0	0	0	0	0				1
+6367	Evil Chicken (Nightmare Zone)	126	200	0	0	0	0	0	0	0	0				0
+1870	Evil Chicken (Recipe for Disaster)	126	200	0	0	0	0	0	0	0	0				1
+1241	Evil Creature	1	1	0	0	0	0	0	0	0	0				1
+1244	Evil Creature	1	1	0	0	0	0	0	0	0	0				0
+625	Evil spirit	100	1	0	0	0	0	0	0	0	0	spectral	air:30		1
+1273	Experiment	50	1	0	0	0	0	0	0	0	0				1
+1274	Experiment	30	1	0	0	0	0	0	0	0	0				0
+1275	Experiment	30	1	0	0	0	0	0	0	0	0				0
+5126	Experiment No.2	90	1	0	45	70	60	60	55	25	55				1
+16652	Ezekiel	200	200	250	150	90	35	200	445	370	320		earth:25		1
+3456	Fareed	135	1	0	100	100	100	0	0	0	0				1
+4115	Fareed (Nightmare Zone)	135	1	0	100	100	100	0	0	0	0		water:30		1
+6348	Fareed (Nightmare Zone)	135	1	0	100	100	100	0	0	0	0		water:30		0
+3114	Farmer	8	1	0	0	0	0	0	0	0	0				1
+3243	Farmer	8	1	0	0	0	0	0	0	0	0				0
+3244	Farmer	8	1	0	0	0	0	0	0	0	0				0
+11918	Farmer	8	1	0	0	0	0	0	0	0	0				0
+11919	Farmer	8	1	0	0	0	0	0	0	0	0				0
+11920	Farmer	8	1	0	0	0	0	0	0	0	0				0
+11921	Farmer	8	1	0	0	0	0	0	0	0	0				0
+1066	Fear reaper	40	1	0	0	0	0	0	0	0	0				1
+4693	Fear reaper	45	1	0	0	0	0	0	0	0	0				0
+3137	Feral Vampyre	81	1	0	0	0	0	0	0	0	0	vampyre1			1
+3234	Feral Vampyre	65	50	0	0	0	0	0	0	0	0	vampyre1			0
+3237	Feral Vampyre	55	40	0	0	0	0	0	0	0	0	vampyre1			0
+3707	Feral Vampyre	30	1	0	0	0	0	0	0	0	0	vampyre1			0
+4431	Feral Vampyre	30	1	0	0	0	0	0	0	0	0	vampyre1			0
+5640	Feral Vampyre	30	0	0	0	0	0	0	0	0	0	vampyre1			0
+5641	Feral Vampyre	30	0	0	0	0	0	0	0	0	0	vampyre1			0
+5642	Feral Vampyre	30	0	0	0	0	0	0	0	0	0	vampyre1			0
+5566	Ferocious barbarian spirit	100	1	0	0	73	72	-3	72	30	72	spectral	air:10		1
+626	Fever spider	40	1	0	20	15	10	15	15	15	15		fire:25		1
+3448	Fire Warrior of Lesarkus	78	62	0	34	37	35	-7	35	35	35				1
+1365	Fire elemental	20	20	0	0	0	0	0	0	0	0	fiery	water:100		1
+14150	Fire elemental (Royal Titans)	20	20	0	0	0	0	0	0	0	0		water:100		1
+2075	Fire giant	65	1	0	0	3	2	0	0	0	0	fiery	water:100		1
+7251	Fire giant	65	1	0	0	3	2	0	0	0	0	fiery	water:100		0
+7252	Fire giant	120	1	0	20	10	10	50	-10	-10	-10	fiery	water:100		0
+1556	Fire wizard	10	10	0	0	0	0	15	0	0	0				1
+1285	Fiyr Shade	85	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+1286	Fiyr Shade	85	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
+4881	Flambeed	75	1	0	50	50	5	5	50	50	50		water:50		1
+6309	Flambeed (Nightmare Zone)	75	1	0	50	50	5	5	50	30	50		water:50		1
+6370	Flambeed (Nightmare Zone)	75	1	0	50	50	5	5	50	30	50		water:50		0
+7394	Flaming pyrelord	52	1	0	18	18	18	0	18	18	18	demon	water:100		1
+10695	Flawed Golem	6	1	0	5	5	0	2	10	10	10	golem	earth:35		1
+10696	Flawed Golem	6	1	0	5	5	0	2	10	10	10		earth:35		0
+2498	Flesh Crawler	10	1	0	15	15	15	15	15	15	15		fire:20		1
+2499	Flesh Crawler	10	1	0	15	15	15	15	15	15	15		fire:20		0
+2500	Flesh Crawler	10	1	0	15	15	15	15	15	15	15		fire:20		0
+3165	Flight Kilisa	175	50	0	0	0	0	0	0	0	0	flying	air:30		1
+3164	Flockleader Geerin	175	50	0	0	0	0	0	0	0	0	flying	air:30		1
+8584	Flower	0	1	0	0	0	0	0	0	0	0				1
+11193	Flower (A Night at the Theatre)	0	1	0	0	0	0	0	0	0	0				1
+1429	Foreman	20	0	0	0	1	1	0	0	0	0				1
+3296	Forester (Woodcutting Guild)	8	1	0	4	3	5	0	0	0	0				1
+7238	Forester (Woodcutting Guild)	8	1	0	4	3	5	0	0	0	0				0
+10544	Forgotten Soul	12	10	0	0	0	0	0	0	0	0	undead,spectral	air:50		1
+10545	Forgotten Soul	12	10	0	0	0	0	0	0	0	0	undead,spectral	air:50		0
+10523	Forgotten Soul (Soul Wars)	20	20	0	10	10	10	10	10	10	10	undead	air:50		1
+10525	Forgotten Soul (Soul Wars)	30	30	0	10	10	10	10	10	10	10	undead	air:50		0
+4772	Fortress Guard	15	1	0	14	18	14	-4	15	15	15				1
+4773	Fortress Guard	15	1	0	14	18	14	-4	15	15	15				0
+4774	Fortress Guard	15	1	0	14	18	14	-4	15	15	15				0
+4775	Fortress Guard	15	1	0	14	18	14	-4	15	15	15				0
+4776	Fortress Guard	15	1	0	14	18	14	-4	15	15	15				0
+3901	Fox	20	1	0	30	30	30	30	30	30	30		fire:25		1
+8917	Fragment of Seren	102	102	0	320	220	320	10	480	480	480			magic-uses-defence	1
+3938	Freidir	40	1	0	0	0	0	0	0	0	0				1
+12814	Fremennik warband archer	80	110	150	0	0	0	75	50	50	50			always-hit-melee	1
+12816	Fremennik warband berserker	80	110	150	50	50	50	0	75	75	75			always-hit-magic	1
+12815	Fremennik warband seer	80	110	150	50	50	50	30	0	0	0			always-hit-ranged	1
+15458	Fremennik warrior	30	1	0	20	21	1	0	0	0	0				1
+5825	Frenzied ice troll female	40	1	0	30	60	30	0	0	0	0		fire:50		1
+5826	Frenzied ice troll grunt	60	1	0	30	60	30	0	0	0	0		fire:50		1
+5824	Frenzied ice troll male	40	1	0	30	60	30	0	0	0	0		fire:50		1
+5823	Frenzied ice troll runt	70	1	0	30	60	30	0	0	0	0		fire:50		1
+15226	Frigatebird	40	1	0	0	0	0	0	30	30	10				1
+8702	Frog	3	1	0	0	0	0	0	0	0	0		earth:40		1
+3600	Frogeel	90	1	0	0	0	0	0	0	0	0		earth:40		1
+13789	Frost Crab	1	1	0	0	0	0	-50	0	0	0		fire:100		1
+13790	Frost Crab	1	1	0	0	0	0	-50	0	0	0		fire:100		0
+13728	Frost Nagua	40	90	70	0	50	10	60	200	200	200	spectral	fire:50		1
+14922	Frost dragon	150	150	0	25	90	15	50	70	50	30	dragon,fiery	fire:100		1
+11283	Fumus	200	200	0	25	100	100	150	50	50	50				1
+4483	Gadderanks	70	1	0	10	10	10	10	10	10	10				1
+2625	Galina	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+8094	Galvek	188	160	160	80	140	140	280	86	86	86	dragon,fiery	water:40		1
+8096	Galvek	188	160	160	80	140	140	280	86	86	86	dragon,fiery	water:40		0
+8097	Galvek	188	160	160	80	140	140	280	86	86	86	dragon,fiery	water:40		0
+8098	Galvek	188	160	160	80	140	140	280	86	86	86	dragon,fiery	water:40		0
+6900	Gang boss	70	1	0	0	0	10	0	0	0	0				1
+6902	Gang boss	70	1	0	0	0	10	0	0	0	0				0
+6896	Gangster	50	1	0	0	0	10	0	0	0	0				1
+6897	Gangster	50	1	0	0	0	10	0	0	0	0				0
+6898	Gangster	40	1	0	0	0	10	0	0	0	0				0
+6899	Gangster	30	1	0	0	0	10	0	0	0	0				0
+3275	Gardener	7	1	0	0	0	0	0	0	0	0				1
+3276	Gardener	5	1	0	0	0	0	0	0	0	0				0
+412	Gargoyle	107	1	0	50	60	-20	20	20	20	-20	golem	earth:40		1
+1543	Gargoyle	107	1	0	50	60	-20	20	20	20	-20	golem	earth:40		0
+4884	Gelatinnoth Mother	81	1	0	150	150	150	50	50	50	50				1
+6312	Gelatinnoth Mother (Nightmare Zone)	81	1	0	150	150	150	50	50	50	50				1
+6373	Gelatinnoth Mother (Nightmare Zone)	81	1	0	150	150	150	50	50	50	50				0
+14779	Gemstone Crab	1	1	0	0	0	0	0	0	0	0				1
+2215	General Graardor	250	80	0	90	90	90	298	90	90	90		earth:40		1
+1213	General Khazard	80	1	0	0	0	0	0	0	0	0				1
+2620	Georgy	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+946	Ghast	18	1	0	0	0	0	0	0	0	0	spectral	air:25		1
+5625	Ghast	60	30	0	0	0	0	0	0	0	0	spectral	air:25		0
+5626	Ghast	70	30	0	0	0	0	0	0	0	0	spectral	air:25		0
+5627	Ghast	80	30	0	0	0	0	0	0	0	0	spectral	air:25		0
+85	Ghost	18	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		1
+2527	Ghost	68	1	0	55	55	5	55	55	55	55	undead,spectral	air:50		0
+2531	Ghost	68	1	0	45	45	5	-5	45	45	45	undead,spectral	air:50		0
+5370	Ghost (Grave of Scorpius)	23	1	0	0	0	0	0	0	0	0	undead,spectral	air:50		1
+12254	Ghost (Lassar Undercity)	150	1	0	0	0	0	0	0	0	0		air:50		1
+3975	Ghost (Melzar's Maze)	18	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		1
+3976	Ghost (Melzar's Maze)	18	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		0
+3977	Ghost (Melzar's Maze)	18	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		0
+3978	Ghost (Melzar's Maze)	18	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		0
+3979	Ghost (Melzar's Maze)	18	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		0
+289	Ghoul	30	1	0	0	0	0	0	0	0	0				1
+3330	Ghoul Champion	60	1	0	0	0	0	0	0	0	0				1
+3329	Giant Champion	52	1	0	0	0	0	0	0	0	0				1
+5779	Giant Mole	200	200	0	60	80	100	80	60	60	60		earth:50		1
+16354	Giant Mole (LANScape)	200	200	0	60	80	100	80	60	60	60				1
+16355	Giant Mole (LANScape)	200	200	0	60	80	100	80	60	60	60				0
+16356	Giant Mole (LANScape)	200	200	0	60	80	100	80	60	60	60				0
+16357	Giant Mole (LANScape)	200	200	0	60	80	100	80	60	60	60				0
+763	Giant Roc	100	1	0	0	0	0	150	0	0	0		air:35		1
+6323	Giant Roc (Nightmare Zone)	100	1	0	0	0	0	150	0	0	0		air:35		1
+6384	Giant Roc (Nightmare Zone)	100	1	0	0	0	0	150	0	0	0		air:35		0
+2261	Giant Rock Crab	200	1	0	225	200	175	-10	250	250	80		earth:20		1
+5940	Giant Rock Crab	200	1	0	225	200	175	10	250	250	80		earth:20		0
+14424	Giant Rock Crab	200	1	0	225	200	175	-10	250	250	250		earth:20		0
+797	Giant Scarab	169	1	0	70	99	99	159	149	103	149	kalphite	fire:50		1
+1127	Giant Scarab (Nightmare Zone)	169	1	0	70	99	99	159	149	103	149	kalphite	fire:50		1
+6343	Giant Scarab (Nightmare Zone)	169	1	0	70	99	99	159	149	103	149	kalphite	fire:50		0
+1101	Giant Sea Snake	160	1	0	0	0	0	0	0	0	0		earth:20		1
+15436	Giant ant	22	1	0	24	20	12	5	0	0	0				1
+15437	Giant ant	24	1	0	24	20	12	7	0	0	0				0
+2834	Giant bat	22	1	0	10	10	12	10	8	8	8		air:10		1
+6824	Giant bat	22	1	0	10	10	12	10	8	8	8		air:10		0
+4504	Giant bat (Brine Rat Cavern)	22	1	0	10	10	12	10	8	8	8		air:10		1
+1680	Giant crypt rat	65	1	0	0	0	0	0	0	0	0	rat			1
+1684	Giant crypt spider	65	1	0	20	20	10	17	20	20	20		fire:40		1
+477	Giant frog	65	1	0	0	0	0	0	0	0	0		earth:25		1
+8700	Giant frog	6	1	0	0	0	0	0	0	0	0		earth:25		0
+12452	Giant goblin	200	1	0	-15	-15	-15	-15	-15	-15	-15				1
+4799	Giant lobster	40	1	0	30	30	15	99	70	50	70		earth:25		1
+2994	Giant lobster (Ghosts Ahoy)	40	1	0	5	15	5	0	5	5	5				1
+15034	Giant lobster (The Red Reef)	60	20	0	20	50	30	10	60	60	60				1
+1041	Giant mosquito	45	1	0	2	2	5	2	0	0	0		fire:40		1
+2510	Giant rat	22	1	0	0	0	0	0	0	0	0	rat			1
+2856	Giant rat	2	1	0	0	0	0	0	0	0	0	rat			0
+2862	Giant rat	2	1	0	0	0	0	0	0	0	0	rat			0
+7223	Giant rat (Scurrius)	10	1	0	0	0	0	0	0	0	0	rat		always-hit-not-clicked	1
+3313	Giant rat (Tutorial Island)	1	1	0	-100	-100	-100	0	-100	-100	-100				1
+3314	Giant rat (Tutorial Island)	1	1	0	-100	-100	-100	0	-100	-100	-100				0
+3315	Giant rat (Tutorial Island)	1	1	0	-100	-100	-100	0	-100	-100	-100				0
+9483	Giant rat (Tutorial Island)	1	1	0	-100	-100	-100	0	-100	-100	-100				0
+7392	Giant rockslug	77	1	0	0	0	0	0	0	0	0		earth:20		1
+680	Giant skeleton (Shadow Dungeon)	70	1	0	0	0	0	0	0	0	0	undead	earth:40		1
+681	Giant skeleton (Shadow Dungeon)	70	1	0	0	0	0	0	0	0	0	undead	earth:40		0
+6440	Giant skeleton (Tarn's Lair)	80	1	0	50	40	0	0	40	40	40	undead	earth:40		1
+5628	Giant snail	60	30	0	0	0	0	0	0	0	0		earth:45		1
+5629	Giant snail	75	30	0	0	0	0	0	0	0	0		earth:45		0
+5630	Giant snail	86	30	0	0	0	0	0	0	0	0		earth:45		0
+2477	Giant spider	31	1	0	10	10	10	10	10	10	10		fire:50		1
+3017	Giant spider	1	1	0	-10	-10	-10	-10	-10	-10	-10		fire:50		0
+3018	Giant spider	21	1	0	0	0	0	0	0	0	0		fire:50		0
+15438	Giant wasp	28	1	0	24	20	12	5	0	0	0				1
+15439	Giant wasp	28	1	0	24	20	12	5	0	0	0				0
+11286	Glacies	200	200	0	100	100	25	150	50	50	50				1
+5129	Glod	110	1	0	105	110	130	125	100	80	100		earth:50		1
+6297	Glod (Nightmare Zone)	110	1	0	105	110	130	125	100	80	100		earth:50		1
+6358	Glod (Nightmare Zone)	110	1	0	105	110	130	125	100	80	100		earth:50		0
+7101	Glough	248	250	80	0	0	0	0	0	0	0				1
+7568	Glowing crystal	100	100	0	-5	180	180	0	0	0	0	xerician			1
+5968	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+5969	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+5970	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6094	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6095	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6096	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6097	Gnome Archer	1	1	0	-30	-30	-30	-30	-30	-30	-30				1
+6098	Gnome Driver	3	1	0	-30	-30	-30	-30	-30	-30	-30				1
+6099	Gnome Mage	1	1	0	-30	-30	-30	-30	-30	-30	-30				1
+6077	Gnome child	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+6078	Gnome child	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6079	Gnome child	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+6081	Gnome guard	17	1	0	0	0	0	0	0	0	0				1
+6082	Gnome guard	18	1	0	8	9	7	0	8	8	8				0
+4973	Gnome troop	1	1	0	3	4	5	2	4	4	4				1
+5966	Gnome troop	1	1	0	3	4	5	2	4	4	4				0
+6086	Gnome woman	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+6087	Gnome woman	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+1792	Goat	20	1	0	10	10	0	0	10	10	10				1
+1795	Goat	20	1	0	10	10	0	0	10	10	10				0
+3028	Goblin	1	1	0	-15	-15	-15	-15	-15	-15	-15				1
+3045	Goblin	4	1	0	0	0	0	0	0	0	0				0
+3046	Goblin	7	1	0	4	6	8	4	4	4	4				0
+5192	Goblin	4	1	0	-15	-15	-15	-15	-15	-15	-15				0
+655	Goblin (Goblin Village)	4	1	0	0	0	0	0	0	0	0				1
+662	Goblin (Goblin Village)	4	1	0	0	0	0	0	0	0	0				0
+2245	Goblin (God Wars Dungeon)	14	1	0	0	0	0	0	0	0	0				1
+2246	Goblin (God Wars Dungeon)	13	1	0	0	0	0	0	0	0	0				0
+2247	Goblin (God Wars Dungeon)	19	1	0	0	0	0	0	0	0	0				0
+2248	Goblin (God Wars Dungeon)	19	1	0	0	0	0	0	0	0	0				0
+2249	Goblin (God Wars Dungeon)	20	1	0	0	0	0	0	0	0	0				0
+2484	Goblin (Vault of War)	4	1	0	0	0	0	0	0	0	0				1
+2485	Goblin (Vault of War)	7	1	0	4	6	8	4	4	4	4				0
+2486	Goblin (Vault of War)	7	1	0	0	0	0	0	0	0	0				0
+2487	Goblin (Vault of War)	14	1	0	0	0	0	0	0	0	0				0
+2488	Goblin (Vault of War)	17	1	0	14	16	18	14	14	14	14				0
+3353	Goblin Champion	14	26	0	0	0	0	0	0	0	0				1
+5369	Goblin guard	37	1	0	4	6	6	0	0	0	0				1
+9051	Golem (Zalcano)	1	1	0	0	0	0	0	0	0	0				1
+2836	Golem (unused NPC)	30	1	0	0	0	0	0	0	0	0				1
+14125	Golem guard	100	170	0	180	200	20	40	0	0	0	golem			1
+4367	Gorad	54	1	0	15	27	21	0	0	0	0				1
+1834	Gorak	131	1	0	0	0	0	0	0	0	0				1
+3141	Gorak	135	1	0	0	0	0	0	0	0	0				0
+1637	Gourmet impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
+5372	Grave scorpion	14	1	0	0	3	3	0	0	0	0		fire:40		1
+7550	Great Olm	175	87	60	200	200	200	50	200	200	200	dragon,xerician	earth:50		1
+7551	Great Olm	150	250	60	200	200	200	200	50	50	50	dragon,xerician	earth:50		0
+7552	Great Olm	175	175	60	50	50	50	200	200	200	200	dragon,xerician	earth:50		0
+15200	Great white shark	70	0	0	0	0	0	15	100	20	40				1
+7278	Greater Nechryael	85	1	0	50	50	50	0	50	50	50	demon			1
+11240	Greater Nechryael	85	1	0	50	50	50	0	50	50	50	demon			0
+12108	Greater Skeleton Hellhound (Calvar'ion)	110	1	0	95	101	15	156	184	184	184	undead	earth:40		1
+6614	Greater Skeleton Hellhound (Vet'ion)	180	1	0	150	163	20	210	275	275	275	undead	earth:40		1
+7410	Greater abyssal demon	240	1	0	50	50	50	0	50	50	50	demon			1
+2025	Greater demon	81	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+7244	Greater demon	50	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7245	Greater demon	80	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7246	Greater demon	50	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7871	Greater demon	81	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+12387	Greater demon (The Scar)	81	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+260	Green dragon	68	68	0	0	40	40	30	50	50	10	dragon,fiery	water:50		1
+7868	Green dragon	68	75	0	0	40	40	30	50	50	10	dragon,fiery	water:50		0
+4744	Grey golem	80	1	0	300	1	300	300	300	300	300	golem			1
+13029	Grimy Lizard	10	25	0	35	15	50	50	35	35	35				1
+4919	Grip	18	1	0	16	27	22	0	0	0	0				1
+2838	Grizzly bear	15	1	0	0	0	0	0	0	0	0		fire:20		1
+3423	Grizzly bear	35	1	0	0	0	0	0	0	0	0		fire:20		0
+11989	Grizzly bear (Escape Caves)	72	1	0	0	0	0	0	0	0	0		fire:20		1
+3424	Grizzly bear cub	25	1	0	0	0	0	0	0	0	0		fire:20		1
+3425	Grizzly bear cub	28	1	0	0	0	0	0	0	0	0		fire:20		0
+2207	Growler	120	150	0	12	14	14	18	5	5	5				1
+8194	Growthling	40	1	0	0	0	0	0	0	0	0				1
+14857	Gryphon	50	50	0	10	20	40	100	60	60	60		air:50		1
+3254	Guard	14	1	0	18	25	19	-4	20	20	20				1
+3269	Guard	14	1	0	18	25	19	-4	20	20	20				0
+3270	Guard	16	1	0	13	17	14	-4	15	15	15				0
+3271	Guard	16	1	0	5	5	5	-4	5	5	5				0
+3273	Guard	16	1	0	5	5	5	-4	5	5	5				0
+3274	Guard	16	1	0	5	5	5	-4	5	5	5				0
+5418	Guard	13	1	0	24	14	19	4	16	16	16				0
+11911	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11912	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11913	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11914	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11915	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11916	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11917	Guard	14	1	0	24	30	25	-9	25	25	25				0
+11922	Guard	14	1	0	18	25	19	-4	20	20	20				0
+11923	Guard	14	1	0	18	25	19	-4	20	20	20				0
+11924	Guard	14	1	0	18	25	19	-4	20	20	20				0
+11937	Guard	13	1	0	24	14	19	4	16	16	16				0
+11938	Guard	13	1	0	24	14	19	4	16	16	16				0
+11939	Guard	13	1	0	24	14	19	4	16	16	16				0
+11942	Guard	14	1	0	18	25	19	-4	20	20	20				0
+11943	Guard	14	1	0	18	25	19	-4	20	20	20				0
+11944	Guard	14	1	0	18	25	19	-4	20	20	20				0
+11945	Guard	16	1	0	13	17	14	-4	15	15	15				0
+11946	Guard	16	1	0	5	5	5	-4	5	5	5				0
+11947	Guard	16	1	0	5	5	5	-4	5	5	5				0
+13986	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				1
+13987	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13988	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13989	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13990	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13991	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13992	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13993	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13994	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+13995	Guard (Aldarin)	14	1	0	18	25	19	-4	20	20	20				0
+5141	Guard (Another Slice of H.A.M.)	12	1	0	0	0	0	0	0	0	0				1
+14663	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				1
+14664	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+14665	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+14666	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+14667	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+14668	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+14669	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+14670	Guard (Auburnvale)	14	1	0	18	25	19	-4	20	20	20				0
+4099	Guard (Burthorpe)	30	1	0	36	48	50	-4	38	38	38				1
+4100	Guard (Burthorpe)	30	1	0	36	48	50	-4	38	38	38				0
+2316	Guard (Cave goblin)	25	1	0	1	16	19	-3	12	12	12				1
+2317	Guard (Cave goblin)	22	1	-4	0	15	19	-3	12	12	12				0
+995	Guard (Death to the Dorgeshuun)	12	1	0	7	7	0	0	7	7	7				1
+4660	Guard (Desert Mining Camp)	39	0	0	17	15	19	-3	19	19	19				1
+4661	Guard (Desert Mining Camp)	39	0	0	17	15	19	-3	19	19	19				0
+4662	Guard (Desert Mining Camp)	39	0	0	17	15	19	-3	19	19	19				0
+4664	Guard (Desert Mining Camp)	39	0	0	17	15	19	-3	19	19	19				0
+4665	Guard (Desert Mining Camp)	39	0	0	17	15	19	-3	19	19	19				0
+3283	Guard (Doric's hut)	18	1	0	5	5	5	-4	5	5	5				1
+4522	Guard (H.A.M. Storerooms)	12	1	0	7	7	0	0	7	7	7				1
+397	Guard (Hosidius)	16	1	0	5	5	5	-4	5	5	5				1
+399	Guard (Hosidius)	16	1	0	5	5	5	-4	5	5	5				0
+14887	Guard (Port Roberts)	14	1	0	18	25	19	-4	20	20	20				1
+14888	Guard (Port Roberts)	14	1	0	18	25	19	-4	20	20	20				0
+14889	Guard (Port Roberts)	14	1	0	18	25	19	-4	20	20	20				0
+14890	Guard (Port Roberts)	14	1	0	18	25	19	-4	20	20	20				0
+1546	Guard (Port Sarim jail)	14	1	0	18	25	19	-4	20	20	20				1
+1547	Guard (Port Sarim jail)	14	1	0	18	25	19	-4	20	20	20				0
+1548	Guard (Port Sarim jail)	14	1	0	18	25	19	-4	20	20	20				0
+1549	Guard (Port Sarim jail)	14	1	0	18	25	19	-4	20	20	20				0
+1550	Guard (Port Sarim jail)	14	1	0	18	25	19	-4	20	20	20				0
+9182	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				1
+9183	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				0
+9184	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				0
+9185	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				0
+9186	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				0
+9187	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				0
+9188	Guard (Prifddinas)	80	1	0	50	70	70	60	50	50	50				0
+6056	Guard (Ranging Guild)	20	1	0	18	23	27	10	19	19	19				1
+11092	Guard (Shayzien)	14	1	0	24	14	19	4	16	16	16				1
+14716	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				1
+14717	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+14718	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+14719	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+14720	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+14721	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+14722	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+14723	Guard (Tlati Rainforest)	14	1	0	18	25	19	-4	20	20	20				0
+13100	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				1
+13101	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13102	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13103	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13104	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13105	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13106	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13107	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13108	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+13109	Guard (Varlamore)	14	1	0	18	25	19	-4	20	20	20				0
+5185	Guard (dwarf)	9	1	0	3	4	4	2	3	3	3				1
+5187	Guard (dwarf)	9	1	0	3	4	4	2	3	3	3				0
+1027	Guard Bandit	17	1	0	4	8	5	1	4	4	4				1
+114	Guard dog	37	1	0	0	0	0	0	0	0	0				1
+7209	Guard dog	37	1	0	0	0	0	0	0	0	0				0
+131	Guard dog (Construction)	37	1	0	0	0	0	0	0	0	0				1
+7569	Guardian (Chambers of Xeric)	100	1	0	80	180	-10	0	0	0	0	xerician			1
+10400	Guardian Drake	200	300	0	20	100	100	20	150	150	0	dragon	water:50		1
+3445	Guardian of Armadyl	37	1	0	43	55	50	-12	51	51	51				1
+3446	Guardian of Armadyl	37	1	0	43	55	50	-12	51	51	51				0
+299	Gunthor the brave	25	1	0	12	14	10	-1	11	11	11				1
+1674	Guthan the Infested	100	1	-50	259	257	241	-11	250	250	250	spectral	air:50		1
+5157	H.A.M. Archer	30	1	0	5	5	0	0	5	5	5				1
+2536	H.A.M. Guard	8	1	0	5	5	0	0	5	5	5				1
+2537	H.A.M. Guard	12	1	0	6	6	0	0	6	6	6				0
+2538	H.A.M. Guard	12	1	0	7	7	0	0	7	7	7				0
+5158	H.A.M. Mage	30	30	8	5	5	0	0	5	5	5				1
+3678	Halla (Miscellania)	1	1	0	0	0	0	0	0	0	0				1
+15196	Hammerhead shark	50	1	0	0	0	0	0	100	20	40				1
+464	Harpie Bug Swarm	32	1	0	10	5	10	5	10	10	10		fire:50		1
+3625	Haze	28	1	0	5	5	5	-5	5	5	5	undead,spectral	air:50		1
+5644	Head (Temple Trekking)	75	50	0	0	0	0	0	0	0	0				1
+5645	Head (Temple Trekking)	75	50	0	0	0	0	0	0	0	0				0
+11093	Head Guard	61	1	0	16	16	18	-12	27	27	27				1
+11529	Head Menaphite Guard	150	150	0	10	30	30	0	50	50	50				1
+4248	Head Thief	16	0	0	8	14	15	4	9	9	9				1
+10506	Headless Beast	42	42	0	18	18	18	6	52	52	52	undead			1
+10492	Headless Beast (Nightmare Zone)	42	42	0	18	18	18	6	52	52	0	undead			1
+10493	Headless Beast (Nightmare Zone)	42	42	0	18	18	18	6	52	52	0	undead			0
+12825	Healing totem	0	0	0	0	0	0	0	0	0	0				1
+104	Hellhound	102	1	0	0	0	0	0	0	0	0	demon	water:50		1
+3133	Hellhound	106	1	0	0	0	0	0	0	0	0	demon			0
+7877	Hellhound	102	1	0	0	0	0	0	0	0	0	demon	water:50		0
+135	Hellhound (Construction)	102	1	0	0	0	0	0	0	0	0		water:50		1
+3284	Hengel	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+14852	Hermit crab	1	1	0	0	0	-50	0	0	0	0				1
+14853	Hermit crab	1	1	0	0	0	-50	0	0	0	0				0
+3295	Hero	54	1	0	87	84	76	-10	79	79	79				1
+11934	Hero	54	1	0	87	84	76	-10	79	79	79				0
+11935	Hero	54	1	0	87	84	76	-10	79	79	79				0
+8583	Hespori	120	126	150	60	20	60	80	80	80	80		fire:100		1
+11192	Hespori (A Night at the Theatre)	120	126	150	60	20	60	80	80	80	80				1
+518	Highwayman	2	1	0	0	3	2	0	2	2	2				1
+519	Highwayman	4	1	0	0	3	2	0	2	2	2				0
+2098	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		1
+2099	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+2100	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+2101	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+2102	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+2103	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+7261	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+10374	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+10375	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+10376	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+12848	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+12849	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+12850	Hill Giant	26	1	0	0	0	0	0	0	0	0		earth:25		0
+2241	Hobgoblin	35	1	0	0	0	0	0	0	0	0				1
+3049	Hobgoblin	24	1	0	0	0	0	0	0	0	0				0
+3050	Hobgoblin	36	1	0	1	1	0	0	0	0	0				0
+3286	Hobgoblin	24	1	0	0	0	0	0	0	0	0				0
+3287	Hobgoblin	24	1	0	0	0	0	0	0	0	0				0
+3288	Hobgoblin	24	1	0	0	0	0	0	0	0	0				0
+3289	Hobgoblin	24	1	0	0	0	0	0	0	0	0				0
+4805	Hobgoblin (The Slug Menace)	24	1	0	0	0	0	0	0	0	0				1
+3354	Hobgoblin Champion	48	1	0	0	0	0	0	0	0	0				1
+132	Hobgoblin guard	43	1	0	1	1	0	0	0	0	0				1
+8996	Holthion	77	1	0	0	0	0	-10	0	0	0	demon			1
+7802	Hoop Snake	20	1	0	0	0	0	0	0	0	0				1
+1072	Hopeless creature	39	1	0	0	0	0	0	0	0	0		fire:40		1
+4695	Hopeless creature	59	1	0	0	0	0	0	0	0	0		fire:40		0
+134	Huge spider	69	1	0	0	0	0	0	0	0	0				1
+9454	Husk	20	80	0	20	20	20	80	80	80	80				1
+9455	Husk	20	80	0	20	20	20	80	80	80	80				0
+9466	Husk (Phosani's Nightmare)	20	80	168	20	20	20	80	80	80	80				1
+9467	Husk (Phosani's Nightmare)	20	0	0	20	20	20	80	80	80	80				0
+8609	Hydra	100	210	0	160	160	160	160	0	0	0	dragon	earth:40		1
+4110	Hygd	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+15553	I DSCIM YOU	25	100	0	25	25	25	50	10	10	10		fire:50		1
+4922	Ice Queen	95	1	0	30	40	20	10	30	30	30		fire:100		1
+5822	Ice Troll King	80	1	0	45	45	45	2000	2000	2000	2000		fire:35		1
+6294	Ice Troll King (Nightmare Zone)	80	1	0	45	45	45	2000	2000	2000	2000		fire:35		1
+6356	Ice Troll King (Nightmare Zone)	80	1	0	45	45	45	2000	2000	2000	2000		fire:35		0
+7584	Ice demon	160	390	0	70	70	110	40	140	140	140	demon,xerician	fire:150		1
+14151	Ice elemental (Royal Titans)	30	30	0	0	0	0	0	0	0	0		fire:100		1
+2085	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		1
+2086	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+2087	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+2088	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+2089	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+7878	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+7879	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+7880	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+13796	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+13797	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
+3022	Ice spider	43	1	0	20	17	12	13	13	13	13		fire:100		1
+10722	Ice spider	43	1	0	20	17	12	13	13	13	13		fire:100		0
+13798	Ice spider	43	1	0	20	17	12	13	13	13	13		fire:100		0
+648	Ice troll	80	1	0	30	60	30	0	0	0	0		fire:100		1
+649	Ice troll	100	1	0	30	60	30	0	0	0	0		fire:100		0
+650	Ice troll	120	1	0	30	60	30	0	0	0	0		fire:100		0
+651	Ice troll	110	1	0	30	60	30	0	0	0	0		fire:100		0
+1876	Ice troll female	40	1	0	30	60	30	0	0	0	0		fire:50		1
+5830	Ice troll female	40	1	0	30	60	30	0	0	0	0		fire:100		0
+1877	Ice troll grunt	60	1	0	30	60	30	0	0	0	0		fire:35		1
+1875	Ice troll male	40	1	0	30	60	30	0	0	0	0		fire:50		1
+5829	Ice troll male	40	1	0	30	60	30	0	0	0	0		fire:100		0
+1874	Ice troll runt	70	1	0	30	60	30	0	0	0	0		fire:50		1
+5828	Ice troll runt	70	1	0	30	60	30	0	0	0	0		fire:100		0
+2841	Ice warrior	47	1	0	30	40	20	10	30	30	30		fire:100		1
+2842	Ice warrior	47	1	0	30	40	20	10	30	30	30		fire:100		0
+2851	Ice warrior	47	1	0	30	40	20	10	30	30	30		fire:100		0
+13802	Ice warrior	47	1	0	30	40	20	10	30	30	30		fire:100		0
+645	Ice wolf	70	1	0	0	0	0	0	0	0	0		fire:20		1
+647	Ice wolf	70	1	0	0	0	0	0	0	0	0		fire:20		0
+3140	Icefiend	19	1	0	0	0	0	0	0	0	0	demon	fire:100		1
+4813	Icefiend	12	1	0	0	0	0	0	0	0	0	demon	fire:100		0
+852	Icelord	40	1	0	0	0	0	0	0	0	0		fire:30		1
+853	Icelord	40	1	0	0	0	0	0	0	0	0		fire:30		0
+854	Icelord	40	1	0	0	0	0	0	0	0	0		fire:30		0
+855	Icelord	40	1	0	0	0	0	0	0	0	0		fire:30		0
+3134	Imp	6	1	0	-42	-42	-42	-42	-42	-42	-42	demon	water:10		1
+5007	Imp	1	1	0	-42	-42	-42	-42	-42	-42	-42	demon	water:10		0
+16650	Imp (Dagon'hai Trio)	0	0	0	0	0	0	0	0	0	0				1
+3355	Imp Champion	5	1	0	0	0	0	0	0	0	0				1
+15759	Impaler deer	30	10	0	0	0	0	0	0	0	0				1
+2614	Imre	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+443	Infernal Mage	60	75	0	0	0	0	40	0	0	0				1
+9465	Infernal pyrelord	68	1	0	18	18	18	0	18	18	18	demon			1
+7397	Insatiable Bloodveld	85	1	0	0	0	0	0	0	0	0	demon			1
+7398	Insatiable mutated Bloodveld	130	1	0	0	0	0	0	0	0	0	demon			1
+511	Invrigar the Necromancer	14	18	0	0	0	0	3	0	0	0				1
+3428	Iorwerth Archer	80	1	0	50	50	50	60	70	70	70				1
+8760	Iorwerth Archer	80	1	0	50	50	50	60	70	70	70				0
+3429	Iorwerth Warrior	80	1	0	50	70	70	60	50	50	50				1
+9502	Iorwerth Warrior	80	1	0	50	70	70	60	50	50	50				0
+2622	Irina	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+272	Iron dragon	165	100	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		1
+7254	Iron dragon	185	120	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		0
+3965	Irvig Senay	81	0	0	27	31	29	-1	29	29	29	spectral	air:15		1
+7964	Ithoi the Navigator	30	30	0	0	0	0	0	0	0	0				1
+4185	Jackal	15	1	0	0	0	0	0	0	0	0		fire:10		1
+12976	Jaguar	55	1	0	0	0	0	0	0	0	0		fire:10		1
+12977	Jaguar cub	25	1	0	0	0	0	0	0	0	0		fire:10		1
+12810	Jaguar warrior	125	100	0	30	30	30	15	45	45	45				1
+4276	Jail guard	21	1	0	8	9	10	4	9	9	9				1
+4277	Jail guard	21	1	0	8	9	10	4	9	9	9				0
+4278	Jail guard	21	1	0	8	9	10	4	9	9	9				0
+4279	Jail guard	21	1	0	8	9	10	4	9	9	9				0
+300	Jailer	40	1	0	79	63	47	0	0	0	0				1
+3863	Jake	25	1	0	0	0	0	0	0	0	0				1
+7693	Jal-Ak	95	160	45	25	25	25	25	25	25	25		water:40		1
+7696	Jal-AkRek-Ket	95	1	0	25	25	25	0	0	0	0		water:40		1
+7694	Jal-AkRek-Mej	95	120	25	0	0	0	25	0	0	0		water:40		1
+7695	Jal-AkRek-Xil	95	1	0	0	0	0	0	25	25	25		water:40		1
+7697	Jal-ImKot	120	120	0	65	65	65	30	50	50	50		water:40		1
+7708	Jal-MejJak	100	1	0	0	0	0	0	0	0	0		water:40		1
+7692	Jal-MejRah	55	120	0	30	30	30	-20	45	45	45		water:40		1
+7691	Jal-Nib	15	15	0	-20	-20	-20	-20	-20	-20	-20		water:40		1
+7698	Jal-Xil	60	90	0	0	0	0	0	0	0	0		water:40		1
+7699	Jal-Zek	260	300	80	0	0	0	0	0	0	0		water:40		1
+7700	JalTok-Jad	480	510	100	0	0	0	0	0	0	0		water:40		1
+12817	Javelin Colossus	190	225	0	15	15	15	20	30	30	30				1
+3282	Jeff	1	1	0	-10	-10	-10	-10	-10	-10	-10				1
+437	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		1
+438	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+439	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+440	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+441	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+442	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+11241	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+11242	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+11243	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+11244	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+11245	Jelly	120	45	0	0	0	0	0	0	0	0		earth:35		0
+16666	Jelly (Dreadnoth)	100	100	0	4	5	0	15	-45	18	-50	demon	fire:60		1
+3944	Jennella	40	1	0	0	0	0	0	0	0	0				1
+12353	Jhallan	250	250	30	200	200	200	300	150	150	150				1
+2094	Jogre	43	1	0	0	0	0	0	0	0	0		earth:25		1
+2234	Jogre	43	1	0	0	0	0	0	0	0	0		earth:25		0
+3356	Jogre Champion	86	1	0	0	0	0	0	0	0	0				1
+5213	Jonny the Beard	1	1	0	0	0	0	0	0	0	0				1
+2616	Joseph	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+4863	Jubbly bird	6	1	0	0	0	0	0	0	0	0				1
+3604	Jubster	81	1	0	0	0	0	0	0	0	0				1
+14180	Judge of Yama	150	250	0	0	0	0	0	0	0	0	demon	water:15	always-hit	1
+10936	Judge of Yama (A Kingdom Divided)	84	84	0	40	40	40	600	600	600	600	demon			1
+1443	Jungle Demon	170	170	0	0	50	0	50	0	0	0	demon	fire:25		1
+6321	Jungle Demon (Nightmare Zone)	170	340	0	0	50	0	50	0	0	0	demon	fire:25		1
+6382	Jungle Demon (Nightmare Zone)	170	170	0	0	50	0	50	0	0	0	demon	fire:25		0
+232	Jungle Wolf	52	1	0	0	0	0	0	0	0	0		fire:15		1
+1042	Jungle horror	55	1	0	0	0	0	0	0	0	0		fire:25		1
+1043	Jungle horror	55	1	0	0	0	0	0	0	0	0		fire:25		0
+1044	Jungle horror	55	1	0	0	0	0	0	0	0	0		fire:25		0
+1045	Jungle horror	55	1	0	0	0	0	0	0	0	0		fire:25		0
+1046	Jungle horror	55	1	0	0	0	0	0	0	0	0		fire:25		0
+3020	Jungle spider	35	1	0	20	20	10	17	20	20	20		fire:40		1
+5243	Jungle spider (Ape Atoll)	10	10	0	0	0	0	0	0	0	0		fire:40		1
+5977	Justiciar Zachariah	100	180	80	200	200	200	-60	200	200	200				1
+14702	Juvenile custodian stalker	45	25	5	30	-10	50	35	-10	5	30		fire:30		1
+3129	K'ril Tsutsaroth	270	200	0	70	80	80	80	80	80	80	demon	water:30		1
+959	Kalphite Guardian	110	1	0	25	25	5	50	50	30	50	kalphite	fire:40		1
+960	Kalphite Guardian	110	1	0	25	25	5	50	50	30	50	kalphite	fire:40		0
+962	Kalphite Guardian	110	1	0	25	25	5	50	50	30	50	kalphite	fire:40		0
+963	Kalphite Queen	300	150	0	50	50	10	100	100	100	100	kalphite	fire:40		1
+965	Kalphite Queen	300	150	0	100	100	100	10	10	10	10	kalphite	fire:40		0
+957	Kalphite Soldier	70	1	0	25	25	5	50	50	30	50	kalphite	fire:40		1
+958	Kalphite Soldier	70	1	0	25	25	5	50	50	30	50	kalphite	fire:40		0
+955	Kalphite Worker	20	1	0	5	5	1	10	10	10	10	kalphite	fire:40		1
+138	Kalphite soldier (Construction)	70	1	0	25	25	5	50	50	50	50				1
+8993	Kalrag	78	1	0	20	17	12	13	13	13	13				1
+3458	Kamil	135	1	0	35	60	35	0	0	0	0		fire:10		1
+1129	Kamil (Nightmare Zone)	135	1	0	35	60	35	0	0	0	0		fire:10		1
+6345	Kamil (Nightmare Zone)	135	1	0	35	60	35	0	0	0	0		fire:10		0
+4882	Karamel	100	1	0	150	150	150	150	150	150	150		fire:40		1
+6310	Karamel (Nightmare Zone)	100	1	0	150	150	150	150	150	150	150		fire:40		1
+6371	Karamel (Nightmare Zone)	100	1	0	150	150	150	150	150	150	150		fire:40		0
+1675	Karil the Tainted	100	1	-26	79	71	90	106	100	100	100	spectral	air:50		1
+12262	Kasonde	90	90	0	30	30	30	250	50	50	50				1
+12331	Kasonde the Craven	120	120	0	30	30	30	250	50	50	50	spectral			1
+1494	Kebbit (Eagles' Peak)	1	1	0	0	0	0	0	0	0	0				1
+7104	Keef	165	1	0	50	50	50	0	0	0	0				1
+11719	Kephri	80	125	125	60	300	100	200	300	300	300	kalphite	fire:40		1
+11721	Kephri	80	125	125	60	300	100	200	300	300	300	kalphite	fire:35		0
+3125	Ket-Zek	240	240	60	0	0	0	0	0	0	0		water:40		1
+12329	Ketla the Unworthy	130	130	0	60	30	80	200	70	70	70	spectral			1
+12330	Ketla the Unworthy	130	130	0	60	30	80	200	70	70	70	spectral			0
+1208	Khazard Guard	20	1	0	35	29	21	0	0	0	0				1
+1211	Khazard Guard	20	1	0	35	29	21	0	0	0	0				0
+12019	Khazard Guard	20	1	0	35	29	21	0	0	0	0				0
+12020	Khazard Guard	20	1	0	35	29	21	0	0	0	0				0
+1225	Khazard Ogre	53	1	0	0	0	0	0	0	0	0				1
+1226	Khazard Scorpion	34	1	0	5	15	15	0	5	5	5		fire:25		1
+4972	Khazard commander	50	1	0	0	0	0	0	0	0	0				1
+4969	Khazard trooper	12	1	0	33	34	29	-7	-33	-33	-33				1
+4970	Khazard trooper	13	1	0	25	25	22	-7	-25	-25	-25				0
+7621	Khazard warlord	80	1	0	0	0	0	0	0	0	0				1
+6329	Khazard warlord (Nightmare Zone)	80	1	0	0	0	0	0	0	0	0				1
+6390	Khazard warlord (Nightmare Zone)	80	1	0	0	0	0	0	0	0	0				0
+469	Killerwatt	40	67	0	10	10	10	20	-10	-10	-10		air:60		1
+470	Killerwatt	40	67	0	10	10	10	20	-10	-10	-10		air:60		0
+239	King Black Dragon	240	240	0	40	90	90	80	70	70	40	dragon,fiery	water:50		1
+4163	King Roald	30	1	0	0	0	0	0	0	0	0				1
+6328	King Roald (Nightmare Zone)	30	1	0	0	0	0	0	0	0	0				1
+6389	King Roald (Nightmare Zone)	30	1	0	0	0	0	0	0	0	0				0
+7266	King Sand Crab	100	1	0	0	0	0	0	0	0	0		earth:15		1
+7267	King Sand Crab	100	1	0	0	0	0	0	0	0	0		earth:15		0
+3027	King Scorpion	23	1	0	5	15	15	0	5	5	5		fire:20		1
+7405	King kurask	250	1	0	0	50	50	0	0	0	0	leafy			1
+3297	Knight of Ardougne	31	1	0	39	40	36	-11	36	36	36				1
+8854	Knight of Ardougne	31	1	0	39	40	36	-11	36	36	36				0
+11902	Knight of Ardougne	31	1	0	39	40	36	-11	36	36	36				0
+11936	Knight of Ardougne	31	1	0	39	40	36	-11	36	36	36				0
+8851	Knight of Ardougne (Song of the Elves)	14	1	0	5	25	25	15	5	5	5				1
+8852	Knight of Ardougne (Song of the Elves)	28	1	0	20	40	40	30	20	20	20				0
+3300	Knight of Ardougne (unused)	31	1	0	0	0	0	0	0	0	0				1
+2213	Knight of Saradomin	70	60	0	10	10	7	0	13	13	13				1
+2214	Knight of Saradomin	82	60	0	12	14	13	0	13	13	13				0
+13114	Knight of Varlamore	31	1	0	39	40	36	-11	36	36	36				1
+13115	Knight of Varlamore	31	1	0	39	40	36	-11	36	36	36				0
+13116	Knight of Varlamore	31	1	0	39	40	36	-11	36	36	36				0
+13117	Knight of Varlamore	31	1	0	39	40	36	-11	36	36	36				0
+13118	Knight of Varlamore	31	1	0	39	40	36	-11	36	36	36				0
+13119	Knight of Varlamore	31	1	0	39	40	36	-11	36	36	36				0
+12916	Knight of Varlamore (Twilight's Promise)	40	20	0	28	26	10	5	20	20	20				1
+7106	Kob	80	0	0	60	85	90	200	200	200	200		earth:20		1
+1605	Kolodion	20	15	0	0	0	0	0	0	0	0				1
+1606	Kolodion	72	50	0	0	0	0	0	0	0	0				0
+1607	Kolodion	47	70	0	0	0	0	0	0	0	0				0
+1608	Kolodion	58	30	0	0	0	0	0	0	0	0				0
+1609	Kolodion	105	400	0	0	0	0	0	0	0	0				0
+3897	Koschei the deathless	20	1	0	20	20	20	20	20	20	20				1
+3898	Koschei the deathless	40	1	0	40	40	40	40	40	40	40				0
+3899	Koschei the deathless	60	1	0	60	60	60	60	60	60	60				0
+3900	Koschei the deathless	255	1	0	0	0	0	0	0	0	0				0
+928	Kraka	50	0	0	25	25	40	200	200	200	200		earth:20		1
+494	Kraken	1	1	0	0	0	0	130	300	300	300		earth:50		1
+496	Kraken	1	1	0	0	0	0	130	300	300	300				0
+3162	Kree'arra	260	200	0	180	180	180	200	200	200	200	flying	air:30		1
+9560	Kroy	80	80	36	50	50	50	50	50	50	50	vampyre1			1
+6805	Kruk	150	130	0	100	100	100	250	100	100	100				1
+2627	Ksenia	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+410	Kurask	105	1	0	0	20	20	0	0	0	0	leafy			1
+411	Kurask	105	1	0	0	20	20	0	0	0	0	leafy			0
+3940	Lanzig	40	1	0	0	0	0	0	0	0	0				1
+14510	Large chicken	10	1	0	0	0	0	0	0	0	0				1
+6272	Large mosquito	45	1	0	2	2	5	2	0	0	0		fire:40		1
+15500	Lava Strykewyrm	50	50	0	30	60	70	40	120	120	120	dragon	water:50		1
+6593	Lava dragon	220	1	0	20	90	90	80	70	70	20	dragon,fiery	water:50		1
+3233	Leech	35	1	0	0	0	0	0	0	0	0				1
+3943	Lensa	40	1	0	0	0	0	0	0	0	0				1
+3360	Leon d'Cour	123	1	0	0	0	0	0	0	0	0				1
+3357	Lesser Demon Champion	142	136	0	0	0	0	0	0	0	0	demon	water:40		1
+2005	Lesser demon	71	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+7247	Lesser demon	71	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7248	Lesser demon	85	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7865	Lesser demon	71	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+3982	Lesser demon (Melzar's Maze)	71	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+12361	Lesser demon (The Scar)	110	110	100	0	0	0	0	0	0	0	demon	water:40		1
+12363	Lesser demon (The Scar)	110	110	100	0	0	0	0	0	0	0	demon	water:40		0
+12365	Lesser demon (The Scar)	110	110	100	0	0	0	0	0	0	0	demon	water:40		0
+12376	Lesser demon (The Scar)	30	1	0	0	0	0	0	0	0	0	demon	water:40		0
+12389	Lesser demon (The Scar)	71	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+2619	Lev	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+2632	Liliya	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+458	Lizard	35	1	0	5	15	15	0	5	5	5				1
+6914	Lizardman	43	1	0	-20	25	0	0	-10	0	0				1
+6916	Lizardman	52	1	0	-20	20	5	0	-10	0	0				0
+6918	Lizardman brute	65	1	0	-20	30	10	0	-10	0	0				1
+8564	Lizardman brute	65	1	0	-20	30	10	0	-10	0	0				0
+6766	Lizardman shaman	140	130	0	-20	40	30	50	-10	0	0				1
+8565	Lizardman shaman	140	130	0	-20	40	30	50	-10	0	0				0
+7573	Lizardman shaman (Chambers of Xeric)	210	130	0	102	160	150	160	-10	0	0	xerician			1
+1276	Loar Shade	26	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+1277	Loar Shade	26	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
+7796	Lobstrosity	40	1	0	30	50	15	99	70	70	70		earth:25		1
+11584	Locust	1	1	0	0	0	0	0	0	0	0		fire:40		1
+795	Locust rider	90	1	0	90	90	40	0	0	0	0	kalphite	fire:40		1
+796	Locust rider	50	1	0	50	90	50	34	66	66	66	kalphite	fire:40		0
+800	Locust rider	90	1	0	90	90	40	0	0	0	0	kalphite	fire:40		0
+801	Locust rider	50	1	0	50	90	50	34	66	66	66	kalphite	fire:40		0
+7792	Long-tailed Wyvern	90	90	0	70	70	70	140	120	120	70	dragon	air:25		1
+2921	Lost barbarian	110	1	0	0	0	0	0	0	0	0				1
+16204	Lowerniel Drakan	100	320	300	0	0	0	0	150	150	150	vampyre3			1
+3443	Lucien	10	1	0	6	8	7	-1	4	4	4				1
+14363	Lucius	70	200	120	90	120	120	200	80	80	60				1
+7233	Lucky impling	0	1	0	-10	-10	-10	50	-10	-10	-10				1
+7302	Lucky impling	0	1	0	-10	-10	-10	50	-10	-10	-10				0
+11068	Lynx	18	1	0	0	0	0	0	0	0	0				1
+11069	Lynx	20	1	0	0	0	0	0	0	0	0				0
+11071	Lynx Tamer	14	1	0	24	14	19	4	16	16	16				1
+16305	Mad Angel	175	150	280	60	80	40	185	205	185	165	golem	earth:15		1
+16309	Mad Angel	125	100	180	40	60	20	165	175	155	135	golem	earth:15		0
+15742	Maggot King	200	200	200	172	100	45	150	232	158	43		fire:80		1
+13663	Magic Mark	30	175	100	25	25	25	150	10	10	10				1
+2844	Magic axe	29	1	0	10	5	15	5	10	10	10				1
+7269	Magic axe	29	1	0	10	5	15	5	10	10	10				0
+15504	Magma strykewyrm	110	110	0	60	30	70	40	120	120	120	dragon	water:50		1
+1642	Magpie impling	0	1	0	-10	-10	-10	30	-10	-10	-10				1
+7396	Malevolent Mage	135	175	0	0	0	0	75	0	0	0				1
+6604	Mammoth	50	1	0	0	0	0	0	0	0	0				1
+3014	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+3106	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3107	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3108	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3109	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3110	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3261	Man	1	1	0	0	0	0	0	0	0	0				0
+3264	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3265	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3652	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+11057	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+11058	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+14920	Man	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3298	Man (East Ardougne)	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+1118	Man (level 4)	1	1	0	1	1	1	0	0	0	0				1
+1138	Man (level 4)	1	1	0	1	1	1	0	0	0	0				0
+7119	Maniacal Monkey Archer	80	1	0	0	0	0	0	0	0	0				1
+7118	Maniacal monkey	10	1	0	0	0	0	0	0	0	0				1
+15220	Manta ray (monster)	40	1	0	0	0	0	0	50	50	20				1
+12818	Manticore	250	300	0	0	0	0	10	25	25	25				1
+7407	Marble gargoyle	190	1	0	50	50	0	50	50	50	50	golem	earth:40		1
+3949	Market Guard	40	1	0	50	50	50	50	50	50	50				1
+2120	Market Guard (Draynor)	13	1	0	24	14	19	4	16	16	16				1
+5732	Market Guard (Draynor)	13	1	0	24	14	19	4	16	16	16				0
+14703	Mature custodian stalker	45	40	15	30	-10	50	35	-10	5	30		fire:30		1
+16233	Maxilla beast	0	0	0	0	0	0	0	0	0	0				1
+785	Me	74	1	0	0	0	0	0	0	0	0				1
+786	Me	74	1	0	0	0	0	0	0	0	0				0
+6320	Me (Nightmare Zone)	74	1	0	0	0	0	0	0	0	0				1
+6381	Me (Nightmare Zone)	74	1	0	0	0	0	0	0	0	0				0
+823	Melzar the Mad	34	40	0	0	0	0	0	0	0	0				1
+11492	Menaphite Akh	140	150	46	5	30	30	280	180	180	180				1
+11462	Menaphite Shadow	70	150	46	5	30	30	280	180	180	180				1
+3549	Menaphite Thug	20	0	0	9	8	10	0	0	0	0				0
+3550	Menaphite Thug	20	0	0	9	8	10	0	0	0	0				0
+4656	Mercenary	39	0	0	17	15	19	-3	19	19	19				1
+4657	Mercenary	39	0	0	17	15	19	-3	19	19	19				0
+4658	Mercenary	39	0	0	17	15	19	-3	19	19	19				0
+4659	Mercenary	39	0	0	17	15	19	-3	19	19	19				0
+4635	Mercenary Captain	32	0	0	17	15	19	-3	19	19	19				1
+13535	Mercenary axeman	110	40	0	110	80	80	10	90	70	30				1
+13536	Mercenary axeman	110	40	0	110	80	80	10	90	70	30				0
+13537	Mercenary mage	90	150	150	50	40	60	10	5	10	15				1
+14313	Metzli, Teokan of Ranul	160	180	110	60	80	70	100	20	20	10		earth:30		1
+14318	Metzli, Teokan of Ranul	160	180	110	60	80	70	100	20	20	10		earth:30		0
+2624	Milla	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+10693	Mind Golem	25	1	0	5	5	0	2	10	10	10	golem	earth:35		1
+10694	Mind Golem	25	1	0	5	5	0	2	10	10	10		earth:35		0
+2481	Minotaur	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+2482	Minotaur	15	1	0	1	1	1	1	0	0	0				0
+2483	Minotaur	25	1	0	-10	-10	-10	-21	-10	-10	-10				0
+12812	Minotaur (Fortis Colosseum)	190	250	0	0	0	0	0	12	12	12				1
+13814	Minotaur (Meat and Greet)	100	100	300	30	20	50	80	140	140	140				1
+13671	Mirrorback Araxyte	50	1	0	25	25	25	-10	25	25	25		fire:50		1
+15679	Mister U.	65	60	13	35	11	40	70	21	33	40				1
+2919	Mithril dragon	268	168	0	0	100	70	30	90	90	20	dragon,fiery	earth:50		1
+2592	Mogre	48	1	0	0	0	0	0	0	0	0		earth:20		1
+15230	Mogre (sea)	40	1	0	0	0	0	0	0	0	0				1
+16667	Moia	195	350	300	20	110	15	30	60	120	140		air:80		1
+1	Molanisk	50	0	0	45	45	35	30	55	55	55		earth:60		1
+2579	Monk	3	1	0	0	0	0	0	0	0	0				1
+4246	Monk	3	1	0	0	0	0	0	0	0	0				0
+527	Monk of Zamorak	22	25	0	0	0	0	0	0	0	0				1
+528	Monk of Zamorak	12	25	0	0	0	0	0	0	0	0				0
+529	Monk of Zamorak	42	40	0	0	0	0	0	0	0	0				0
+8698	Monk of Zamorak	18	30	0	0	0	0	0	0	0	0				0
+3484	Monk of Zamorak (Paterdomus)	22	25	0	0	0	0	0	0	0	0				1
+3485	Monk of Zamorak (Paterdomus)	12	25	0	0	0	0	0	0	0	0				0
+3486	Monk of Zamorak (Paterdomus)	25	40	0	0	0	0	0	0	0	0				0
+1038	Monkey (monster)	2	1	0	0	0	0	0	0	0	0				1
+2848	Monkey (monster)	2	1	0	0	0	0	0	0	0	0				0
+5272	Monkey Archer	80	1	0	0	0	0	0	0	0	0				1
+5273	Monkey Archer	80	1	0	0	0	0	0	0	0	0				0
+5275	Monkey Guard	200	130	0	0	0	0	0	0	0	0				1
+5276	Monkey Guard	200	130	0	0	0	0	0	0	0	0				0
+5271	Monkey Guard (ninja)	130	130	0	0	0	0	0	0	0	0				1
+5281	Monkey Zombie	60	60	0	0	0	0	0	0	0	0	undead	fire:50		1
+5282	Monkey Zombie	90	90	0	0	0	0	0	0	0	0	undead	fire:50		0
+5283	Monkey Zombie	60	60	0	0	0	0	0	0	0	0	undead	fire:50		0
+9287	Monstrous Basilisk (The Fremennik Exiles)	130	1	0	35	35	0	35	0	0	0		earth:40		1
+7395	Monstrous basilisk	130	1	0	35	35	0	35	0	0	0				1
+13030	Moonlight Cockatrice	39	1	0	14	14	0	14	0	0	0				1
+6273	Mosquito swarm	45	1	0	2	2	5	2	0	0	0		fire:45		1
+6402	Mosquito swarm	45	1	0	2	2	5	2	0	0	0		fire:45		0
+8736	Moss Giant (Iorwerth Dungeon)	60	1	0	0	0	0	0	0	0	0		fire:50		1
+891	Moss Guardian	60	1	0	0	0	0	0	0	0	0				1
+6325	Moss Guardian (Nightmare Zone)	60	1	0	0	0	0	0	0	0	0		fire:50		1
+6386	Moss Guardian (Nightmare Zone)	60	1	0	0	0	0	0	0	0	0		fire:50		0
+2090	Moss giant	30	1	0	0	0	0	0	0	0	0		fire:50		1
+3851	Moss giant	30	1	0	0	0	0	0	0	0	0		fire:50		0
+12844	Moss giant	30	1	0	0	0	0	0	0	0	0		fire:50		0
+11271	Mosschin	50	50	34	10	10	5	5	20	20	20				1
+8428	Mother	170	60	0	0	0	0	200	0	0	0				1
+936	Mountain troll	40	0	0	0	0	10	200	200	40	200		fire:50		1
+4143	Mountain troll	25	0	0	0	0	10	200	200	40	200		earth:50		0
+2067	Mounted terrorbird gnome	25	1	0	16	16	18	15	10	10	10				1
+2068	Mounted terrorbird gnome	40	1	0	16	16	18	15	10	10	10				0
+9013	Mourner	8	1	0	6	6	9	0	0	0	0				1
+9017	Mourner	80	1	0	50	70	70	60	50	50	50				0
+8844	Mourner (Song of the Elves)	12	1	0	5	25	25	15	5	5	5				1
+8845	Mourner (Song of the Elves)	30	1	0	20	40	40	30	20	20	20				0
+8846	Mourner (Song of the Elves)	80	1	0	40	60	60	50	40	40	40				0
+9008	Mourner (boss)	10	1	0	3	2	4	0	0	0	0				1
+5127	Mouse	86	1	0	30	55	65	50	60	60	60				1
+5128	Mouse	86	1	0	30	55	65	50	60	60	60				0
+4820	Mudskipper	26	1	0	0	0	0	0	0	0	0		earth:20		1
+4821	Mudskipper	29	1	0	0	0	0	0	0	0	0		earth:20		0
+513	Mugger	5	1	0	0	0	0	0	0	0	0				1
+13282	Mugger	5	1	0	0	0	0	0	0	0	0				0
+717	Mummy (Ancient Pyramid sarcophagus)	50	1	0	100	100	100	0	0	0	0		fire:50		1
+724	Mummy (Ancient Pyramid sarcophagus)	50	1	0	100	100	100	0	0	0	0		fire:50		0
+720	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		1
+721	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+722	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+723	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+725	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+726	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+727	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+728	Mummy (Ancient Pyramid)	90	1	0	90	90	90	0	0	0	0		fire:50		0
+949	Mummy (Klenter's Pyramid)	90	1	0	90	90	30	90	0	0	0				1
+950	Mummy (Klenter's Pyramid)	90	1	0	90	90	30	90	0	0	0				0
+951	Mummy (Klenter's Pyramid)	90	1	0	90	90	30	90	0	0	0				0
+952	Mummy (Klenter's Pyramid)	90	1	0	90	90	30	90	0	0	0				0
+953	Mummy (Klenter's Pyramid)	90	1	0	90	90	30	90	0	0	0				0
+7658	Mummy (Pyramid Plunder)	90	1	0	90	90	30	90	0	0	0				1
+7659	Mummy (Pyramid Plunder)	90	1	0	90	90	30	90	0	0	0				0
+7660	Mummy (Pyramid Plunder)	90	1	0	90	90	30	90	0	0	0				0
+7661	Mummy (Pyramid Plunder)	90	1	0	90	90	30	90	0	0	0				0
+7662	Mummy (Pyramid Plunder)	90	1	0	90	90	30	90	0	0	0				0
+7276	Mutated Bloodveld	30	1	0	0	0	0	0	0	0	0	demon			1
+12464	Mutated Terrorbird	40	110	0	50	50	0	0	62	62	62				1
+12465	Mutated Tortoise	120	90	0	50	50	0	0	60	60	0		earth:25		1
+15681	Mute Jack	65	60	13	35	11	40	70	21	33	40				1
+7561	Muttadile	220	250	0	-5	82	60	75	0	0	0	xerician	earth:40		1
+7562	Muttadile	138	1	0	-5	72	50	60	0	0	0	xerician	earth:40		0
+2634	Myre Blamish Snail	22	1	0	5	5	30	5	50	50	50		earth:25		1
+2649	Myre Blamish Snail	12	1	0	5	5	30	5	50	50	50		earth:25		0
+12300	Mysterious Figure	120	120	80	20	40	60	30	20	20	20				1
+2946	Nail beast	2	1	0	0	0	0	0	0	0	0				1
+2947	Nail beast	30	1	0	0	0	0	0	0	0	0				0
+2948	Nail beast	40	1	0	0	0	0	0	0	0	0				0
+3280	Narf	1	1	0	-5	-5	-5	-5	-5	-5	-5				1
+15202	Narwhal	50	1	0	0	0	0	20	65	65	40				1
+1641	Nature impling	0	1	0	-10	-10	-10	20	-10	-10	-10				1
+5353	Nazastarool	80	0	0	0	0	0	0	0	0	0	undead	fire:40		1
+5354	Nazastarool	58	0	0	5	5	5	5	5	5	5	undead	earth:40		0
+5355	Nazastarool	80	0	0	0	0	0	0	0	0	0	undead,spectral	air:20		0
+6337	Nazastarool (Nightmare Zone)	80	0	0	0	0	0	0	0	0	0				1
+6338	Nazastarool (Nightmare Zone)	58	0	0	5	5	5	5	5	5	5				0
+6339	Nazastarool (Nightmare Zone)	80	0	0	0	0	0	0	0	0	0	spectral	air:20		0
+6398	Nazastarool (Nightmare Zone)	80	0	0	0	0	0	0	0	0	0				0
+6399	Nazastarool (Nightmare Zone)	58	0	0	5	5	5	5	5	5	5				0
+6400	Nazastarool (Nightmare Zone)	80	0	0	0	0	0	0	0	0	0	spectral	air:20		0
+8	Nechryael	105	1	0	20	20	20	0	20	20	20	demon			1
+11	Nechryael	105	1	0	20	20	20	0	20	20	20	demon			0
+7411	Nechryarch	140	1	0	30	30	30	0	30	30	30	demon			1
+1025	Necromancer	18	18	0	0	0	0	0	0	0	0				1
+11088	Necromancer (Great Kourend)	50	60	10	8	8	8	4	0	0	0				1
+3605	Newtroost	17	1	0	0	0	0	0	0	0	0				1
+11278	Nex	260	230	100	40	140	35	300	190	190	150				1
+3962	Nezikchened	167	160	0	0	0	0	0	0	0	0	demon	water:10		1
+6318	Nezikchened (Nightmare Zone)	167	320	0	0	0	0	0	0	0	0	demon	water:10		1
+6379	Nezikchened (Nightmare Zone)	167	160	0	0	0	0	0	0	0	0	demon	water:10		0
+7409	Night beast	220	300	0	75	80	200	190	200	200	200				1
+2629	Nikita	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+2617	Nikolai	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+1643	Ninja impling	0	1	0	-10	-10	-10	40	-10	-10	-10				1
+7406	Nuclear smoke devil	390	1	0	0	0	0	850	80	80	80		air:20		1
+8384	Nylocas Athanatos	50	50	0	0	0	0	0	0	0	0		fire:15		1
+10844	Nylocas Athanatos	40	40	0	0	0	0	0	0	0	0		fire:15		0
+8344	Nylocas Hagios	1	1	1073	0	0	0	0	0	0	0		fire:15		1
+8347	Nylocas Hagios	20	20	500	0	0	0	0	0	0	0		fire:15		0
+8383	Nylocas Hagios	0	0	0	0	0	0	0	0	0	0		fire:15		0
+10776	Nylocas Hagios	1	1	505	0	0	0	0	0	0	0		fire:15		0
+10779	Nylocas Hagios	6	6	400	0	0	0	0	0	0	0		fire:15		0
+10843	Nylocas Hagios	0	0	0	0	0	0	0	0	0	0		fire:15		0
+8342	Nylocas Ischyros	1	1	1073	0	0	0	0	0	0	0		fire:15		1
+8345	Nylocas Ischyros	20	20	500	0	0	0	0	0	0	0		fire:15		0
+8381	Nylocas Ischyros	0	0	0	0	0	0	0	0	0	0		fire:15		0
+10774	Nylocas Ischyros	1	1	505	0	0	0	0	0	0	0		fire:15		0
+10777	Nylocas Ischyros	6	6	400	0	0	0	0	0	0	0		fire:15		0
+10841	Nylocas Ischyros	0	0	0	0	0	0	0	0	0	0		fire:15		0
+8366	Nylocas Matomenos	100	100	0	0	0	0	0	0	0	0		fire:15		1
+8385	Nylocas Matomenos	50	50	0	0	0	0	0	0	0	0		fire:15		0
+10820	Nylocas Matomenos	100	100	0	0	0	0	0	0	0	0		fire:15		0
+10828	Nylocas Matomenos	100	100	0	0	0	0	0	0	0	0		fire:15		0
+10862	Nylocas Matomenos	100	100	0	0	0	0	0	0	0	0		fire:15		0
+10803	Nylocas Prinkipas	25	25	300	0	0	0	0	0	0	0		fire:15		1
+10805	Nylocas Prinkipas	25	25	300	0	0	0	0	0	0	0		fire:15		0
+10806	Nylocas Prinkipas	25	25	300	0	0	0	0	0	0	0		fire:15		0
+8343	Nylocas Toxobolos	1	1	1073	0	0	0	0	0	0	0		fire:15		1
+8346	Nylocas Toxobolos	20	20	500	0	0	0	0	0	0	0		fire:15		0
+8382	Nylocas Toxobolos	0	0	0	0	0	0	0	0	0	0		fire:15		0
+10775	Nylocas Toxobolos	1	1	505	0	0	0	0	0	0	0		fire:15		0
+10778	Nylocas Toxobolos	6	6	400	0	0	0	0	0	0	0		fire:15		0
+10842	Nylocas Toxobolos	0	0	0	0	0	0	0	0	0	0		fire:15		0
+8354	Nylocas Vasilias	50	50	600	0	0	0	0	0	0	0		fire:15		1
+10786	Nylocas Vasilias	50	20	380	0	0	0	0	0	0	0		fire:15		0
+10807	Nylocas Vasilias	50	50	600	0	0	0	0	0	0	0		fire:15		0
+15677	Oaky Doak	65	60	13	35	11	40	70	21	33	40				1
+11751	Obelisk (Tombs of Amascut)	100	100	0	70	70	70	50	60	20	60				1
+7416	Obor	60	1	0	35	40	45	20	20	20	20		earth:20		1
+16673	Ocellus	215	350	150	150	95	60	100	50	135	50	demon			1
+16675	Ocellus	250	220	0	150	120	10	100	100	110	80				0
+16677	Ocellus	250	300	350	150	100	30	200	250	250	250	demon			0
+14545	Ocelot	30	1	0	0	0	0	0	0	0	0		fire:10		1
+14546	Ocelot	30	1	0	0	0	0	0	0	0	0		fire:10		0
+14547	Ocelot	30	1	0	0	0	0	0	0	0	0		fire:10		0
+4108	Ocga	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+2646	Ochre Blamish Snail	18	1	0	5	5	30	5	50	50	50		earth:25		1
+2651	Ochre Blamish Snail	25	1	0	5	5	30	5	50	50	50		earth:25		0
+136	Ogre	43	1	0	0	0	0	0	0	0	0		earth:20		1
+1153	Ogre	54	1	0	19	23	24	0	0	0	0		earth:20		0
+2233	Ogre	43	1	0	0	0	0	0	0	0	0		earth:20		0
+4362	Ogre chieftain	75	1	0	10	21	16	0	0	0	0		earth:20		1
+4383	Ogre shaman	1	1	0	0	0	0	0	0	0	0				1
+4387	Ogre shaman	1	1	0	0	0	0	0	0	0	0				0
+4389	Ogre shaman	1	1	0	0	0	0	0	0	0	0				0
+4391	Ogre shaman	1	1	0	0	0	0	0	0	0	0				0
+4393	Ogre shaman	1	1	0	0	0	0	0	0	0	0				0
+4395	Ogre shaman	1	1	0	0	0	0	0	0	0	0				0
+4382	Ogre shaman (Swan Song)	99	1	0	0	0	0	0	0	0	0				1
+7991	Ogress Shaman	82	68	0	12	14	14	16	8	8	8		earth:20		1
+7989	Ogress Warrior	82	60	0	10	12	12	14	16	16	16		earth:20		1
+7990	Ogress Warrior	82	60	0	10	12	12	14	16	16	16		earth:20		0
+5259	Oipuis	130	130	0	0	0	0	0	0	0	0				1
+15680	Old Jack	65	60	13	35	11	40	70	21	33	40				1
+2062	Oomlie bird	40	1	0	0	0	0	0	0	0	0				1
+15204	Orca	75	1	0	0	0	0	0	150	60	40				1
+2237	Ork	60	1	0	12	14	13	5	13	13	13		earth:15		1
+13006	Oryx	13	1	0	0	0	0	0	0	0	0				1
+15222	Osprey	40	1	0	0	0	0	0	30	30	10				1
+8994	Othainian	77	1	0	0	0	0	-10	0	0	0	demon			1
+2843	Otherworldly being	46	1	0	15	10	20	-5	15	15	15	spectral	air:35		1
+5261	Ouhai	130	130	0	0	0	0	0	0	0	0				1
+4167	Outlaw	25	1	0	0	0	0	0	0	0	0				1
+4168	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4169	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4170	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4171	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4172	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4173	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4174	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4175	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+4176	Outlaw	25	1	0	0	0	0	0	0	0	0				0
+16527	Outlaw (A Ruff Situation)	20	0	0	0	0	0	0	0	0	0				1
+16528	Outlaw (A Ruff Situation)	20	0	0	0	0	0	0	0	0	0				0
+16835	Outlaw (Mudfoot's Big Adventure)	3	2	0	2	6	6	10	8	8	8				1
+16837	Outlaw (Mudfoot's Big Adventure)	3	2	0	2	6	6	10	8	8	8				0
+16839	Outlaw (Mudfoot's Big Adventure)	3	6	0	10	10	10	12	2	2	2				0
+16840	Outlaw (Mudfoot's Big Adventure)	3	6	0	10	10	10	12	2	2	2				0
+16842	Outlaw (Mudfoot's Big Adventure)	3	2	0	8	8	6	-5	10	10	10				0
+16843	Outlaw (Mudfoot's Big Adventure)	3	2	0	8	8	6	-5	10	10	10				0
+5263	Padulah	130	130	0	0	0	0	0	0	0	0				1
+3293	Paladin	54	1	0	87	84	76	-10	79	79	79				1
+3294	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+8853	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+11901	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+11930	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+11931	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+11932	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+11933	Paladin	54	1	0	87	84	76	-10	79	79	79				0
+8849	Paladin (Song of the Elves)	28	1	0	20	40	40	30	20	20	20				1
+8850	Paladin (Song of the Elves)	64	1	0	87	84	76	-10	79	79	79				0
+3869	Palmer	25	1	0	0	0	0	0	0	0	0				1
+9452	Parasite	60	60	20	60	80	20	120	120	120	120		fire:50		1
+9453	Parasite	40	60	12	50	70	10	100	100	100	100		fire:50		0
+9468	Parasite (Phosani's Nightmare)	60	60	84	60	80	20	120	120	120	120		fire:50		1
+9469	Parasite (Phosani's Nightmare)	40	60	44	50	70	10	100	100	100	100		fire:50		0
+12833	Passionate Supporter	1	1	0	0	0	0	0	0	0	0				1
+927	Pee Hat	50	0	0	25	25	40	200	200	200	200		earth:20		1
+1667	Penance Fighter	25	1	0	0	0	0	0	0	0	0	penance			1
+5740	Penance Fighter	27	1	0	0	0	0	0	0	0	0	penance			0
+5741	Penance Fighter	34	1	0	0	0	0	0	0	0	0	penance			0
+5742	Penance Fighter	37	1	0	0	0	0	0	0	0	0	penance			0
+5743	Penance Fighter	44	1	0	0	0	0	0	0	0	0	penance			0
+5744	Penance Fighter	48	1	0	0	0	0	0	0	0	0	penance			0
+5745	Penance Fighter	52	1	0	0	0	0	0	0	0	0	penance			0
+5746	Penance Fighter	62	1	0	0	0	0	0	0	0	0	penance			0
+5747	Penance Fighter	66	1	0	0	0	0	0	0	0	0	penance			0
+1670	Penance Healer	9	1	0	0	0	0	0	0	0	0				1
+5767	Penance Healer	14	1	0	0	0	0	0	0	0	0				0
+5768	Penance Healer	19	1	0	0	0	0	0	0	0	0				0
+5769	Penance Healer	21	1	0	0	0	0	0	0	0	0				0
+5770	Penance Healer	25	1	0	0	0	0	0	0	0	0				0
+5771	Penance Healer	28	1	0	0	0	0	0	0	0	0				0
+5772	Penance Healer	34	1	0	0	0	0	0	0	0	0				0
+5773	Penance Healer	36	1	0	0	0	0	0	0	0	0				0
+5774	Penance Healer	38	1	0	0	0	0	0	0	0	0				0
+5775	Penance Queen	132	1	0	0	0	0	0	0	0	0				1
+1668	Penance Ranger	21	1	0	0	0	0	0	0	0	0	penance			1
+5758	Penance Ranger	29	1	0	0	0	0	0	0	0	0	penance			0
+5759	Penance Ranger	33	1	0	0	0	0	0	0	0	0	penance			0
+5760	Penance Ranger	42	1	0	0	0	0	0	0	0	0	penance			0
+5761	Penance Ranger	46	1	0	0	0	0	0	0	0	0	penance			0
+5762	Penance Ranger	54	1	0	0	0	0	0	0	0	0	penance			0
+5763	Penance Ranger	61	1	0	0	0	0	0	0	0	0	penance			0
+5764	Penance Ranger	68	1	0	0	0	0	0	0	0	0	penance			0
+5765	Penance Ranger	80	1	0	0	0	0	0	0	0	0	penance			0
+1669	Penance Runner	1	1	0	0	0	0	0	0	0	0				1
+5749	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5750	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5751	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5752	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5753	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5754	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5755	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+5756	Penance Runner	1	1	0	0	0	0	0	0	0	0				0
+4109	Penda	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+2063	Penguin (monster)	2	1	0	0	0	0	0	0	0	0		fire:25		1
+12333	Persten the Deceitful	130	250	40	70	70	70	200	20	20	20	spectral			1
+8359	Pestilent Bloat	100	150	0	40	20	40	600	800	800	800	undead			1
+10812	Pestilent Bloat	80	120	0	10	5	10	600	800	800	800	undead			0
+10813	Pestilent Bloat	100	150	0	40	20	40	600	800	800	800	undead			0
+16579	Pete Kayer	120	99	0	0	0	0	0	0	0	0				1
+16588	Pete Kayer	120	99	0	0	0	0	0	0	0	0				0
+10957	Phantom Hand	8	8	0	0	0	0	0	0	0	0				1
+10958	Phantom Hand	8	8	0	0	0	0	0	0	0	0				0
+12073	Phantom Muspah	200	150	90	110	90	80	280	0	0	0				0
+12074	Phantom Muspah	200	150	90	110	90	80	-10	160	160	160				0
+12075	Phantom Muspah	200	180	90	110	90	80	280	0	0	0				0
+12076	Phantom Muspah	200	179	90	110	90	80	280	0	0	0				0
+12077	Phantom Muspah	200	150	280	185	134	120	437	56	56	56	spectral	air:65		1
+12078	Phantom Muspah	200	150	280	185	134	120	34	261	261	261	spectral	air:65		0
+12079	Phantom Muspah	200	180	280	185	134	120	437	56	56	56	spectral	air:65		0
+12080	Phantom Muspah	200	179	280	185	134	120	437	56	56	56	spectral	air:65		0
+12081	Phantom Muspah	200	150	90	110	90	80	280	0	0	0				0
+12082	Phantom Muspah	200	150	280	185	134	120	437	56	56	56	spectral	air:65		0
+373	Pheasant	3	1	0	0	0	0	0	0	0	0				1
+374	Pheasant	3	1	0	0	0	0	0	0	0	0				0
+5500	Pheasant	3	1	0	0	0	0	0	0	0	0				0
+5502	Pheasant	3	1	0	0	0	0	0	0	0	0				0
+9416	Phosani's Nightmare	150	150	220	120	180	40	600	600	600	600				1
+1279	Phrin Shade	42	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+1280	Phrin Shade	42	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
+521	Pirate	20	1	0	0	1	0	0	0	0	0				1
+522	Pirate	21	1	0	3	2	0	0	0	0	0				0
+523	Pirate	23	1	0	3	2	0	0	0	0	0				0
+524	Pirate	20	1	0	0	1	0	0	0	0	0				0
+1447	Pirate	20	1	0	0	1	0	0	0	0	0				0
+4043	Pirate	50	1	0	0	0	0	0	0	0	0				0
+15456	Pirate (Feldip Gulf)	10	0	0	5	17	0	0	0	0	0				1
+15021	Pirate (The Red Reef)	35	10	0	10	20	10	0	0	0	0				1
+15022	Pirate (The Red Reef)	35	10	0	10	20	10	0	0	0	0				0
+15023	Pirate (The Red Reef)	35	10	0	10	20	10	0	0	0	0				0
+15024	Pirate (The Red Reef)	35	10	0	10	20	10	0	0	0	0				0
+14933	Pirate (Thieving)	35	10	0	10	20	10	0	0	0	0				1
+14934	Pirate (Thieving)	35	10	0	10	20	10	0	0	0	0				0
+14935	Pirate (Thieving)	35	10	0	10	20	10	0	0	0	0				0
+14936	Pirate (Thieving)	35	10	0	10	20	10	0	0	0	0				0
+14937	Pirate (Thieving)	35	10	0	10	20	10	0	0	0	0				0
+4926	Pirate Guard	10	1	0	30	39	30	0	0	0	0				1
+15455	Pirate captain (Feldip Gulf)	50	0	0	5	17	0	0	0	0	0				1
+3026	Pit Scorpion	23	1	0	0	5	5	0	0	0	0		fire:25		1
+11586	Plague frog	1	1	0	0	0	0	0	0	0	0				1
+3025	Poison Scorpion	15	1	0	5	15	15	0	5	5	5		fire:25		1
+3023	Poison spider	52	1	0	20	17	10	14	14	14	14		fire:40		1
+5373	Poison spider	28	1	0	20	17	10	14	14	14	14		fire:40		0
+11990	Poison spider (Escape Caves)	35	1	0	20	17	10	14	14	14	14		fire:40		1
+4758	Poltenip	14	1	0	18	25	19	-4	20	20	20				1
+7515	Porazdir	100	180	80	200	200	200	-60	200	200	200	demon			1
+13968	Porcupine	2	1	0	0	0	0	0	0	0	0		fire:20		1
+1739	Portal (Pest Control)	120	0	0	100	100	100	100	0	0	0				1
+1740	Portal (Pest Control)	120	0	0	100	100	100	0	100	100	100				0
+1741	Portal (Pest Control)	120	0	0	0	0	100	100	100	100	100				0
+1742	Portal (Pest Control)	120	0	0	100	100	0	100	100	100	100				0
+1743	Portal (Pest Control)	120	0	0	100	100	100	100	0	0	0				0
+1744	Portal (Pest Control)	120	0	0	100	100	100	0	100	100	100				0
+1745	Portal (Pest Control)	120	0	0	0	0	100	100	100	100	100				0
+1746	Portal (Pest Control)	120	0	0	100	100	0	100	100	100	100				0
+1747	Portal (Pest Control)	120	0	0	100	100	100	100	0	0	0				0
+1748	Portal (Pest Control)	120	0	0	100	100	100	0	100	100	100				0
+1749	Portal (Pest Control)	120	0	0	0	0	100	100	100	100	100				0
+1750	Portal (Pest Control)	120	0	0	100	100	0	100	100	100	100				0
+1751	Portal (Pest Control)	120	0	0	100	100	100	100	0	0	0				0
+1752	Portal (Pest Control)	120	0	0	100	100	100	0	100	100	100				0
+1753	Portal (Pest Control)	120	0	0	0	0	100	100	100	100	100				0
+1754	Portal (Pest Control)	120	0	0	100	100	0	100	100	100	100				0
+12334	Portal (wighted leech)	1	1	0	0	0	0	0	0	0	0				1
+4210	Possessed Priest	40	60	0	90	0	90	0	0	0	0				1
+3612	Possessed pickaxe	40	1	0	15	10	5	5	10	10	10				1
+7268	Possessed pickaxe	40	1	0	15	10	5	5	10	10	10				0
+15430	Praying mantis	10	1	0	10	15	5	0	10	10	10				1
+15431	Praying mantis	10	1	0	10	15	5	0	10	10	10				0
+15432	Praying mantis	10	1	0	10	15	5	0	10	10	10				0
+13784	Prince Itzla Arkan	75	55	0	30	30	20	10	30	30	30				1
+15206	Pygmy kraken	50	90	0	0	0	0	-63	120	75	60		earth:50		1
+433	Pyrefiend	22	1	0	10	10	10	0	10	10	10	fiery,demon	water:100		1
+3139	Pyrefiend	22	1	0	10	10	10	0	10	10	10	fiery,demon	water:100		0
+6762	Pyrelord	30	1	0	10	10	10	0	10	10	10	demon	water:100		1
+6795	Pyrelord	30	1	0	10	10	10	0	10	10	10	demon	water:100		0
+5776	Queen spawn	50	1	0	0	0	0	0	0	0	0				1
+1852	Rabbit	1	1	0	0	0	0	0	0	0	0		fire:20		1
+3420	Rabbit	1	1	0	-42	-42	-42	-42	-42	-42	-42		fire:20		0
+3664	Rabbit	1	1	0	-42	-42	-42	-42	-42	-42	-42		fire:20		0
+12851	Rabbit	1	1	0	-42	-42	-42	-42	-42	-42	-42		fire:20		0
+9118	Rabbit (Prifddinas)	450	300	0	150	150	150	150	200	200	200			magic-uses-defence	1
+4759	Radat	14	1	0	18	25	19	-4	20	20	20				1
+12370	Radiant sanguisphera	1	1	0	0	0	0	0	0	0	0				1
+3674	Ragnar (Miscellania)	1	1	0	0	0	0	0	0	0	0				1
+3687	Ragnvald	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+1261	Ram	1	1	0	-21	-21	-21	-21	-21	-21	-21		fire:20		1
+1262	Ram	1	1	0	-21	-21	-21	-21	-21	-21	-21		fire:20		0
+1263	Ram	1	1	0	-21	-21	-21	-21	-21	-21	-21		fire:20		0
+1264	Ram	1	1	0	-21	-21	-21	-21	-21	-21	-21		fire:20		0
+1265	Ram	1	1	0	-21	-21	-21	-21	-21	-21	-21		fire:20		0
+3966	Ranalph Devere	66	0	0	38	40	36	0	38	38	38	spectral	air:10		1
+13664	Ranging Ro	100	15	100	100	100	100	200	100	100	100				1
+8242	Ranis Drakan	120	120	0	60	60	60	60	60	60	60	vampyre3			1
+8248	Ranis Drakan	120	120	0	60	60	60	60	60	60	60	vampyre3			0
+3681	Rannveig	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+2492	Rat	1	1	0	-42	-42	-42	-42	-42	-42	-42	rat			1
+2854	Rat	1	1	0	-42	-42	-42	-42	-42	-42	-42	rat			0
+1704	Ravager	13	0	0	0	0	0	0	0	0	0				1
+1705	Ravager	23	0	0	0	0	0	0	0	0	0				0
+1706	Ravager	33	0	0	0	0	0	0	0	0	0				0
+1707	Ravager	43	0	0	0	0	0	0	0	0	0				0
+1708	Ravager	53	0	0	0	0	0	0	0	0	0				0
+7035	Reanimated TzHaar	120	40	0	0	0	0	0	0	0	0				1
+7038	Reanimated abyssal	135	1	0	20	20	20	0	20	20	20	demon			1
+7037	Reanimated aviansie	70	1	0	0	0	0	0	0	0	0	flying			1
+7023	Reanimated bear	15	1	0	0	0	0	0	0	0	0				1
+7034	Reanimated bloodveld	30	1	0	0	0	0	0	0	0	0	demon			1
+7026	Reanimated chaos druid	12	10	0	0	0	0	0	0	0	0				1
+7033	Reanimated dagannoth	81	1	0	0	0	0	0	0	0	0				1
+7036	Reanimated demon	71	1	0	0	0	0	-10	0	0	0	demon			1
+7287	Reanimated demon spawn	71	1	0	0	0	0	-10	0	0	0	demon			1
+7025	Reanimated dog	54	1	0	0	0	0	0	0	0	0				1
+7039	Reanimated dragon	68	68	0	20	40	40	30	20	20	20	dragon			1
+7029	Reanimated elf	80	1	0	5	20	40	60	50	50	50				1
+7027	Reanimated giant	26	1	0	0	0	0	0	0	0	0				1
+7018	Reanimated goblin	1	1	0	-15	-15	-15	-15	-15	-15	-15				1
+11463	Reanimated hellhound	102	1	0	0	0	0	0	0	0	0	demon			1
+7031	Reanimated horror	55	1	0	0	0	0	0	0	0	0				1
+7020	Reanimated imp	1	1	0	-42	-42	-42	-42	-42	-42	-42	demon			1
+7032	Reanimated kalphite	110	1	0	25	25	5	50	50	50	50	kalphite			1
+7021	Reanimated minotaur	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+7019	Reanimated monkey	3	1	0	0	0	0	0	0	0	0				1
+7028	Reanimated ogre	43	1	0	0	0	0	0	0	0	0				1
+7022	Reanimated scorpion	11	1	0	5	15	15	5	0	0	0				1
+7030	Reanimated troll	40	1	0	0	0	10	200	200	200	200				1
+7024	Reanimated unicorn	13	1	0	0	0	0	0	0	0	0				1
+247	Red dragon	130	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		1
+248	Red dragon	130	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+249	Red dragon	130	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+250	Red dragon	130	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+251	Red dragon	130	1	0	0	70	70	60	50	50	10	dragon,fiery	water:50		0
+14511	Red dragon (Scrambled!)	90	1	0	10	70	70	60	50	50	15	dragon,fiery	water:50		1
+11272	Redeyes	70	70	36	10	10	5	5	20	20	20				1
+15499	Reef snake	100	100	0	120	120	120	100	0	0	0				1
+3517	Renegade knight	28	1	0	99	82	62	0	0	0	0				1
+7403	Repugnant spectre	220	380	0	120	120	120	0	115	115	115	undead,spectral	air:40		1
+5914	Respiratory system	80	0	0	0	0	0	0	0	0	0	demon			1
+7934	Revenant cyclops	49	65	0	110	130	135	10	135	135	95	undead,spectral	air:30		1
+7938	Revenant dark beast	80	130	0	113	152	155	70	158	158	118	undead,spectral	air:30		1
+7936	Revenant demon	80	120	50	124	118	130	85	90	90	90	undead,spectral	air:30		1
+7940	Revenant dragon	87	150	61	143	206	188	101	197	197	157	undead,spectral	air:30		1
+7931	Revenant goblin	14	12	37	25	28	31	1	31	31	31	undead,spectral	air:30		1
+7935	Revenant hellhound	80	104	30	98	140	142	62	110	140	140	undead,spectral	air:30		1
+7933	Revenant hobgoblin	41	55	5	65	60	68	30	50	50	20	undead,spectral	air:30		1
+7881	Revenant imp	4	9	5	0	0	0	5	0	0	0	undead,spectral	air:30		1
+7939	Revenant knight	80	146	55	145	200	180	95	190	190	150	undead,spectral	air:30		1
+11246	Revenant maledictus	90	130	60	201	206	188	101	231	231	231	undead,spectral			1
+7937	Revenant ork	60	110	0	118	150	146	50	148	148	118	undead,spectral	air:30		1
+7932	Revenant pyrefiend	33	67	0	45	40	50	15	10	10	10	undead,spectral	air:30		1
+6732	River troll	9	1	0	0	0	0	0	0	0	0		earth:20		1
+6733	River troll	22	1	0	0	0	0	0	0	0	0		earth:20		0
+6734	River troll	38	1	0	0	0	0	0	0	0	0		earth:20		0
+6735	River troll	65	1	0	0	0	0	0	0	0	0		earth:20		0
+6736	River troll	100	1	0	0	0	0	0	0	0	0		earth:20		0
+6737	River troll	130	1	0	0	0	0	0	0	0	0		earth:20		0
+1281	Riyl Shade	60	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+1282	Riyl Shade	60	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
+5631	Riyl shadow (Temple Trekking)	60	50	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+8057	Robert the Strong	140	128	0	140	180	60	940	860	860	860				1
+925	Rock (Troll)	70	0	0	35	60	35	200	200	200	180		earth:20		1
+100	Rock Crab	1	1	0	0	0	0	0	0	0	0		earth:20		1
+101	Rock Crab	1	1	0	0	0	0	0	0	0	0		earth:20		0
+6725	Rock Golem (monster)	9	1	0	0	0	0	0	0	0	0	golem	earth:40		1
+6726	Rock Golem (monster)	22	1	0	0	0	0	0	0	0	0	golem	earth:40		0
+6727	Rock Golem (monster)	38	1	0	0	0	0	0	0	0	0	golem	earth:40		0
+6728	Rock Golem (monster)	65	1	0	0	0	0	0	0	0	0	golem	earth:40		0
+6729	Rock Golem (monster)	100	1	0	0	0	0	0	0	0	0	golem	earth:40		0
+6730	Rock Golem (monster)	130	1	0	0	0	0	0	0	0	0	golem	earth:40		0
+5944	Rock lobster	100	1	0	100	100	50	50	150	150	90		earth:25		1
+5945	Rock lobster	100	1	0	100	100	50	50	150	150	90		earth:25		0
+421	Rockslug	27	1	0	0	0	0	0	0	0	0		earth:25		1
+422	Rockslug	27	1	0	0	0	0	0	0	0	0		earth:25		0
+143	Rocnar	80	1	0	0	0	0	0	0	0	0				1
+526	Rogue	13	1	0	6	9	11	0	0	0	0				1
+6603	Rogue	150	1	0	0	0	0	0	0	0	0				0
+1175	Rooster	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
+3663	Rooster	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
+4634	Rowdy slave	7	0	0	0	0	0	0	0	0	0				1
+8031	Rune dragon	276	196	0	20	115	90	30	95	95	50	dragon,fiery	earth:50		1
+8027	Rune dragon (Construction)	276	196	0	20	115	90	30	95	95	50	dragon	earth:50		1
+6600	Runite Golem	165	1	0	0	0	0	0	0	0	0	golem	earth:60		1
+13673	Ruptura Araxyte	50	1	0	25	25	25	-10	25	25	25		fire:50		1
+3281	Rusty	1	1	0	-15	-15	-15	-15	-15	-15	-15				1
+304	Salarin the twisted	62	1	0	0	0	0	0	0	0	0				1
+3964	San Tojalon	86	0	0	18	22	20	-1	20	20	20	spectral	air:10		1
+5935	Sand Crab	1	1	0	0	0	0	0	0	0	0		earth:20		1
+5936	Sand Crab	1	1	0	0	0	0	0	0	0	0		earth:20		0
+7903	Sand Snake	20	1	0	0	0	0	0	0	0	0		earth:40		1
+7894	Sand Snake (Nightmare Zone)	20	1	0	0	0	0	0	0	0	0		earth:40		1
+7895	Sand Snake (Nightmare Zone)	20	1	0	0	0	0	0	0	0	0		earth:40		0
+15756	Sanguidae	30	30	0	10	5	10	5	10	10	10		fire:40		1
+16223	Sanguidae	30	30	0	10	5	10	5	10	10	10		fire:40		0
+16225	Sanguidae	30	30	0	10	5	10	5	10	10	10		fire:40		0
+8713	Sarachnis	150	150	0	60	40	10	150	300	300	300		fire:40		1
+2209	Saradomin priest	120	125	0	12	14	13	5	13	13	13				1
+2955	Saradomin wizard	80	80	0	0	0	0	30	0	0	0				1
+11697	Scarab (Tombs of Amascut)	28	1	0	0	0	0	0	0	0	0		fire:40		1
+794	Scarab Mage	90	70	70	40	90	90	34	0	0	0	kalphite	fire:50		1
+799	Scarab Mage	90	70	70	40	90	90	34	0	0	0	kalphite	fire:50		0
+11508	Scarab Mage	60	100	30	0	20	20	30	0	0	0	kalphite	fire:50		0
+1782	Scarab Swarm	30	1	0	90	90	5	90	90	90	90	kalphite	fire:50		1
+4192	Scarab Swarm	30	1	0	90	90	5	90	90	90	90	kalphite	fire:50		0
+11484	Scarab Swarm (Beneath Cursed Sands)	2	1	0	-100	-100	-100	-100	-100	-100	-100				1
+11723	Scarab Swarm (Tombs of Amascut)	0	1	0	-100	-100	-100	-100	-100	-100	-100		fire:40		1
+729	Scarabs	10	1	0	15	15	15	15	15	15	15	kalphite	fire:50		1
+12386	Scarred black demon	152	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+12373	Scarred greater demon	40	1	0	0	0	0	-10	0	0	0	demon	water:40		1
+12388	Scarred greater demon	81	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+12374	Scarred hellhound	50	1	0	0	0	0	0	0	0	0	demon	water:50		1
+12377	Scarred imp	50	1	0	0	0	0	0	0	0	0	demon	water:10		1
+12360	Scarred lesser demon	110	110	100	0	0	0	0	0	0	0	demon	water:40		1
+12362	Scarred lesser demon	110	110	100	0	0	0	0	0	0	0	demon	water:40		0
+12364	Scarred lesser demon	110	110	100	0	0	0	0	0	0	0	demon	water:40		0
+12378	Scarred lesser demon	90	1	0	0	0	0	0	0	0	0	demon	water:40		0
+12390	Scarred lesser demon	71	1	0	0	0	0	-10	0	0	0	demon	water:40		0
+7548	Scavenger beast	45	1	0	0	0	0	0	0	0	0	xerician			1
+5918	Scion	50	1	0	0	0	0	-10	0	0	0				1
+6615	Scorpia	180	1	0	246	284	284	44	284	284	284		fire:35		1
+6617	Scorpia's guardian	60	30	0	0	0	0	0	0	0	0		fire:35		1
+6616	Scorpia's offspring (monster)	1	1	0	0	0	0	-40	0	0	0		fire:35		1
+2479	Scorpion	50	1	0	5	15	15	0	55	55	55		fire:25		1
+2480	Scorpion	31	1	0	35	15	15	30	35	35	35		fire:25		0
+3024	Scorpion	11	1	0	5	15	15	0	5	5	5		fire:25		0
+5242	Scorpion	10	10	0	0	0	0	0	0	0	0		fire:25		0
+14940	Scorpion	1	1	0	-53	-53	-53	-53	-53	-53	-53		fire:25		0
+7390	Screaming banshee	56	1	0	13	13	13	0	13	13	13	undead,spectral	air:40		1
+7391	Screaming twisted banshee	80	1	0	25	25	25	0	25	25	25	undead,spectral	air:40		1
+7221	Scurrius	100	100	150	20	20	20	10	20	20	20	rat			1
+7222	Scurrius	60	50	150	20	20	20	10	20	20	20	rat			0
+1098	Sea Snake Hatchling	50	1	0	0	0	0	0	0	0	0		earth:20		1
+1097	Sea Snake Young	70	1	0	0	0	0	0	0	0	0		earth:20		1
+4315	Sea Troll Queen	100	150	0	20	40	40	40	0	0	0		earth:15		1
+4308	Sea troll	60	1	0	0	0	0	0	0	0	0		earth:15		1
+4309	Sea troll	50	1	0	0	0	0	0	0	0	0		earth:15		0
+4310	Sea troll	75	1	0	0	0	0	0	0	0	0		earth:15		0
+4311	Sea troll	90	1	0	0	0	0	0	0	0	0		earth:15		0
+1338	Seagull	1	1	0	-42	-42	-42	-42	-42	-42	-42		air:20		1
+1339	Seagull	1	1	0	-42	-42	-42	-42	-42	-42	-42		air:20		0
+9609	Seagull (Icyene Graveyard)	1	1	0	-42	-42	-42	-42	-42	-42	-42		air:20		1
+11073	Sergeant (Shayzien)	61	1	0	16	16	18	-12	27	27	27				1
+2218	Sergeant Grimspike	132	50	0	0	0	0	0	0	0	0				1
+2217	Sergeant Steelwill	150	150	0	0	0	0	0	0	0	0				1
+2216	Sergeant Strongstack	125	50	0	0	0	0	0	0	0	0				1
+12811	Serpent shaman	90	220	50	30	30	30	15	50	50	50				1
+4104	Servant (Burthorpe)	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+6740	Shade	130	1	0	0	0	0	0	0	0	0	undead,spectral			1
+7258	Shade	100	50	0	0	0	0	0	0	0	0	undead,spectral	air:40		0
+5633	Shade (Temple Trekking)	100	50	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+4004	Shadow (Temple of Light)	5	90	0	30	30	30	30	30	30	30		air:40		1
+3449	Shadow Hound	54	1	0	0	0	0	0	0	0	0				1
+12248	Shadow Keeper	100	100	0	0	0	0	0	0	0	0				1
+11485	Shadow Rift	10	1	0	0	0	0	0	0	0	0				1
+10398	Shadow Wyrm	125	160	0	20	100	100	50	20	0	20	dragon	earth:50		1
+10399	Shadow Wyrm	125	160	0	20	100	100	50	20	0	20	dragon	earth:50		0
+3016	Shadow spider	44	1	0	20	15	10	15	15	15	15		fire:40		1
+2853	Shadow warrior	36	0	0	43	31	19	15	38	38	38				1
+8709	Shaeded Beast	50	250	0	50	30	100	150	50	50	50				1
+4643	Shantay Guard	16	0	0	12	15	18	6	15	15	15				1
+14860	Shellbane gryphon	120	100	0	10	20	40	100	60	60	60		air:50		1
+15010	Shellbane gryphon	120	100	0	10	20	40	100	60	60	60		air:50		0
+1694	Shifter	23	27	0	0	0	0	0	0	0	0				1
+1696	Shifter	38	37	0	0	0	0	0	0	0	0				0
+1698	Shifter	53	47	0	0	0	0	0	0	0	0				0
+1700	Shifter	68	50	0	0	0	0	0	0	0	0				0
+1702	Shifter	83	60	0	0	0	0	0	0	0	0				0
+5457	Shipyard worker	10	0	0	0	0	0	0	0	0	0				1
+5729	Shipyard worker	10	0	0	0	0	0	0	0	0	0				0
+12819	Shockwave Colossus	150	350	55	15	15	15	5	35	35	35				1
+990	Sigmund	24	1	8	0	0	0	0	0	0	0				1
+5139	Sigmund	44	1	8	0	0	0	0	0	0	0				0
+4345	Sir Bedivere	99	1	0	15	0	190	0	0	0	0				1
+8988	Sir Carl	54	1	0	87	84	76	-10	79	79	79				1
+4348	Sir Gawain	100	1	0	65	90	300	0	0	0	0				1
+8989	Sir Harry	54	1	0	87	84	76	-10	79	79	79				1
+8987	Sir Jerro	54	1	0	87	84	76	-10	79	79	79				1
+4349	Sir Kay	100	1	0	45	300	65	0	0	0	0				1
+4344	Sir Lancelot	110	1	0	300	85	300	0	0	0	0				1
+4682	Sir Leye	15	1	0	0	0	0	0	0	0	0				1
+4342	Sir Lucan	99	1	0	275	65	45	0	0	0	0				1
+3527	Sir Mordred	33	1	0	99	82	45	0	0	0	0				1
+4343	Sir Palomedes	100	1	0	250	250	50	0	0	0	0				1
+4347	Sir Pelleas	98	1	0	200	-5	5	0	0	0	0				1
+4346	Sir Tristram	99	1	0	0	0	225	0	0	0	0				1
+7604	Skeletal Mystic	187	140	40	155	155	75	140	115	115	75	undead,xerician			1
+465	Skeletal Wyvern	120	125	0	140	90	90	80	140	140	140	dragon	fire:25		1
+466	Skeletal Wyvern	120	125	0	140	90	90	80	140	140	140	dragon	fire:25		0
+467	Skeletal Wyvern	120	125	0	140	90	90	80	140	140	140	dragon	fire:25		0
+468	Skeletal Wyvern	120	125	0	140	90	90	80	140	140	140	dragon	fire:25		0
+3615	Skeletal miner	38	1	0	9	11	-2	1	4	4	4				1
+70	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		1
+71	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+72	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+73	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+74	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+75	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+76	Skeleton	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+77	Skeleton	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+78	Skeleton	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+79	Skeleton	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+80	Skeleton	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+81	Skeleton	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+82	Skeleton	36	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+83	Skeleton	36	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+14426	Skeleton	24	1	0	5	5	-5	0	5	5	5	undead	air:35		0
+14427	Skeleton	24	1	0	5	5	-5	0	5	5	5	undead	air:35		0
+14428	Skeleton	24	1	0	5	5	-5	0	5	5	5	undead	air:35		0
+5237	Skeleton (Ape Atoll)	110	110	0	0	0	0	0	0	0	0	undead	earth:35		1
+1685	Skeleton (Barrows)	72	1	0	5	5	-5	0	5	5	5	undead	earth:35		1
+1686	Skeleton (Barrows)	72	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+1687	Skeleton (Barrows)	72	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+1688	Skeleton (Barrows)	72	1	0	5	5	-5	0	5	5	5	undead	earth:35		0
+7265	Skeleton (Catacombs of Kourend)	17	1	0	5	5	-5	0	5	5	5	undead	earth:35		1
+3565	Skeleton (Draynor Manor)	17	1	0	9	11	-2	1	4	4	4	undead	earth:35		1
+10717	Skeleton (Forthos Ruin)	24	1	0	9	11	-1	1	4	4	4	undead	earth:35		1
+10718	Skeleton (Forthos Ruin)	24	1	0	9	11	-1	1	4	4	4	undead	earth:35		0
+10719	Skeleton (Forthos Ruin)	24	1	0	9	11	-1	1	4	4	4	undead	earth:35		0
+10720	Skeleton (Forthos Ruin)	24	1	0	9	11	-1	1	4	4	4	undead	earth:35		0
+10721	Skeleton (Forthos Ruin)	24	1	0	9	11	-1	1	4	4	4	undead	earth:35		0
+13476	Skeleton (Lucien's camp)	62	1	0	25	20	25	10	30	30	30	undead	earth:35		1
+13477	Skeleton (Lucien's camp)	62	1	0	25	20	25	10	30	30	30	undead	earth:35		0
+13478	Skeleton (Lucien's camp)	62	1	0	25	20	25	10	30	30	30	undead	earth:35		0
+13479	Skeleton (Lucien's camp)	62	1	0	25	20	25	10	30	30	30	undead	earth:35		0
+3972	Skeleton (Melzar's Maze)	17	1	0	9	11	-2	1	4	4	4	undead	earth:35		1
+3973	Skeleton (Melzar's Maze)	17	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+3974	Skeleton (Melzar's Maze)	17	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+8070	Skeleton (Shayzien Crypts)	62	1	0	25	20	25	10	30	30	30	undead	earth:35		1
+8071	Skeleton (Shayzien Crypts)	62	1	0	15	10	15	30	20	20	20	undead	earth:35		0
+8072	Skeleton (Shayzien Crypts)	62	180	20	35	30	35	20	10	10	10	undead	earth:35		0
+2520	Skeleton (Stronghold of Security)	60	1	0	35	35	-5	0	35	35	35	undead	earth:35		1
+2521	Skeleton (Stronghold of Security)	40	1	0	35	35	-5	0	35	35	35	undead	earth:35		0
+2522	Skeleton (Stronghold of Security)	40	1	0	35	35	-5	0	35	35	35	undead	earth:35		0
+2523	Skeleton (Stronghold of Security)	40	1	0	35	35	-5	0	35	35	35	undead	earth:35		0
+2524	Skeleton (Stronghold of Security)	74	1	0	79	31	20	5	70	70	70	undead	earth:35		0
+2525	Skeleton (Stronghold of Security)	74	1	0	79	31	20	5	70	70	70	undead	earth:35		0
+2526	Skeleton (Stronghold of Security)	74	1	0	79	31	20	5	70	70	70	undead	earth:35		0
+6442	Skeleton (Tarn's Lair)	60	1	0	50	40	0	0	40	40	40	undead	earth:35		1
+6443	Skeleton (Tarn's Lair)	80	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6444	Skeleton (Tarn's Lair)	40	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6445	Skeleton (Tarn's Lair)	62	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6446	Skeleton (Tarn's Lair)	30	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6447	Skeleton (Tarn's Lair)	45	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6448	Skeleton (Tarn's Lair)	52	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6467	Skeleton (Tarn's Lair)	45	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+6468	Skeleton (Tarn's Lair)	55	1	0	50	40	0	0	40	40	40	undead	earth:35		0
+924	Skeleton (The Restless Ghost)	7	1	0	5	5	-5	0	5	5	5	undead	earth:35		1
+13495	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		1
+13496	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+13497	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+13498	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+13499	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+13500	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+13501	Skeleton (Wilderness Agility Course)	24	1	0	9	11	-2	1	4	4	4	undead	earth:35		0
+8139	Skeleton (Wrath Altar)	24	1	0	0	0	0	0	0	0	0				1
+6441	Skeleton (mage)	80	110	0	50	40	0	0	40	40	40	undead	earth:35		1
+3358	Skeleton Champion	34	1	0	0	0	0	0	0	0	0	undead	air:35		1
+5054	Skeleton Hellhound	100	1	0	0	0	0	0	0	0	0	demon	earth:35		1
+12107	Skeleton Hellhound (Calvar'ion)	95	1	0	76	73	10	126	155	155	155	undead	earth:30		1
+6326	Skeleton Hellhound (Nightmare Zone)	100	1	0	0	0	0	0	0	0	0	demon	earth:35		1
+6387	Skeleton Hellhound (Nightmare Zone)	100	1	0	0	0	0	0	0	0	0	demon	earth:35		0
+6613	Skeleton Hellhound (Vet'ion)	150	1	0	101	103	10	180	266	266	266	undead	earth:30		1
+84	Skeleton Mage	14	18	0	0	0	0	0	0	0	0	undead	earth:35		1
+4319	Skeleton Mage	60	100	0	0	0	0	15	0	0	0	undead	earth:35		0
+1538	Skeleton brute	110	1	0	0	3	2	-3	2	2	2	undead	earth:35		1
+4491	Skeleton fremennik	30	1	0	14	18	15	-4	15	15	15	undead	earth:35		1
+4494	Skeleton fremennik	35	1	0	14	18	15	-4	15	15	15	undead	earth:35		0
+4497	Skeleton fremennik	40	1	0	14	18	15	-4	15	15	15	undead	earth:35		0
+130	Skeleton guard	17	1	0	9	11	-2	1	4	4	4		air:35		1
+1540	Skeleton heavy	110	1	0	0	3	2	-3	2	2	2	undead	earth:35		1
+1537	Skeleton hero	110	1	0	0	3	2	-3	2	2	2	undead	earth:35		1
+1541	Skeleton thug	110	1	0	0	3	2	-3	2	2	2	undead	earth:35		1
+1539	Skeleton warlord	110	1	0	0	3	2	-3	2	2	2	undead	earth:35		1
+11268	Skoblin	10	10	0	10	10	5	5	20	20	20				1
+872	Skogre	35	1	0	0	0	0	0	0	0	0	undead			1
+878	Skogre	35	1	0	0	0	0	0	0	0	0	undead			0
+879	Skogre	35	1	0	0	0	0	0	0	0	0	undead			0
+7286	Skotizo	200	280	0	80	80	80	80	130	130	130	demon	water:40		1
+773	Skraeling (Etceteria)	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+774	Skraeling (Etceteria)	3	1	0	-12	-12	-12	-12	-12	-12	-12				0
+3684	Skraeling (Miscellania)	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+3686	Skraeling (Miscellania)	3	1	0	-12	-12	-12	-12	-12	-12	-12				0
+1362	Slagilith	75	1	0	50	50	5	5	50	50	50		earth:40		1
+6324	Slagilith (Nightmare Zone)	75	1	0	50	50	5	5	50	50	50		earth:40		1
+6385	Slagilith (Nightmare Zone)	75	1	0	50	50	5	5	50	50	50		earth:40		0
+882	Slash Bash	60	1	0	30	30	30	0	0	0	0	undead			1
+9470	Sleepwalker (Phosani's Nightmare)	0	0	0	-100	-100	-100	-100	-100	-100	-100				1
+9446	Sleepwalker (monster)	0	0	0	-100	-100	-100	-100	-100	-100	-100				1
+9447	Sleepwalker (monster)	0	0	0	-100	-100	-100	-100	-100	-100	-100				0
+9448	Sleepwalker (monster)	0	0	0	-100	-100	-100	-100	-100	-100	-100				0
+9449	Sleepwalker (monster)	0	0	0	-100	-100	-100	-100	-100	-100	-100				0
+9450	Sleepwalker (monster)	0	0	0	-100	-100	-100	-100	-100	-100	-100				0
+9451	Sleepwalker (monster)	0	0	0	-100	-100	-100	-100	-100	-100	-100				0
+4797	Slug Prince	50	1	0	30	30	30	99	99	99	99				1
+462	Small Lizard	10	1	0	0	5	5	0	0	0	0				1
+463	Small Lizard	10	1	0	0	5	5	0	0	0	0				0
+14126	Small scarab	55	1	0	0	0	0	0	0	0	0	kalphite	fire:50		1
+498	Smoke devil	275	1	0	0	0	0	600	44	44	44		air:30		1
+11270	Snailfeet	30	30	0	10	10	5	5	20	20	20				1
+2845	Snake	3	1	0	0	0	0	0	0	0	0				1
+13002	Snake	3	1	0	0	0	0	0	0	0	0				0
+14916	Snake	3	1	0	0	0	0	0	0	0	0				0
+5244	Snake (Ape Atoll)	10	10	0	0	0	0	0	0	0	0				1
+1037	Snake (Mos Le'Harmless)	50	1	0	0	0	0	0	0	0	0				1
+3544	Snake (desert)	3	1	0	0	0	0	0	0	0	0				1
+2045	Snakeling	1	1	0	-40	-40	-40	-40	-40	-40	-40				1
+2046	Snakeling	1	185	80	-40	-40	-40	-40	-40	-40	-40				0
+15163	Snakeling (Sea charting)	1	185	80	-40	-40	-40	-40	-40	-40	-40				1
+11269	Snothead	15	15	0	10	10	5	5	20	20	20				1
+2626	Sofiya	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+12821	Sol Heredit	200	300	0	65	5	30	750	825	825	825				1
+4088	Soldier (Burthorpe)	40	1	0	15	23	21	6	14	14	14				1
+11072	Soldier (Shayzien)	14	1	0	24	14	19	4	16	16	16				1
+5421	Soldier (Yanille)	26	1	0	24	14	19	-4	16	16	16				1
+6905	Soldier (tier 1)	30	1	0	0	0	0	0	-1	-1	-1				1
+6907	Soldier (tier 2)	40	1	0	0	0	0	0	0	0	0				1
+6909	Soldier (tier 3)	50	1	0	0	0	0	0	-1	-1	-1				1
+6911	Soldier (tier 4)	60	1	0	1	1	0	0	0	0	0				1
+6913	Soldier (tier 5)	86	1	0	0	0	0	0	0	0	0				1
+11724	Soldier Scarab	80	100	250	15	250	30	-15	250	250	250	kalphite	fire:50		1
+4930	Solus Dellagar	25	1	0	5	5	5	72	0	0	0				1
+561	Sorebones	50	1	0	0	0	0	0	0	0	0	undead			1
+562	Sorebones	50	1	0	0	0	0	0	0	0	0	undead			0
+8387	Sotetseg	200	250	-10	70	70	70	30	150	150	150				1
+10864	Sotetseg	150	150	-10	30	30	30	10	120	120	120				0
+10867	Sotetseg	200	250	-10	70	70	70	30	150	150	150				0
+508	Soulless	18	1	0	0	0	0	0	0	0	0				1
+10435	Sourhog	25	25	0	0	30	10	30	0	0	0				1
+10436	Sourhog (A Porcine of Interest)	25	25	0	0	30	10	30	0	0	0				1
+16607	Sparring partner	70	99	0	0	0	0	0	0	0	0				1
+16608	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16609	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16610	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16611	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16612	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16613	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16614	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16615	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16616	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+16617	Sparring partner	99	99	0	0	0	0	0	0	0	0				0
+5916	Spawn	10	1	0	0	0	0	-10	0	0	0			always-hit	1
+8056	Spawn (Dragon Slayer II)	60	1	1	5	15	15	0	5	5	5				1
+8714	Spawn of Sarachnis	50	1	0	50	50	20	-10	150	150	20				1
+8715	Spawn of Sarachnis	50	100	0	50	50	50	150	0	0	0				0
+303	Speedy Keith	27	1	0	9	8	10	0	0	0	0				1
+2478	Spider	21	1	0	53	53	53	53	53	53	53		fire:50		1
+3019	Spider	1	1	0	-53	-53	-53	-53	-53	-53	-53		fire:50		0
+4561	Spider	1	1	0	-53	-53	-53	-53	-53	-53	-53		fire:50		0
+5238	Spider (Ape Atoll)	1	1	0	0	1	0	1	0	0	0		fire:50		1
+8137	Spider (Ungael)	20	1	0	20	20	10	17	20	20	20		fire:50		1
+3602	Spidine	36	1	0	0	0	0	0	0	0	0		fire:25		1
+10397	Spiked Turoth	154	1	0	0	40	40	0	0	0	0	leafy			1
+11998	Spindel	225	235	0	70	70	10	205	103	103	103		fire:25		1
+12001	Spindel's Spiderling	1	10	0	0	0	0	0	0	0	0				1
+15208	Spined kraken	75	135	0	0	0	0	-63	120	75	60		earth:50		1
+1709	Spinner	43	37	0	0	0	0	0	0	0	0				1
+1710	Spinner	68	52	0	0	0	0	0	0	0	0				0
+1711	Spinner	93	67	0	0	0	0	0	0	0	0				0
+1712	Spinner	118	82	0	0	0	0	0	0	0	0				0
+1713	Spinner	143	37	0	0	0	0	0	0	0	0				0
+5946	Spinolyp	10	1	0	0	0	0	0	0	0	0				1
+5947	Spinolyp	10	1	0	100	100	100	50	50	50	50				0
+2212	Spiritual mage	86	160	0	8	7	3	16	2	2	2	spectral	air:30		1
+2244	Spiritual mage	103	142	0	12	14	13	35	13	13	13	spectral	air:30		0
+3161	Spiritual mage	61	180	0	0	0	0	0	0	0	0	spectral	air:30		0
+3168	Spiritual mage	111	150	0	9	12	5	45	28	28	28	spectral	air:30		0
+11292	Spiritual mage	100	200	52	420	400	420	200	0	0	0	spectral	fire:200		0
+2211	Spiritual ranger	100	1	0	3	5	13	16	23	23	23	spectral	air:30		1
+2242	Spiritual ranger	96	1	0	12	14	13	5	13	13	13	spectral	air:30		0
+3160	Spiritual ranger	80	1	0	0	0	0	0	0	0	0	spectral	air:30		0
+3167	Spiritual ranger	130	1	0	17	16	8	35	41	41	41	spectral	air:30		0
+11291	Spiritual ranger	100	100	0	20	0	20	300	50	50	50	spectral	fire:200		0
+2210	Spiritual warrior	110	1	0	12	14	13	5	13	13	13	spectral	air:30		1
+2243	Spiritual warrior	100	1	0	12	14	13	5	13	13	13	spectral	air:30		0
+3159	Spiritual warrior	100	1	0	0	0	0	0	0	0	0	spectral	air:30		0
+3166	Spiritual warrior	120	1	0	23	25	13	35	35	35	35	spectral	air:30		0
+11290	Spiritual warrior	100	50	0	100	100	80	0	250	250	250	spectral	fire:200		0
+11725	Spitting Scarab	80	100	250	15	250	30	250	125	125	125	kalphite	fire:50		1
+7794	Spitting Wyvern	90	125	0	50	70	70	140	120	70	120	dragon	air:25		1
+1689	Splatter	33	17	0	0	0	0	0	0	0	0				1
+1690	Splatter	53	22	0	0	0	0	0	0	0	0				0
+1691	Splatter	73	27	0	0	0	0	0	0	0	0				0
+1692	Splatter	93	32	0	0	0	0	0	0	0	0				0
+1693	Splatter	113	37	0	0	0	0	0	0	0	0				0
+1845	Stag	13	1	0	0	0	0	0	0	0	0				1
+2206	Starlight	120	125	0	12	14	13	5	13	13	13				1
+274	Steel dragon	215	100	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		1
+275	Steel dragon	215	100	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		0
+7255	Steel dragon	235	130	0	0	70	70	30	90	90	10	dragon,fiery	earth:50		0
+139	Steel dragon (Construction)	215	100	0	20	70	70	30	90	90	65		earth:50		1
+926	Stick	60	0	0	30	30	50	200	200	200	200		earth:20		1
+15218	Stingray	25	1	0	0	0	0	0	50	50	20				1
+8064	Stone Guardian	138	118	0	25	25	15	10	40	40	40	golem	earth:40		1
+8065	Stone Guardian	138	118	0	10	10	0	55	25	25	25	golem	earth:40		0
+8066	Stone Guardian	138	128	10	40	40	35	35	0	0	0	golem	earth:40		0
+14706	Strange creature (Shadows of Custodia)	45	25	5	30	-10	50	35	-10	5	30		fire:30		1
+685	Stranger	80	1	1	81	93	98	1	82	82	82				1
+12268	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		1
+12269	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		0
+12270	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		0
+12271	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		0
+12272	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		0
+12273	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		0
+12274	Strangled	30	50	0	30	20	30	10	0	0	0		fire:50		0
+12288	Strangled Bear	40	60	0	30	20	30	10	0	0	0				1
+12289	Strangled Boar	40	60	0	30	20	30	10	0	0	0				1
+12290	Strangled Lynx	40	60	0	30	20	30	10	0	0	0				1
+13484	Strong Warrior	80	1	0	0	0	0	0	0	0	0				1
+11273	Strongbones	90	90	38	10	10	5	5	20	20	20				1
+5043	Suit of armour	9	1	0	46	50	45	-12	45	45	45				1
+8614	Sulphur Lizard	30	1	0	15	25	25	0	15	15	15				1
+13033	Sulphur Nagua	40	50	0	50	50	10	200	200	200	200	spectral	air:15		1
+12879	Sulphur Nagua (Perilous Moons)	40	50	0	50	50	10	200	200	200	200				1
+69	Summoned Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+787	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		1
+788	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		0
+789	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		0
+790	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		0
+791	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		0
+792	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		0
+793	Suqah	95	1	0	50	70	70	90	50	30	50		earth:20		0
+13482	Surok Magis	160	160	85	30	20	40	0	20	20	20				1
+2621	Svetlana	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+8297	Swamp Crab	50	50	0	100	100	100	100	-55	-55	-55		earth:35		1
+8298	Swamp Crab	50	50	0	100	100	100	100	-55	-55	-55		earth:35		0
+8299	Swamp Crab	50	50	0	100	100	100	100	-55	-55	-55		earth:35		0
+8578	Swamp frog	15	1	0	0	0	0	0	0	0	0		earth:20		1
+5615	Swamp snake	70	30	0	0	0	0	0	0	0	0				1
+5616	Swamp snake	80	30	0	0	0	0	0	0	0	0				0
+5617	Swamp snake	90	30	0	0	0	0	0	0	0	0				0
+3603	Swordchick	45	1	0	0	0	0	0	0	0	0				1
+7793	Taloned Wyvern	90	90	0	50	70	70	140	120	70	120	dragon	air:35		1
+5848	Tanglefoot	91	1	0	0	0	0	0	0	0	0				1
+6291	Tanglefoot (Nightmare Zone)	91	1	0	0	0	0	0	0	0	0		fire:35		1
+6353	Tanglefoot (Nightmare Zone)	91	1	0	0	0	0	0	0	0	0		fire:35		0
+7804	Tar Monster	70	1	0	0	0	0	0	0	0	0				1
+4763	Target	1	1	0	0	0	0	0	0	0	0				1
+4764	Target	1	1	0	0	0	0	0	0	0	0				0
+4757	Tarik (Nardah)	14	1	0	18	25	19	-4	20	20	20				1
+6476	Tarn	40	1	0	50	50	50	50	50	50	50	undead			1
+6477	Tarn	40	1	0	50	50	50	50	50	50	50				0
+7540	Tekton	205	205	0	155	165	105	0	0	0	0	xerician	water:20		1
+7543	Tekton	205	205	0	280	290	180	0	0	0	0	xerician	water:20		0
+7620	Temple Guardian	20	1	0	0	0	0	0	0	0	0				1
+8703	Temple Spider	10	1	0	20	30	10	25	20	20	20		fire:40		1
+5912	Tentacle (Abyssal Sire)	1	1	0	0	0	0	0	0	0	0	demon			1
+5643	Tentacle (Temple Trekking)	75	50	0	0	0	0	0	0	0	0				1
+5646	Tentacle (Temple Trekking)	75	50	0	0	0	0	0	0	0	0				0
+15228	Tern	0	1	0	0	0	0	0	30	30	10				1
+6473	Terror dog	78	1	0	0	0	0	0	0	0	0				1
+6474	Terror dog	74	1	0	0	0	0	0	0	0	0				0
+2064	Terrorbird	19	1	0	0	0	0	0	0	0	0				1
+2065	Terrorbird	19	1	0	0	0	0	0	0	0	0				0
+2066	Terrorbird	19	1	0	0	0	0	0	0	0	0				0
+3922	The Draugen	60	1	0	100	100	100	500	500	500	500	undead	air:50		1
+3474	The Everlasting	120	1	0	0	0	0	0	0	0	0				1
+6120	The Everlasting (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0				1
+6351	The Everlasting (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0				0
+12328	The Forsaken Assassin	140	140	0	60	30	80	200	50	50	50	spectral	air:15		1
+14009	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		1
+14011	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
+14014	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
+14015	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
+14017	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
+3476	The Illusive	105	1	0	0	0	0	0	0	0	0				1
+3473	The Inadequacy	240	1	0	0	0	0	0	0	0	0				1
+6119	The Inadequacy (Nightmare Zone)	240	1	0	0	0	0	0	0	0	0				1
+6350	The Inadequacy (Nightmare Zone)	240	1	0	0	0	0	0	0	0	0				0
+9290	The Jormungand	214	214	0	50	50	10	50	50	50	50		earth:40		1
+1377	The Kendal	60	0	0	10	10	10	-10	20	20	20				1
+6322	The Kendal (Nightmare Zone)	60	0	0	10	10	10	-10	20	20	20				1
+6383	The Kendal (Nightmare Zone)	60	0	0	10	10	10	-10	20	20	20				0
+12214	The Leviathan	287	280	160	260	190	230	280	50	50	25				1
+12215	The Leviathan	200	130	130	200	150	180	220	50	50	25				0
+8360	The Maiden of Sugadinti	200	350	300	0	0	0	0	0	0	0				1
+8361	The Maiden of Sugadinti	200	350	300	0	0	0	0	0	0	0				0
+8362	The Maiden of Sugadinti	200	350	300	0	0	0	0	0	0	0				0
+8363	The Maiden of Sugadinti	200	350	300	0	0	0	0	0	0	0				0
+10814	The Maiden of Sugadinti	80	140	150	0	0	0	0	0	0	0				0
+10822	The Maiden of Sugadinti	200	350	300	0	0	0	0	0	0	0				0
+8633	The Mimic	120	60	180	160	165	150	30	145	145	145				1
+9425	The Nightmare	150	150	140	120	180	40	600	600	600	600				1
+4708	The Shaikahan	25	1	0	0	0	0	10000	10000	10000	10000				1
+16641	The Smorks	220	185	185	220	170	160	400	80	150	80		earth:85		1
+3475	The Untouchable	434	1	0	0	0	0	0	0	0	0				1
+6121	The Untouchable (Nightmare Zone)	434	1	0	0	0	0	0	0	0	0				1
+6352	The Untouchable (Nightmare Zone)	434	1	0	0	0	0	0	0	0	0				0
+12204	The Whisperer	300	225	190	180	300	220	10	300	300	300		earth:60		1
+12206	The Whisperer	200	130	180	150	250	180	-10	250	250	250		earth:60		0
+15168	The rocks	135	1	0	35	60	35	0	0	0	0		fire:100		1
+499	Thermonuclear smoke devil	360	1	0	11	4	9	800	900	900	900		air:20		1
+1448	Thief	12	1	0	0	0	0	0	0	0	0				1
+3252	Thief	12	1	0	0	0	0	0	0	0	0				0
+3253	Thief	12	0	0	0	0	0	0	0	0	0				0
+4247	Thief	9	1	0	8	13	14	4	9	9	9				0
+5217	Thief	12	1	0	0	0	0	0	0	0	0				0
+5218	Thief	12	1	0	0	0	0	0	0	0	0				0
+5219	Thief	12	1	0	0	0	0	0	0	0	0				0
+5220	Thief	12	1	0	0	0	0	0	0	0	0				0
+7914	Thief	14	1	0	24	14	19	4	16	16	16				0
+7915	Thief	14	1	0	24	14	19	4	16	16	16				0
+7916	Thief	14	1	0	24	14	19	4	16	16	16				0
+13291	Thief (Varlamore)	12	1	0	0	0	0	0	0	0	0				1
+13292	Thief (Varlamore)	12	1	0	0	0	0	0	0	0	0				0
+13293	Thief (Varlamore)	12	1	0	0	0	0	0	0	0	0				0
+13294	Thief (Varlamore)	12	1	0	0	0	0	0	0	0	0				0
+13295	Thief (Varlamore)	12	1	0	0	0	0	0	0	0	0				0
+13296	Thief (Varlamore)	12	1	0	0	0	0	0	0	0	0				0
+2115	Thing under the bed	5	1	0	0	0	0	0	0	0	0				1
+8637	Third Age Mage	80	110	145	5	6	5	65	-5	-5	-5				1
+8636	Third Age Ranger	80	1	0	55	47	60	60	55	55	55				1
+8635	Third Age Warrior	80	1	0	96	108	113	-4	97	97	97				1
+3682	Thora (Miscellania)	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+3677	Thorhild	1	1	0	0	0	0	0	0	0	0				1
+3518	Thrantax the Mighty	80	1	0	0	0	0	0	0	0	0				1
+931	Thrower Troll	30	0	0	0	0	0	200	200	120	200		earth:20		1
+4135	Thrower troll (Trollheim)	15	0	0	0	0	0	200	200	120	200		earth:20		1
+525	Thug	9	1	0	2	3	3	0	0	0	0				1
+15198	Tiger shark	60	1	0	0	0	0	0	100	20	40				1
+2193	Tok-Xil	60	60	0	0	0	0	0	0	0	0		water:40		1
+141	Tok-Xil (Construction)	90	90	0	0	0	0	0	0	0	0				1
+1075	Tolna	40	1	0	0	0	0	50	50	50	50				1
+1076	Tolna	40	1	0	0	0	0	50	50	50	50				0
+1077	Tolna	40	1	0	0	0	0	50	50	50	50				0
+1676	Torag the Corrupted	100	1	-33	221	235	222	0	221	221	221	spectral	air:50		1
+1714	Torcher	25	46	0	0	0	0	0	0	0	0				1
+1716	Torcher	41	66	0	0	0	0	0	0	0	0				0
+1718	Torcher	57	85	0	0	0	0	0	0	0	0				0
+1720	Torcher	73	97	0	0	0	0	0	0	0	0				0
+1722	Torcher	89	107	0	0	0	0	0	0	0	0				0
+1723	Torcher	89	107	0	0	0	0	0	0	0	0				0
+13599	Tormented Demon	150	255	300	75	175	68	5	140	150	90	demon	water:30		1
+13600	Tormented Demon	150	255	300	75	175	68	5	140	150	90	demon	water:30		0
+13601	Tormented Demon	150	255	300	75	175	68	5	140	150	90	demon	water:30		0
+13602	Tormented Demon	150	255	300	75	175	68	5	140	150	90	demon	water:30		0
+8512	Tormented Soul	10	1	0	0	0	0	0	0	0	0	undead			1
+3959	Tormented Warrior	76	0	0	0	0	0	0	0	0	0				1
+6075	Tortoise	80	1	0	0	0	0	0	0	0	0		earth:20		1
+6076	Tortoise	80	50	0	0	0	0	0	0	0	0		earth:20		0
+7095	Tortured gorilla	110	110	0	0	0	0	0	0	0	0				1
+7150	Tortured gorilla	95	95	20	0	0	0	25	0	0	0				0
+2999	Tortured soul	38	1	0	0	0	0	0	0	0	0	undead,spectral			1
+9435	Totem (Phosani's Nightmare)	0	1	0	-100	-100	-100	-100	0	0	0		fire:70		1
+9436	Totem (Phosani's Nightmare)	0	1	0	-100	-100	-100	-100	0	0	0				0
+3551	Tough Guy	50	80	0	9	8	10	0	0	0	0				1
+6065	Tower Archer	10	1	0	0	0	0	6	12	12	12				1
+6066	Tower Archer	10	1	0	0	0	0	24	40	40	40				0
+6067	Tower Archer	10	1	0	0	0	0	20	45	45	45				0
+6068	Tower Archer	10	1	0	0	0	0	34	66	66	66				0
+4405	Tower guard	26	1	0	23	35	28	0	0	0	0				1
+8514	Trapped Soul	20	1	0	0	0	0	0	0	0	0	undead	air:15		1
+8528	Trapped Soul (Nightmare Zone)	20	1	0	0	0	0	0	0	0	0	undead	air:15		1
+8529	Trapped Soul (Nightmare Zone)	20	1	0	0	0	0	0	0	0	0	undead	air:15		0
+1861	Tree spirit	9	1	0	0	0	0	0	0	0	0		fire:35		1
+1862	Tree spirit	22	1	0	0	0	0	0	0	0	0		fire:35		0
+1863	Tree spirit	38	1	0	0	0	0	0	0	0	0		fire:35		0
+1864	Tree spirit	65	1	0	0	0	0	0	0	0	0		fire:35		0
+1865	Tree spirit	100	1	0	0	0	0	0	0	0	0		fire:35		0
+1866	Tree spirit	130	1	0	0	0	0	0	0	0	0		fire:35		0
+1163	Tree spirit (Lost City)	80	1	0	0	0	0	0	0	0	0	undead,spectral	fire:35		1
+6319	Tree spirit (Nightmare Zone)	80	1	0	0	0	0	0	0	0	0	spectral	fire:35		1
+6380	Tree spirit (Nightmare Zone)	80	1	0	0	0	0	0	0	0	0	spectral	fire:35		0
+3616	Treus Dayth	100	1	0	5	5	5	-5	5	5	5	spectral,undead	air:25		1
+6298	Treus Dayth (Nightmare Zone)	100	1	0	5	5	5	-5	5	5	5	spectral	air:25		1
+6359	Treus Dayth (Nightmare Zone)	100	1	0	5	5	5	-5	5	5	5	spectral	air:25		0
+530	Tribesman	26	1	0	4	6	6	0	0	0	0				1
+6406	Tribesman	26	1	0	4	6	6	0	0	0	0				0
+11954	Tribesman	26	1	0	4	6	6	0	0	0	0				0
+11955	Tribeswoman	26	1	0	4	6	6	0	0	0	0				1
+11956	Tribeswoman	26	1	0	4	6	6	0	0	0	0				0
+133	Troll (Construction)	50	0	0	25	25	40	200	200	200	200				1
+4120	Troll general	40	0	0	35	60	35	200	200	120	200		earth:20		1
+4121	Troll general	40	0	0	35	60	35	200	200	120	200		earth:20		0
+4122	Troll general	40	0	0	35	60	35	200	200	120	200		earth:20		0
+4123	Troll spectator	25	0	0	0	0	10	200	200	200	200		earth:20		1
+3130	Tstanon Karlak	125	50	0	0	0	0	-5	0	0	0	demon	water:40		1
+11756	Tumeken's Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		1
+11758	Tumeken's Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		0
+11762	Tumeken's Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
+11764	Tumeken's Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
+427	Turoth	88	1	0	0	20	20	0	0	0	0	leafy			1
+428	Turoth	86	1	0	0	20	20	0	0	0	0	leafy			0
+429	Turoth	84	1	0	0	20	20	0	0	0	0	leafy			0
+430	Turoth	83	1	0	0	20	20	0	0	0	0	leafy			0
+4131	Twig	25	0	0	0	0	10	200	200	200	200		earth:20		1
+4133	Twig	25	0	0	0	0	10	200	200	200	200		earth:20		0
+7272	Twisted Banshee	50	1	0	15	15	15	0	15	15	15	undead,spectral	air:25		1
+9295	Typhor	186	186	0	30	30	0	30	0	0	0				1
+639	Tyras guard	100	1	0	87	84	76	-10	79	79	79				1
+2191	Tz-Kek	30	30	0	0	0	0	0	0	0	0		water:40		1
+3120	Tz-Kek	15	15	0	0	0	0	0	0	0	0		water:40		0
+2189	Tz-Kih	15	15	0	0	0	0	0	0	0	0		water:40		1
+2161	TzHaar-Hur	60	80	0	0	0	0	0	0	0	0		water:40		1
+2173	TzHaar-Ket	120	40	0	0	0	0	0	0	0	0		water:40		1
+7679	TzHaar-Ket	190	40	0	0	0	0	0	0	0	0		water:40		0
+2154	TzHaar-Mej	80	120	0	0	0	0	0	0	0	0		water:40		1
+2167	TzHaar-Xil	100	40	0	0	0	0	0	0	0	0		water:40		1
+2168	TzHaar-Xil	100	40	0	0	0	0	0	0	0	0		water:40		0
+2169	TzHaar-Xil	100	40	0	0	0	0	0	0	0	0		water:40		0
+7706	TzKal-Zuk	260	150	550	0	0	0	350	100	100	100		water:40		1
+3127	TzTok-Jad	480	480	60	0	0	0	0	0	0	0		water:40		1
+15557	TzTok-Jad-Rek	25	250	0	0	0	0	0	0	0	0		water:40		1
+4652	Ugthanki	35	0	0	0	0	0	0	0	0	0				1
+4500	Ulfric	82	1	0	0	0	0	0	0	0	0	undead			1
+11284	Umbra	200	200	0	100	100	100	150	25	25	25				1
+2145	Undead Druid	60	115	100	40	30	80	140	40	40	40	undead	fire:50		1
+5648	Undead Lumberjack	10	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+5656	Undead Lumberjack	11	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5665	Undead Lumberjack	12	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5673	Undead Lumberjack	13	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5681	Undead Lumberjack	14	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5689	Undead Lumberjack	15	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5697	Undead Lumberjack	16	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5705	Undead Lumberjack	17	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+5713	Undead Lumberjack	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+10591	Undead Zealot	38	1	0	20	20	0	0	10	10	10		fire:50		1
+10592	Undead Zealot	38	1	0	20	20	0	0	10	10	10		fire:50		0
+16670	Undead binder	225	50	0	12	15	10	-20	30	90	20	undead	fire:80		1
+2993	Undead chicken	1	1	0	-42	-42	-42	-42	-42	-42	-42	undead	fire:50		1
+2992	Undead cow	1	1	0	-21	-21	-21	-21	-21	-21	-21	undead	fire:50		1
+5342	Undead one	63	0	0	0	0	0	0	0	0	0	undead	earth:50		1
+5344	Undead one	55	0	0	5	5	3	1	4	4	4	undead	earth:50		0
+5346	Undead one	63	0	0	0	0	0	0	0	0	0	undead	fire:50		0
+5349	Undead one	65	0	0	0	0	0	0	0	0	0	undead	fire:50		0
+3957	Ungadulu	65	65	0	0	0	0	0	0	0	0				1
+3958	Ungadulu	147	0	0	0	0	0	0	0	0	0				0
+2837	Unicorn	13	1	0	0	0	0	0	0	0	0				1
+3910	Unicorn Foal	10	1	0	0	0	0	0	0	0	0				1
+3601	Unicow	22	1	0	0	0	0	0	0	0	0				1
+5262	Uodai	130	130	0	0	0	0	0	0	0	0				1
+15743	Ur-maggot larvae	35	100	0	0	0	0	0	0	0	0				1
+6143	Urium Shade	100	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
+10589	Urium Shade	100	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
+5260	Uyoro	130	130	0	0	0	0	0	0	0	0				1
+3683	Valgerd	3	1	0	-12	-12	-12	-12	-12	-12	-12				1
+3692	Vampyre Juvenile	30	1	0	0	0	0	0	0	0	0	vampyre1			1
+4436	Vampyre Juvenile	30	1	0	0	0	0	0	0	0	0	vampyre1			0
+9731	Vampyre Juvenile	30	1	0	0	0	0	0	0	0	0	vampyre1			0
+3694	Vampyre Juvinate	30	1	0	0	0	0	0	0	0	0	vampyre2			1
+4427	Vampyre Juvinate	30	1	0	0	0	0	0	0	0	0	vampyre2			0
+4442	Vampyre Juvinate	35	1	0	0	0	0	0	0	0	0	vampyre2			0
+4443	Vampyre Juvinate	30	1	0	0	0	0	0	0	0	0	vampyre2			0
+5634	Vampyre Juvinate	45	50	0	0	0	0	0	0	0	0	vampyre2			0
+5635	Vampyre Juvinate	55	50	0	0	0	0	0	0	0	0	vampyre2			0
+5636	Vampyre Juvinate	65	50	0	0	0	0	0	0	0	0	vampyre2			0
+9614	Vampyre Juvinate	65	50	0	0	0	0	0	0	0	0	vampyre2			0
+9727	Vampyre Juvinate	30	1	0	0	0	0	0	0	0	0	vampyre2			0
+16344	Vampyre Snail	300	100	0	600	600	50	600	50	50	50		earth:5		1
+15212	Vampyre kraken	115	215	0	0	0	0	-63	120	75	60		earth:50		1
+7527	Vanguard	160	150	0	150	150	150	20	400	400	400	xerician			1
+7528	Vanguard	160	150	0	55	60	100	400	300	300	300	xerician			0
+7529	Vanguard	160	150	40	315	340	400	110	50	50	50	xerician			0
+3734	Vanstrom Klause	150	150	0	0	0	0	0	0	0	0	vampyre3			1
+9567	Vanstrom Klause	180	180	16	34	34	34	34	34	34	34	vampyre3			0
+12223	Vardorvis	0	215	0	215	65	85	580	580	580	580		fire:35		1
+12224	Vardorvis	0	180	0	150	25	50	560	560	560	560		fire:35		0
+7566	Vasa Nistirio	175	230	0	170	190	40	400	40	40	30	xerician			1
+15576	Veiled kraken	115	100	0	0	0	0	325	325	325	0				1
+15765	Venator	120	100	0	-5	20	90	100	100	100	100	vampyre3			1
+15766	Venator	120	100	0	-5	20	90	100	100	100	100	vampyre3			0
+15767	Venator	120	100	0	-5	20	90	100	100	100	100	vampyre3			0
+15768	Venator	120	100	0	-5	20	90	100	100	100	100	vampyre3			0
+15769	Venator	120	100	0	-5	20	90	100	100	100	100	vampyre3			0
+16213	Venator (The Blood Moon Rises)	100	100	0	0	0	0	0	0	0	0	vampyre3			1
+16214	Venator (The Blood Moon Rises)	100	100	0	0	0	0	0	0	0	0	vampyre3			0
+16215	Venator (The Blood Moon Rises)	100	100	0	0	0	0	0	0	0	0	vampyre3			0
+16216	Venator (The Blood Moon Rises)	100	100	0	0	0	0	0	0	0	0	vampyre3			0
+16217	Venator (The Blood Moon Rises)	100	100	0	0	0	0	0	0	0	0	vampyre3			0
+6610	Venenatis	321	300	0	100	100	10	300	150	150	150		fire:40		1
+12000	Venenatis' Spiderling (monster)	1	10	0	0	0	0	0	0	0	0				1
+2630	Vera	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+1677	Verac the Defiled	100	1	-42	227	230	221	0	225	225	225	spectral	air:50		1
+8369	Verzik Vitur	20	400	80	20	20	20	20	20	20	20				1
+8372	Verzik Vitur	200	400	80	100	60	100	70	250	250	250				0
+8374	Verzik Vitur	150	300	80	70	30	70	100	230	230	230		fire:50		0
+10830	Verzik Vitur	10	180	32	10	10	10	10	10	10	10				0
+10833	Verzik Vitur	120	180	32	40	20	40	40	180	180	180				0
+10835	Verzik Vitur	120	180	20	30	10	30	60	100	100	100		fire:50		0
+10847	Verzik Vitur	20	400	80	20	20	20	20	20	20	20				0
+10850	Verzik Vitur	200	400	80	100	60	100	70	250	250	250				0
+10852	Verzik Vitur	150	300	80	70	30	70	100	230	230	230		fire:50		0
+7538	Vespine soldier	40	40	0	0	0	0	30	0	0	0	xerician,flying			1
+7530	Vespula	88	88	0	0	0	0	70	20	60	60	xerician,flying	fire:50		1
+6611	Vet'ion	395	300	0	201	200	-10	250	270	270	270	undead			1
+6612	Vet'ion	395	300	0	201	200	-10	250	270	270	270	undead			0
+15501	Vitreous Chilled Jelly	250	180	0	0	0	0	0	0	0	0		earth:30		1
+7399	Vitreous Jelly	220	150	0	0	0	0	0	0	0	0		earth:30		1
+7400	Vitreous Warped Jelly	250	180	0	0	0	0	0	0	0	0		earth:30		1
+3963	Viyeldi	70	0	0	0	0	0	0	0	0	0				1
+16680	Void Augmenter	175	300	0	50	50	50	0	0	50	50		earth:75		1
+14179	Void Flare	100	200	0	0	0	0	0	0	0	0	demon		always-hit	1
+2950	Void Knight (Pest Control)	50	50	0	100	100	100	100	100	100	100				1
+2951	Void Knight (Pest Control)	50	50	0	100	100	100	100	100	100	100				0
+2952	Void Knight (Pest Control)	50	50	0	100	100	100	100	100	100	100				0
+2953	Void Knight (Pest Control)	50	50	0	100	100	100	100	100	100	100				0
+16678	Void Rift	175	300	0	0	0	0	0	0	0	0		earth:75		1
+16679	Void Siphon	175	300	0	50	50	50	0	0	0	0				1
+16681	Void Vine	0	0	0	0	0	0	0	0	0	0				1
+11716	Volatile Baboon	20	60	25	900	900	900	-60	-50	-50	-50				1
+8058	Vorkath	164	148	148	66	126	126	204	80	80	80	dragon,undead,fiery	fire:40		0
+8059	Vorkath	214	150	150	26	108	108	240	26	26	26	dragon,undead,fiery	fire:40		1
+1267	Vulture	10	1	0	0	0	0	0	0	0	0		air:20		1
+1268	Vulture	10	1	0	0	0	0	0	0	0	0		air:20		0
+3709	Vyrewatch	85	105	0	0	0	0	0	0	0	0	vampyre3			1
+3710	Vyrewatch	85	110	0	0	0	0	0	0	0	0	vampyre3			0
+3711	Vyrewatch	85	120	0	0	0	0	0	0	0	0	vampyre3			0
+3712	Vyrewatch	85	120	0	0	0	0	0	0	0	0	vampyre3			0
+8252	Vyrewatch	75	75	0	0	0	0	0	0	0	0	vampyre3			0
+9756	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			1
+9757	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+9758	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+9759	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+9760	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+9761	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+9762	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+9763	Vyrewatch Sentinel	180	120	0	0	0	0	0	100	100	100	vampyre3			0
+475	Wall beast	16	1	0	0	0	0	0	0	0	0				1
+476	Wall beast	16	1	0	0	0	0	0	0	0	0				0
+5938	Wallasalki	80	100	0	100	150	175	250	-10	-10	-10		earth:30		1
+5939	Wallasalki	80	100	0	100	150	175	250	10	10	10		earth:30		0
+7277	Warped Jelly	70	95	0	0	0	0	0	0	0	0		earth:30		1
+12491	Warped Terrorbird	20	60	0	50	50	0	0	20	62	62				1
+12499	Warped Terrorbird	60	160	0	50	50	0	0	20	62	62				0
+12490	Warped Tortoise	78	50	0	50	50	0	0	60	60	20		earth:20		1
+3950	Warrior (Rellekka)	40	1	0	50	50	50	50	50	50	50				1
+3260	Warrior (Thieving)	22	1	6	40	41	37	-10	38	38	38				1
+11925	Warrior (Thieving)	22	1	6	40	41	37	-10	38	38	38				0
+11926	Warrior (Thieving)	22	1	6	40	41	37	-10	38	38	38				0
+11927	Warrior (Thieving)	22	1	6	40	41	37	-10	38	38	38				0
+11928	Warrior (Thieving)	22	1	6	40	41	37	-10	38	38	38				0
+11929	Warrior (Thieving)	22	1	6	40	41	37	-10	38	38	38				0
+10393	Warrior of Murahs	14	0	0	0	0	0	0	0	0	0				1
+10394	Warrior of Murahs	14	0	0	0	0	0	0	0	0	0				0
+10395	Warrior of Murahs	14	0	0	0	0	0	0	0	0	0				0
+5420	Watchman	31	1	0	24	14	19	-4	16	16	16				1
+1370	Water elemental	30	30	0	0	0	0	0	0	0	0		earth:50		1
+1557	Water wizard	10	10	0	0	0	0	15	0	0	0				1
+2916	Waterfiend	128	105	0	100	100	10	100	100	100	20	demon	earth:100		1
+2917	Waterfiend	128	105	0	100	100	10	100	100	100	20	demon	earth:100		0
+14137	Weaponsmaster	21	1	0	21	23	21	-6	20	20	20				1
+16226	Webbed-winged Crow	50	50	0	0	0	0	0	0	0	0		air:25		1
+2593	Werewolf	70	1	0	0	0	0	60	0	0	0				1
+2594	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2595	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2596	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2597	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2598	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2599	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2600	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2601	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2602	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2603	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2604	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2605	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2606	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2607	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2608	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2609	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2610	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2611	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+2612	Werewolf	70	1	0	0	0	0	60	0	0	0				0
+3135	Werewolf	85	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3136	Werewolf	85	1	0	-21	-21	-21	-21	-21	-21	-21				0
+1798	White Knight	21	1	0	83	76	70	-11	74	74	54				1
+1799	White Knight	25	1	0	83	76	70	-11	74	74	54				0
+1800	White Knight	27	1	0	83	76	70	-11	74	74	54				0
+1829	White Knight	27	1	0	83	76	70	-11	85	85	65				0
+11892	White Knight	21	1	0	83	76	70	-11	74	74	54				0
+11949	White Knight	25	1	0	83	76	70	-11	74	74	54				0
+11950	White Knight	27	1	0	83	76	70	-11	74	74	54				0
+11951	White Knight	27	1	0	83	76	70	-11	85	85	65				0
+4114	White Knight (Burthorpe)	21	1	0	83	76	70	-11	74	74	54				1
+4743	White golem	80	1	0	1	300	300	300	300	300	300	golem			1
+12979	White jaguar	55	1	0	0	0	0	0	0	0	0				1
+107	White wolf	22	1	0	0	0	0	0	0	0	0		fire:25		1
+108	White wolf	32	1	0	0	0	0	0	0	0	0		fire:25		0
+12335	Wighted Leech	1	1	0	0	0	0	0	0	0	0				1
+112	Wild dog	54	1	0	0	0	0	0	0	0	0				1
+113	Wild dog	54	1	0	0	0	0	0	0	0	0				0
+3865	Wilson	25	1	0	0	0	0	0	0	0	0				1
+3163	Wingman Skree	160	150	0	0	0	0	0	0	0	0	flying	air:30		1
+3996	Witch's experiment	19	1	0	0	0	0	0	0	0	0				1
+3997	Witch's experiment	29	1	0	0	0	0	0	0	0	0				0
+3998	Witch's experiment	39	1	0	0	0	0	0	0	0	0				0
+3999	Witch's experiment	49	1	0	0	0	0	0	0	0	0				0
+6333	Witch's experiment (Nightmare Zone)	19	1	0	0	0	0	0	0	0	0				1
+6334	Witch's experiment (Nightmare Zone)	29	1	0	0	0	0	0	0	0	0				0
+6335	Witch's experiment (Nightmare Zone)	39	1	0	0	0	0	0	0	0	0				0
+6336	Witch's experiment (Nightmare Zone)	49	1	0	0	0	0	0	0	0	0				0
+6394	Witch's experiment (Nightmare Zone)	19	1	0	0	0	0	0	0	0	0				0
+6395	Witch's experiment (Nightmare Zone)	29	1	0	0	0	0	0	0	0	0				0
+6396	Witch's experiment (Nightmare Zone)	39	1	0	0	0	0	0	0	0	0				0
+6397	Witch's experiment (Nightmare Zone)	49	1	0	0	0	0	0	0	0	0				0
+3257	Wizard	5	10	0	0	0	0	3	0	0	0				1
+106	Wolf	52	1	0	0	0	0	0	0	0	0		fire:25		1
+110	Wolf	22	1	0	0	0	0	0	0	0	0		fire:25		0
+2490	Wolf	10	1	0	0	0	0	0	0	0	0		fire:25		0
+2491	Wolf	10	1	0	0	0	0	0	0	0	0		fire:25		0
+3912	Wolf	52	1	0	0	0	0	0	0	0	0		fire:25		0
+10522	Wolf (Soul Wars)	30	30	0	10	10	10	10	10	10	10		fire:25		1
+3015	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+3111	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3112	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3113	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+11053	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+11054	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+14921	Woman	1	1	0	-21	-21	-21	-21	-21	-21	-21				0
+3299	Woman (East Ardougne)	1	1	0	-21	-21	-21	-21	-21	-21	-21				1
+1119	Woman (West Ardougne)	1	1	0	1	1	1	0	0	0	0				1
+1130	Woman (West Ardougne)	1	1	0	1	1	1	0	0	0	0				0
+1131	Woman (West Ardougne)	1	1	0	1	1	1	0	0	0	0				0
+1139	Woman (West Ardougne)	1	1	0	0	0	0	0	0	0	0				0
+1140	Woman (West Ardougne)	10	1	0	0	0	0	0	0	0	0				0
+1141	Woman (West Ardougne)	2	1	0	0	0	0	0	0	0	0				0
+1142	Woman (West Ardougne)	10	1	0	0	0	0	0	0	0	0				0
+820	Wormbrain	1	1	0	0	0	0	0	0	0	0				1
+16212	Wyrd	180	250	80	30	30	30	30	150	150	150	vampyre3			1
+8610	Wyrm	80	80	0	10	50	50	50	20	20	10	dragon	earth:50		1
+8611	Wyrm	80	80	0	10	50	50	50	20	20	10	dragon	earth:50		0
+13031	Wyrmling	40	60	0	20	50	50	50	20	20	20	dragon	earth:50		1
+13032	Wyrmling	40	60	0	20	50	50	50	20	20	20	dragon	earth:50		0
+16296	Wyrmling	40	60	0	20	50	50	50	20	20	20	dragon	earth:50		0
+16297	Wyrmling	40	60	0	20	50	50	50	20	20	20	dragon	earth:50		0
+10953	Xamphur	100	140	20	180	180	180	260	30	30	30				1
+10954	Xamphur	100	140	20	180	180	180	260	30	30	30				0
+8340	Xarpus	250	220	0	0	0	0	0	160	160	160		air:50		1
+10768	Xarpus	100	80	0	0	0	0	0	100	100	100		air:50		0
+10772	Xarpus	200	220	0	0	0	0	0	160	160	160		air:50		0
+16684	Xarth	170	350	250	60	105	20	205	125	230	155	demon	water:85		1
+2628	Yadviga	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+5816	Yak	1	1	0	0	0	0	0	0	0	0				1
+14176	Yama	225	250	100	100	80	333	0	333	220	333	demon	water:50		1
+100001	Yama	247	275	100	666	666	80	666	666	666	666	demon	water:50		0
+2847	Yeti	39	1	0	0	0	0	0	0	0	0				1
+1636	Young impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
+3128	Yt-HurKot	60	120	0	0	0	0	100	100	100	100		water:40		1
+7701	Yt-HurKot	100	150	100	0	0	0	130	130	130	130		water:40		0
+3123	Yt-MejKot	120	120	0	0	0	0	0	0	0	0		water:40		1
+2615	Yuri	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+3131	Zakl'n Gritch	127	50	0	0	0	0	-5	0	0	0	demon	water:40		1
+9049	Zalcano	1	1	0	0	0	0	0	0	0	0				1
+9050	Zalcano	1	1	0	0	0	0	0	0	0	0				0
+7426	Zamorak crafter	12	20	0	0	0	0	0	0	0	0				1
+7422	Zamorak mage	82	85	0	0	0	0	0	0	0	0				1
+7423	Zamorak mage	80	85	0	0	0	0	0	0	0	0				0
+7420	Zamorak ranger	80	1	0	0	0	0	0	0	0	0				1
+7421	Zamorak ranger	80	1	0	0	0	0	0	0	0	0				0
+7418	Zamorak warrior	90	1	0	0	0	0	0	0	0	0				1
+7419	Zamorak warrior	90	1	0	0	0	0	0	0	0	0				0
+2954	Zamorak wizard	24	80	0	0	0	0	3	0	0	0				1
+11730	Zebak	70	100	215	160	160	260	200	110	110	110				1
+11732	Zebak	70	100	215	160	160	260	200	110	110	110				0
+15558	Zemouregal Summon	150	1	0	0	0	0	0	0	0	0		fire:50		1
+15559	Zemouregal Summon	10	50	0	0	0	0	0	0	0	0	spectral	air:40		0
+15560	Zemouregal Summon	100	1	0	0	0	0	0	0	0	0		fire:50		0
+15561	Zemouregal Summon	100	1	0	0	0	0	0	0	0	0		fire:50		0
+15562	Zemouregal Summon	50	1	0	0	0	0	0	0	0	0				0
+15563	Zemouregal Summon	100	1	0	0	0	0	0	0	0	0				0
+866	Zogre	35	1	0	0	0	0	0	0	0	0	undead			1
+2631	Zoja	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
+26	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+27	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+28	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+29	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+30	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+31	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+32	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+34	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+37	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+38	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+39	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+40	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+41	Zombie	10	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+42	Zombie	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+43	Zombie	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+44	Zombie	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+49	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+50	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+51	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+52	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+54	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+55	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+56	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+57	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+58	Zombie	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+64	Zombie (Entrana Dungeon)	21	1	0	10	8	12	10	10	10	10	undead	fire:50		1
+65	Zombie (Entrana Dungeon)	21	1	0	10	8	12	10	10	10	10	undead	fire:50		0
+66	Zombie (Entrana Dungeon)	21	1	0	10	8	12	10	10	10	10	undead	fire:50		0
+67	Zombie (Entrana Dungeon)	21	1	0	10	8	12	10	10	10	10	undead	fire:50		0
+68	Zombie (Entrana Dungeon)	21	1	0	10	8	12	10	10	10	10	undead	fire:50		0
+7485	Zombie (Kourend)	61	1	0	20	20	0	0	10	10	10	undead	fire:50		1
+7486	Zombie (Kourend)	47	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+7487	Zombie (Kourend)	62	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+7488	Zombie (Kourend)	62	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+3980	Zombie (Melzar's Maze)	16	1	0	9	8	12	10	11	11	11	undead	fire:50		1
+6741	Zombie (Sepulchre of Death)	130	1	0	0	0	0	0	0	0	0	undead			1
+8067	Zombie (Shayzien Crypts)	62	1	0	25	20	25	10	30	30	30	undead	fire:50		1
+8068	Zombie (Shayzien Crypts)	62	1	0	15	10	15	30	20	20	20	undead	fire:50		0
+8069	Zombie (Shayzien Crypts)	62	180	20	35	30	35	20	10	10	10	undead	fire:50		0
+2501	Zombie (Stronghold of Security)	20	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+2502	Zombie (Stronghold of Security)	20	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+2503	Zombie (Stronghold of Security)	20	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+2504	Zombie (Stronghold of Security)	40	1	0	0	0	22	0	0	0	0	undead	fire:50		0
+2505	Zombie (Stronghold of Security)	40	1	0	0	0	22	0	0	0	0	undead	fire:50		0
+2506	Zombie (Stronghold of Security)	40	1	0	0	0	22	0	0	0	0	undead	fire:50		0
+2507	Zombie (Stronghold of Security)	48	1	0	19	18	0	20	21	21	21	undead	fire:50		0
+2508	Zombie (Stronghold of Security)	48	1	0	19	18	0	20	21	21	21	undead	fire:50		0
+2509	Zombie (Stronghold of Security)	48	1	0	19	18	0	20	21	21	21	undead	fire:50		0
+6449	Zombie (Tarn's Lair)	33	1	0	20	20	0	0	10	10	10	undead	fire:50		1
+6450	Zombie (Tarn's Lair)	35	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6451	Zombie (Tarn's Lair)	42	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6452	Zombie (Tarn's Lair)	44	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6453	Zombie (Tarn's Lair)	47	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6454	Zombie (Tarn's Lair)	50	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6455	Zombie (Tarn's Lair)	60	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6456	Zombie (Tarn's Lair)	61	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6457	Zombie (Tarn's Lair)	62	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6458	Zombie (Tarn's Lair)	62	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6459	Zombie (Tarn's Lair)	62	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6460	Zombie (Tarn's Lair)	70	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6461	Zombie (Tarn's Lair)	71	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6462	Zombie (Tarn's Lair)	72	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6463	Zombie (Tarn's Lair)	75	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6464	Zombie (Tarn's Lair)	81	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6465	Zombie (Tarn's Lair)	81	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+6466	Zombie (Tarn's Lair)	71	1	0	20	20	0	0	10	10	10	undead	fire:50		0
+5647	Zombie (Temple Trekking)	20	1	0	0	0	0	0	0	0	0	undead			1
+45	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+46	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+47	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+48	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+59	Zombie (Wilderness)	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+60	Zombie (Wilderness)	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+61	Zombie (Wilderness)	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+62	Zombie (Wilderness)	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+63	Zombie (Wilderness)	16	1	0	9	8	12	10	11	11	11	undead	fire:50		0
+6596	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+6597	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+6598	Zombie (Wilderness)	18	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+880	Zombie (Zogre Flesh Eaters)	30	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+13489	Zombie pirate	20	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+13490	Zombie pirate	20	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+13492	Zombie pirate	20	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+613	Zombie pirate (Braindeath Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+614	Zombie pirate (Braindeath Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+615	Zombie pirate (Braindeath Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+616	Zombie pirate (Braindeath Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+617	Zombie pirate (Braindeath Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+618	Zombie pirate (Braindeath Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+563	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+565	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+567	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+568	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+569	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+571	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+572	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+573	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+574	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+575	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+576	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+577	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+578	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+579	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+580	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+581	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+582	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+584	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+586	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+588	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+590	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+592	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+593	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+595	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+597	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+599	Zombie pirate (Harmony Island)	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+3969	Zombie rat	2	1	0	0	0	0	0	0	0	0	rat,undead	fire:50		1
+3970	Zombie rat	2	1	0	0	0	0	0	0	0	0	rat,undead	fire:50		0
+3971	Zombie rat	2	1	0	0	0	0	0	0	0	0	rat,undead	fire:50		0
+619	Zombie swab	50	1	0	0	0	0	0	0	0	0	undead	fire:50		1
+620	Zombie swab	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+621	Zombie swab	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+622	Zombie swab	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+623	Zombie swab	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+624	Zombie swab	50	1	0	0	0	0	0	0	0	0	undead	fire:50		0
+3359	Zombies Champion	42	1	0	0	0	0	0	0	0	0		fire:50		1
+8062	Zombified Spawn	4	1	0	3	3	3	-100	3	3	3	undead	fire:50		0
+8063	Zombified Spawn	6	1	0	3	3	3	-100	3	3	3	undead	fire:50		1
+2042	Zulrah	300	300	50	0	0	0	-45	50	50	50		fire:50		1
+2043	Zulrah	300	300	50	0	0	0	0	300	300	300		fire:50		0
+2044	Zulrah	300	300	50	0	0	0	300	0	0	0		fire:50		0
+537	Zygomite	65	65	0	10	10	10	20	20	20	20		fire:40		1
+1024	Zygomite	75	75	0	10	10	10	20	20	20	20		fire:40		0

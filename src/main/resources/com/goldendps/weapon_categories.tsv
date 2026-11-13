@@ -1,0 +1,1178 @@
+# Weapon categories from the Old School RuneScape Wiki (CC BY-NC-SA 3.0). Made by tools/make_npc_stats.py
+# id	name	category
+35	Excalibur	Slash Sword
+278	Cattleprod	Stab Sword
+667	Blurite sword	Slash Sword
+732	Holy water	Thrown
+746	Dark dagger	Stab Sword
+747	Glowing dagger	Stab Sword
+751	Gnomeball	Unarmed
+767	Phoenix crossbow	Crossbow
+772	Dramen staff	Blunt
+800	Bronze thrownaxe	Thrown
+801	Iron thrownaxe	Thrown
+802	Steel thrownaxe	Thrown
+803	Mithril thrownaxe	Thrown
+804	Adamant thrownaxe	Thrown
+805	Rune thrownaxe	Thrown
+806	Bronze dart	Thrown
+807	Iron dart	Thrown
+808	Steel dart	Thrown
+809	Mithril dart	Thrown
+810	Adamant dart	Thrown
+811	Rune dart	Thrown
+812	Bronze dart	Thrown
+813	Iron dart	Thrown
+814	Steel dart	Thrown
+815	Mithril dart	Thrown
+816	Adamant dart	Thrown
+817	Rune dart	Thrown
+837	Crossbow	Crossbow
+839	Longbow	Bow
+841	Shortbow	Bow
+843	Oak shortbow	Bow
+845	Oak longbow	Bow
+847	Willow longbow	Bow
+849	Willow shortbow	Bow
+851	Maple longbow	Bow
+853	Maple shortbow	Bow
+855	Yew longbow	Bow
+857	Yew shortbow	Bow
+859	Magic longbow	Bow
+861	Magic shortbow	Bow
+863	Iron knife	Thrown
+864	Bronze knife	Thrown
+865	Steel knife	Thrown
+866	Mithril knife	Thrown
+867	Adamant knife	Thrown
+868	Rune knife	Thrown
+869	Black knife	Thrown
+870	Bronze knife	Thrown
+871	Iron knife	Thrown
+872	Steel knife	Thrown
+873	Mithril knife	Thrown
+874	Black knife	Thrown
+875	Adamant knife	Thrown
+876	Rune knife	Thrown
+975	Machete	Slash Sword
+1203	Iron dagger	Stab Sword
+1205	Bronze dagger	Stab Sword
+1207	Steel dagger	Stab Sword
+1209	Mithril dagger	Stab Sword
+1211	Adamant dagger	Stab Sword
+1213	Rune dagger	Stab Sword
+1215	Dragon dagger	Stab Sword
+1217	Black dagger	Stab Sword
+1219	Iron dagger	Stab Sword
+1221	Bronze dagger	Stab Sword
+1223	Steel dagger	Stab Sword
+1225	Mithril dagger	Stab Sword
+1227	Adamant dagger	Stab Sword
+1229	Rune dagger	Stab Sword
+1231	Dragon dagger	Stab Sword
+1233	Black dagger	Stab Sword
+1237	Bronze spear	Spear
+1239	Iron spear	Spear
+1241	Steel spear	Spear
+1243	Mithril spear	Spear
+1245	Adamant spear	Spear
+1247	Rune spear	Spear
+1249	Dragon spear	Spear
+1251	Bronze spear	Spear
+1253	Iron spear	Spear
+1255	Steel spear	Spear
+1257	Mithril spear	Spear
+1259	Adamant spear	Spear
+1261	Rune spear	Spear
+1263	Dragon spear	Spear
+1265	Bronze pickaxe	Pickaxe
+1267	Iron pickaxe	Pickaxe
+1269	Steel pickaxe	Pickaxe
+1271	Adamant pickaxe	Pickaxe
+1273	Mithril pickaxe	Pickaxe
+1275	Rune pickaxe	Pickaxe
+1277	Bronze shortsword	Stab Sword
+1279	Iron shortsword	Stab Sword
+1281	Steel shortsword	Stab Sword
+1283	Black shortsword	Stab Sword
+1285	Mithril shortsword	Stab Sword
+1287	Adamant shortsword	Stab Sword
+1289	Rune shortsword	Stab Sword
+1291	Bronze longsword	Slash Sword
+1293	Iron longsword	Slash Sword
+1295	Steel longsword	Slash Sword
+1297	Black longsword	Slash Sword
+1299	Mithril longsword	Slash Sword
+1301	Adamant longsword	Slash Sword
+1303	Rune longsword	Slash Sword
+1305	Dragon longsword	Slash Sword
+1307	Bronze 2h sword	2h Sword
+1309	Iron 2h sword	2h Sword
+1311	Steel 2h sword	2h Sword
+1313	Black 2h sword	2h Sword
+1315	Mithril 2h sword	2h Sword
+1317	Adamant 2h sword	2h Sword
+1319	Rune 2h sword	2h Sword
+1321	Bronze scimitar	Slash Sword
+1323	Iron scimitar	Slash Sword
+1325	Steel scimitar	Slash Sword
+1327	Black scimitar	Slash Sword
+1329	Mithril scimitar	Slash Sword
+1331	Adamant scimitar	Slash Sword
+1333	Rune scimitar	Slash Sword
+1335	Iron warhammer	Blunt
+1337	Bronze warhammer	Blunt
+1339	Steel warhammer	Blunt
+1341	Black warhammer	Blunt
+1343	Mithril warhammer	Blunt
+1345	Adamant warhammer	Blunt
+1347	Rune warhammer	Blunt
+1349	Iron axe	Axe
+1351	Bronze axe	Axe
+1353	Steel axe	Axe
+1355	Mithril axe	Axe
+1357	Adamant axe	Axe
+1359	Rune axe	Axe
+1361	Black axe	Axe
+1363	Iron battleaxe	Axe
+1365	Steel battleaxe	Axe
+1367	Black battleaxe	Axe
+1369	Mithril battleaxe	Axe
+1371	Adamant battleaxe	Axe
+1373	Rune battleaxe	Axe
+1375	Bronze battleaxe	Axe
+1377	Dragon battleaxe	Axe
+1379	Staff	Staff
+1381	Staff of air	Staff
+1383	Staff of water	Staff
+1385	Staff of earth	Staff
+1387	Staff of fire	Staff
+1389	Magic staff	Staff
+1391	Battlestaff	Staff
+1393	Fire battlestaff	Staff
+1395	Water battlestaff	Staff
+1397	Air battlestaff	Staff
+1399	Earth battlestaff	Staff
+1401	Mystic fire staff	Staff
+1403	Mystic water staff	Staff
+1405	Mystic air staff	Staff
+1407	Mystic earth staff	Staff
+1409	Iban's staff	Staff
+1410	Iban's staff	Staff
+1419	Scythe (Halloween event)	Scythe
+1420	Iron mace	Spiked
+1422	Bronze mace	Spiked
+1424	Steel mace	Spiked
+1426	Black mace	Spiked
+1428	Mithril mace	Spiked
+1430	Adamant mace	Spiked
+1432	Rune mace	Spiked
+1434	Dragon mace	Spiked
+2402	Silverlight	Slash Sword
+2415	Saradomin staff	Staff
+2416	Guthix staff	Staff
+2417	Zamorak staff	Staff
+2460	Assorted flowers	Blunt
+2462	Red flowers	Blunt
+2464	Blue flowers	Blunt
+2466	Yellow flowers	Blunt
+2468	Purple flowers	Blunt
+2470	Orange flowers	Blunt
+2472	Mixed flowers	Blunt
+2474	White flowers	Blunt
+2476	Black flowers	Blunt
+2883	Ogre bow	Bow
+2952	Wolfbane	Stab Sword
+2961	Silver sickle	Slash Sword
+2963	Silver sickle (b)	Slash Sword
+3053	Lava battlestaff	Staff
+3054	Mystic lava staff	Staff
+3093	Black dart	Thrown
+3094	Black dart	Thrown
+3095	Bronze claws	Claw
+3096	Iron claws	Claw
+3097	Steel claws	Claw
+3098	Black claws	Claw
+3099	Mithril claws	Claw
+3100	Adamant claws	Claw
+3101	Rune claws	Claw
+3170	Bronze spear	Spear
+3171	Iron spear	Spear
+3172	Steel spear	Spear
+3173	Mithril spear	Spear
+3174	Adamant spear	Spear
+3175	Rune spear	Spear
+3176	Dragon spear	Spear
+3190	Bronze halberd	Polearm
+3192	Iron halberd	Polearm
+3194	Steel halberd	Polearm
+3196	Black halberd	Polearm
+3198	Mithril halberd	Polearm
+3200	Adamant halberd	Polearm
+3202	Rune halberd	Polearm
+3204	Dragon halberd	Polearm
+3689	Lyre	Unarmed
+3690	Enchanted lyre	Unarmed
+3691	Enchanted lyre	Unarmed
+3695	Pet rock	Unarmed
+3757	Fremennik blade	Slash Sword
+3899	Iron sickle	Slash Sword
+4023	Monkey talisman	Unarmed
+4024	Ninja monkey greegree (small)	Unarmed
+4025	Ninja monkey greegree (medium)	Unarmed
+4026	Gorilla greegree	Unarmed
+4027	Bearded gorilla greegree	Unarmed
+4028	Ancient gorilla greegree	Unarmed
+4029	Zombie monkey greegree (small)	Unarmed
+4030	Zombie monkey greegree (big)	Unarmed
+4031	Karamjan monkey greegree	Unarmed
+4037	Saradomin banner	Banner
+4039	Zamorak banner	Banner
+4068	Decorative sword (red)	Slash Sword
+4083	Sled	Unarmed
+4084	Sled	Unarmed
+4086	Trollweiss	Blunt
+4151	Abyssal whip	Whip
+4153	Granite maul	Blunt
+4158	Leaf-bladed spear	Spear
+4170	Slayer's staff	Staff
+4212	Crystal bow (historical)	Bow
+4214	Crystal bow (historical)	Bow
+4215	Crystal bow (historical)	Bow
+4216	Crystal bow (historical)	Bow
+4217	Crystal bow (historical)	Bow
+4218	Crystal bow (historical)	Bow
+4219	Crystal bow (historical)	Bow
+4220	Crystal bow (historical)	Bow
+4221	Crystal bow (historical)	Bow
+4222	Crystal bow (historical)	Bow
+4223	Crystal bow (historical)	Bow
+4236	Signed oak bow	Bow
+4503	Decorative sword (white)	Slash Sword
+4508	Decorative sword (gold)	Slash Sword
+4565	Easter basket	Blunt
+4566	Rubber chicken	Blunt
+4580	Black spear	Spear
+4582	Black spear	Spear
+4584	Black spear	Spear
+4587	Dragon scimitar	Slash Sword
+4599	Oak blackjack	Blunt
+4600	Willow blackjack	Blunt
+4675	Ancient staff	Staff
+4710	Ahrim's staff	Staff
+4718	Dharok's greataxe	Axe
+4726	Guthan's warspear	Spear
+4734	Karil's crossbow	Crossbow
+4747	Torag's hammers	Blunt
+4755	Verac's flail	Spiked
+4827	Comp ogre bow	Bow
+4862	Ahrim's staff	Staff
+4863	Ahrim's staff	Staff
+4864	Ahrim's staff	Staff
+4865	Ahrim's staff	Staff
+4866	Ahrim's staff	Staff
+4886	Dharok's greataxe	Axe
+4887	Dharok's greataxe	Axe
+4888	Dharok's greataxe	Axe
+4889	Dharok's greataxe	Axe
+4890	Dharok's greataxe	Axe
+4910	Guthan's warspear	Spear
+4911	Guthan's warspear	Spear
+4912	Guthan's warspear	Spear
+4913	Guthan's warspear	Spear
+4914	Guthan's warspear	Spear
+4934	Karil's crossbow	Crossbow
+4935	Karil's crossbow	Crossbow
+4936	Karil's crossbow	Crossbow
+4937	Karil's crossbow	Crossbow
+4938	Karil's crossbow	Crossbow
+4958	Torag's hammers	Blunt
+4959	Torag's hammers	Blunt
+4960	Torag's hammers	Blunt
+4961	Torag's hammers	Blunt
+4962	Torag's hammers	Blunt
+4982	Verac's flail	Spiked
+4983	Verac's flail	Spiked
+4984	Verac's flail	Spiked
+4985	Verac's flail	Spiked
+4986	Verac's flail	Spiked
+5016	Bone spear	Spear
+5018	Bone club	Blunt
+5608	Fox (Recruitment Drive)	Unarmed
+5628	Bronze dart	Thrown
+5629	Iron dart	Thrown
+5630	Steel dart	Thrown
+5631	Black dart	Thrown
+5632	Mithril dart	Thrown
+5633	Adamant dart	Thrown
+5634	Rune dart	Thrown
+5635	Bronze dart	Thrown
+5636	Iron dart	Thrown
+5637	Steel dart	Thrown
+5638	Black dart	Thrown
+5639	Mithril dart	Thrown
+5640	Adamant dart	Thrown
+5641	Rune dart	Thrown
+5654	Bronze knife	Thrown
+5655	Iron knife	Thrown
+5656	Steel knife	Thrown
+5657	Mithril knife	Thrown
+5658	Black knife	Thrown
+5659	Adamant knife	Thrown
+5660	Rune knife	Thrown
+5661	Bronze knife	Thrown
+5662	Iron knife	Thrown
+5663	Steel knife	Thrown
+5664	Mithril knife	Thrown
+5665	Black knife	Thrown
+5666	Adamant knife	Thrown
+5667	Rune knife	Thrown
+5668	Iron dagger	Stab Sword
+5670	Bronze dagger	Stab Sword
+5672	Steel dagger	Stab Sword
+5674	Mithril dagger	Stab Sword
+5676	Adamant dagger	Stab Sword
+5678	Rune dagger	Stab Sword
+5680	Dragon dagger	Stab Sword
+5682	Black dagger	Stab Sword
+5686	Iron dagger	Stab Sword
+5688	Bronze dagger	Stab Sword
+5690	Steel dagger	Stab Sword
+5692	Mithril dagger	Stab Sword
+5694	Adamant dagger	Stab Sword
+5696	Rune dagger	Stab Sword
+5698	Dragon dagger	Stab Sword
+5700	Black dagger	Stab Sword
+5704	Bronze spear	Spear
+5706	Iron spear	Spear
+5708	Steel spear	Spear
+5710	Mithril spear	Spear
+5712	Adamant spear	Spear
+5714	Rune spear	Spear
+5716	Dragon spear	Spear
+5718	Bronze spear	Spear
+5720	Iron spear	Spear
+5722	Steel spear	Spear
+5724	Mithril spear	Spear
+5726	Adamant spear	Spear
+5728	Rune spear	Spear
+5730	Dragon spear	Spear
+5734	Black spear	Spear
+5736	Black spear	Spear
+6082	Fixed device	Gun
+6125	Enchanted lyre	Unarmed
+6126	Enchanted lyre	Unarmed
+6127	Enchanted lyre	Unarmed
+6313	Opal machete	Slash Sword
+6315	Jade machete	Slash Sword
+6317	Red topaz machete	Slash Sword
+6408	Oak blackjack(o)	Blunt
+6410	Oak blackjack(d)	Blunt
+6412	Willow blackjack(o)	Blunt
+6414	Willow blackjack(d)	Blunt
+6416	Maple blackjack	Blunt
+6418	Maple blackjack(o)	Blunt
+6420	Maple blackjack(d)	Blunt
+6522	Toktz-xil-ul	Thrown
+6523	Toktz-xil-ak	Stab Sword
+6525	Toktz-xil-ek	Slash Sword
+6526	Toktz-mej-tal	Staff
+6527	Tzhaar-ket-em	Blunt
+6528	Tzhaar-ket-om	Blunt
+6541	Mouse toy	Blunt
+6562	Mud battlestaff	Staff
+6563	Mystic mud staff	Staff
+6587	White claws	Claw
+6589	White battleaxe	Axe
+6591	White dagger	Stab Sword
+6593	White dagger	Stab Sword
+6595	White dagger	Stab Sword
+6597	White dagger	Stab Sword
+6599	White halberd	Polearm
+6601	White mace	Spiked
+6603	White magic staff	Staff
+6605	White shortsword	Stab Sword
+6607	White longsword	Slash Sword
+6609	White 2h sword	2h Sword
+6611	White scimitar	Slash Sword
+6613	White warhammer	Blunt
+6724	Seercull	Bow
+6739	Dragon axe	Axe
+6745	Silverlight	Slash Sword
+6746	Darklight	Slash Sword
+6760	Guthix mjolnir	Polestaff
+6762	Saradomin mjolnir	Polestaff
+6764	Zamorak mjolnir	Polestaff
+6773	Rat pole	Blunt
+6774	Rat pole	Blunt
+6775	Rat pole	Blunt
+6776	Rat pole	Blunt
+6777	Rat pole	Blunt
+6778	Rat pole	Blunt
+6779	Rat pole	Blunt
+6908	Beginner wand	Staff
+6910	Apprentice wand	Staff
+6912	Teacher wand	Staff
+6914	Master wand	Staff
+7140	Lucky cutlass	Slash Sword
+7141	Harry's cutlass	Slash Sword
+7142	Rapier	Stab Sword
+7158	Dragon 2h sword	2h Sword
+7170	Mud pie	Thrown
+7409	Magic secateurs	Stab Sword
+7433	Wooden spoon	Slash Sword
+7435	Egg whisk	Stab Sword
+7437	Spork	Stab Sword
+7439	Spatula	2h Sword
+7441	Frying pan	Blunt
+7443	Skewer	Slash Sword
+7445	Rolling pin	Blunt
+7447	Kitchen knife	Stab Sword
+7449	Meat tenderiser	Blunt
+7451	Cleaver	Slash Sword
+7639	Rod of Ivandis	Staff
+7640	Rod of Ivandis	Staff
+7641	Rod of Ivandis	Staff
+7642	Rod of Ivandis	Staff
+7643	Rod of Ivandis	Staff
+7644	Rod of Ivandis	Staff
+7645	Rod of Ivandis	Staff
+7646	Rod of Ivandis	Staff
+7647	Rod of Ivandis	Staff
+7648	Rod of Ivandis	Staff
+7668	Gadderhammer	Blunt
+7671	Boxing gloves	Claw
+7673	Boxing gloves	Claw
+7675	Wooden shortsword	Stab Sword
+7679	Pugel	Unarmed
+7806	Anger sword	Stab Sword
+7807	Anger battleaxe	Axe
+7808	Anger mace	Spiked
+7809	Anger spear	Spear
+8650	Banner (Arrav)	Banner
+8652	Banner (Asgarnia)	Banner
+8654	Banner (Dorgeshuun)	Banner
+8656	Banner (Dragon)	Banner
+8658	Banner (Fairy)	Banner
+8660	Banner (Guthix)	Banner
+8662	Banner (HAM)	Banner
+8664	Banner (Horse)	Banner
+8666	Banner (Jogre)	Banner
+8668	Banner (Kandarin)	Banner
+8670	Banner (Misthalin)	Banner
+8672	Banner (Money)	Banner
+8674	Banner (Saradomin)	Banner
+8676	Banner (Skull)	Banner
+8678	Banner (Varrock)	Banner
+8680	Banner (Zamorak)	Banner
+8841	Void knight mace	Staff
+8871	Crate with zanik	Unarmed
+8872	Bone dagger	Stab Sword
+8874	Bone dagger	Stab Sword
+8876	Bone dagger	Stab Sword
+8878	Bone dagger	Stab Sword
+8880	Dorgeshuun crossbow	Crossbow
+8966	Cutthroat flag	Banner
+8967	Gilded smile flag	Banner
+8968	Bronze fist flag	Banner
+8969	Lucky shot flag	Banner
+8970	Treasure flag	Banner
+8971	Phasmatys flag	Banner
+9013	Skull sceptre	Staff
+9084	Lunar staff	Staff
+9091	Lunar staff - pt1	Staff
+9092	Lunar staff - pt2	Staff
+9093	Lunar staff - pt3	Staff
+9174	Bronze crossbow	Crossbow
+9176	Blurite crossbow	Crossbow
+9177	Iron crossbow	Crossbow
+9179	Steel crossbow	Crossbow
+9181	Mithril crossbow	Crossbow
+9183	Adamant crossbow	Crossbow
+9185	Rune crossbow	Crossbow
+9703	Training shortsword	Stab Sword
+9705	Training shortbow	Bow
+10010	Butterfly net	Spear
+10023	Falconer's glove	Unarmed
+10024	Falconer's glove	Unarmed
+10033	Chinchompa	Chinchompas
+10034	Red chinchompa	Chinchompas
+10129	Barb-tail harpoon	Stab Sword
+10146	Orange salamander	Salamander
+10147	Red salamander	Salamander
+10148	Black salamander	Salamander
+10149	Swamp lizard	Salamander
+10150	Noose wand	Spear
+10156	Hunters' crossbow	Crossbow
+10280	Willow comp bow	Bow
+10282	Yew comp bow	Bow
+10284	Magic comp bow	Bow
+10440	Saradomin crozier	Staff
+10442	Guthix crozier	Staff
+10444	Zamorak crozier	Staff
+10487	Undead chicken (item)	Blunt
+10491	Blessed axe	Axe
+10501	Snowball	Unarmed
+10581	Keris	Stab Sword
+10582	Keris	Stab Sword
+10583	Keris	Stab Sword
+10584	Keris	Stab Sword
+10858	Shadow sword	2h Sword
+10887	Barrelchest anchor	Spiked
+10888	Barrelchest anchor	Spiked
+11037	Brine sabre	Slash Sword
+11061	Ancient mace	Spiked
+11230	Dragon dart	Thrown
+11231	Dragon dart	Thrown
+11233	Dragon dart	Thrown
+11234	Dragon dart	Thrown
+11235	Dark bow	Bow
+11259	Magic butterfly net	Spear
+11367	Bronze hasta	Spear
+11369	Iron hasta	Spear
+11371	Steel hasta	Spear
+11373	Mithril hasta	Spear
+11375	Adamant hasta	Spear
+11377	Rune hasta	Spear
+11379	Bronze hasta	Spear
+11381	Bronze hasta	Spear
+11382	Bronze hasta	Spear
+11384	Bronze hasta	Spear
+11386	Iron hasta	Spear
+11388	Iron hasta	Spear
+11389	Iron hasta	Spear
+11391	Iron hasta	Spear
+11393	Steel hasta	Spear
+11395	Steel hasta	Spear
+11396	Steel hasta	Spear
+11398	Steel hasta	Spear
+11400	Mithril hasta	Spear
+11402	Mithril hasta	Spear
+11403	Mithril hasta	Spear
+11405	Mithril hasta	Spear
+11407	Adamant hasta	Spear
+11409	Adamant hasta	Spear
+11410	Adamant hasta	Spear
+11412	Adamant hasta	Spear
+11414	Rune hasta	Spear
+11416	Rune hasta	Spear
+11417	Rune hasta	Spear
+11419	Rune hasta	Spear
+11705	Beach boxing gloves	Claw
+11706	Beach boxing gloves	Claw
+11707	Cursed goblin hammer	Blunt
+11708	Cursed goblin bow	Bow
+11709	Cursed goblin staff	Staff
+11711	Magic secateurs (nz)	Stab Sword
+11719	Rune pickaxe (nz)	Pickaxe
+11720	Mithril pickaxe (nz)	Pickaxe
+11721	Iron pickaxe (nz)	Pickaxe
+11748	Crystal bow (i)	Bow
+11749	Crystal bow (i)	Bow
+11750	Crystal bow (i)	Bow
+11751	Crystal bow (i)	Bow
+11752	Crystal bow (i)	Bow
+11753	Crystal bow (i)	Bow
+11754	Crystal bow (i)	Bow
+11755	Crystal bow (i)	Bow
+11756	Crystal bow (i)	Bow
+11757	Crystal bow (i)	Bow
+11758	Crystal bow (i)	Bow
+11785	Armadyl crossbow	Crossbow
+11787	Steam battlestaff	Staff
+11789	Mystic steam staff	Staff
+11791	Staff of the Dead	Bladed Staff
+11802	Armadyl godsword	2h Sword
+11804	Bandos godsword	2h Sword
+11806	Saradomin godsword	2h Sword
+11808	Zamorak godsword	2h Sword
+11824	Zamorakian spear	Spear
+11838	Saradomin sword	2h Sword
+11889	Zamorakian hasta	Spear
+11891	Saradomin banner	Banner
+11892	Zamorak banner	Banner
+11902	Leaf-bladed sword	Stab Sword
+11905	Trident of the Seas	Powered Staff
+11907	Trident of the Seas	Powered Staff
+11908	Trident of the Seas	Powered Staff
+11920	Dragon pickaxe	Pickaxe
+11959	Black chinchompa	Chinchompas
+11998	Smoke battlestaff	Staff
+12000	Mystic smoke staff	Staff
+12006	Abyssal tentacle	Whip
+12199	Ancient crozier	Staff
+12263	Armadyl crozier	Staff
+12275	Bandos crozier	Staff
+12297	Black pickaxe	Pickaxe
+12357	Katana	Slash Sword
+12373	Dragon cane	Polestaff
+12375	Black cane	Spiked
+12377	Adamant cane	Spiked
+12379	Rune cane	Spiked
+12389	Gilded scimitar	Slash Sword
+12422	3rd Age wand	Staff
+12424	3rd Age bow	Bow
+12426	3rd Age longsword	2h Sword
+12439	Royal sceptre	Polestaff
+12658	Iban's staff (u)	Staff
+12727	Goblin paint cannon	Unarmed
+12765	Dark bow	Bow
+12766	Dark bow	Bow
+12767	Dark bow	Bow
+12768	Dark bow	Bow
+12773	Volcanic abyssal whip	Whip
+12774	Frozen abyssal whip	Whip
+12788	Magic shortbow (i)	Bow
+12795	Steam battlestaff (or)	Staff
+12796	Mystic steam staff (or)	Staff
+12797	Dragon pickaxe (upgraded)	Pickaxe
+12808	Saradomin's blessed sword	2h Sword
+12809	Saradomin's blessed sword	2h Sword
+12848	Granite maul	Blunt
+12899	Trident of the Swamp	Powered Staff
+12900	Trident of the Swamp	Powered Staff
+12902	Toxic Staff of the Dead	Bladed Staff
+12904	Toxic Staff of the Dead	Bladed Staff
+12924	Toxic blowpipe	Thrown
+12926	Toxic blowpipe	Thrown
+13079	Enchanted lyre	Unarmed
+13108	Wilderness sword 1	Stab Sword
+13109	Wilderness sword 2	Stab Sword
+13110	Wilderness sword 3	Stab Sword
+13111	Wilderness sword 4	Stab Sword
+13141	Western banner 1	Polestaff
+13142	Western banner 2	Polestaff
+13143	Western banner 3	Polestaff
+13144	Western banner 4	Polestaff
+13183	Empty blaster	Blaster
+13184	Incomplete blaster	Blaster
+13185	Easter blaster	Blaster
+13195	Oddskull	Unarmed
+13241	Infernal axe	Axe
+13242	Infernal axe	Axe
+13243	Infernal pickaxe	Pickaxe
+13244	Infernal pickaxe	Pickaxe
+13263	Abyssal bludgeon	Bludgeon
+13265	Abyssal dagger	Stab Sword
+13267	Abyssal dagger	Stab Sword
+13269	Abyssal dagger	Stab Sword
+13271	Abyssal dagger	Stab Sword
+13328	Green banner	Banner
+13576	Dragon warhammer	Blunt
+13652	Dragon claws	Claw
+19478	Light ballista	Crossbow
+19481	Heavy ballista	Crossbow
+19525	Kruk monkey greegree	Unarmed
+19675	Arclight	Slash Sword
+19912	Zombie head (Treasure Trails)	Blunt
+19918	Nunchaku	Blunt
+19941	Heavy casket	Blunt
+20000	Dragon scimitar (or)	Slash Sword
+20011	3rd Age axe	Axe
+20014	3rd Age pickaxe	Pickaxe
+20056	Ale of the gods	Unarmed
+20155	Gilded 2h sword	2h Sword
+20158	Gilded spear	Spear
+20161	Gilded hasta	Spear
+20164	Large spade	Blunt
+20243	Crier bell	Blunt
+20249	Clueless scroll	Blunt
+20251	Arceuus banner	Polestaff
+20254	Hosidius banner	Polestaff
+20257	Lovakengj banner	Polestaff
+20260	Piscarilius banner	Polestaff
+20263	Shayzien banner	Polestaff
+20368	Armadyl godsword (or)	2h Sword
+20370	Bandos godsword (or)	2h Sword
+20372	Saradomin godsword (or)	2h Sword
+20374	Zamorak godsword (or)	2h Sword
+20473	Void knight mace	Staff
+20483	Decorative sword (gold)	Slash Sword
+20590	Stale baguette	Blunt
+20720	Bruma torch	Unarmed
+20727	Leaf-bladed battleaxe	Axe
+20730	Mist battlestaff	Staff
+20733	Mystic mist staff	Staff
+20736	Dust battlestaff	Staff
+20739	Mystic dust staff	Staff
+20756	Hill giant club	Blunt
+20779	Hunting knife	Blunt
+20781	Killer's knife	Stab Sword
+20836	Giant present	Blunt
+20849	Dragon thrownaxe	Thrown
+20997	Twisted bow	Bow
+21003	Elder maul	Blunt
+21006	Kodai wand	Staff
+21009	Dragon shortsword	Stab Sword
+21012	Dragon hunter crossbow	Crossbow
+21015	Dinh's bulwark	Bulwark
+21028	Dragon harpoon	Stab Sword
+21031	Infernal harpoon	Stab Sword
+21033	Infernal harpoon	Stab Sword
+21059	Killer's knife	Stab Sword
+21198	Lava battlestaff (or)	Staff
+21200	Mystic lava staff (or)	Staff
+21209	Birthday balloons	Blunt
+21255	Slayer's staff (e)	Staff
+21276	Skull sceptre (i)	Staff
+21354	Hand fan	Blunt
+21539	Heat-proof vessel	Unarmed
+21646	Granite longsword	Slash Sword
+21649	Merfolk trident	Spear
+21742	Granite hammer	Blunt
+21865	Fine mesh net	Blunt
+21902	Dragon crossbow	Crossbow
+22288	Trident of the Seas (e)	Powered Staff
+22290	Trident of the Seas (e)	Powered Staff
+22292	Trident of the Swamp (e)	Powered Staff
+22294	Trident of the Swamp (e)	Powered Staff
+22296	Staff of Light	Bladed Staff
+22316	Prop sword	Blunt
+22323	Sanguinesti staff	Powered Staff
+22324	Ghrazi rapier	Stab Sword
+22325	Scythe of Vitur	Scythe
+22331	Starter sword	Slash Sword
+22333	Starter bow	Bow
+22335	Starter staff	Powered Staff
+22355	Holy handegg	Unarmed
+22358	Peaceful handegg	Unarmed
+22361	Chaotic handegg	Unarmed
+22368	Bryophyta's staff	Staff
+22370	Bryophyta's staff	Staff
+22398	Ivandis flail	Staff
+22433	Emerald sickle (b)	Slash Sword
+22435	Enchanted emerald sickle (b)	Slash Sword
+22481	Sanguinesti staff	Powered Staff
+22486	Scythe of Vitur	Scythe
+22516	Dawnbringer	Powered Staff
+22542	Viggora's chainmace	Spiked
+22545	Viggora's chainmace	Spiked
+22547	Craw's bow	Bow
+22550	Craw's bow	Bow
+22552	Thammaron's sceptre	Powered Staff
+22555	Thammaron's sceptre	Powered Staff
+22610	Vesta's spear (Deadman Mode)	Spear
+22613	Vesta's longsword (Deadman Mode)	Slash Sword
+22622	Statius's warhammer (Deadman Mode)	Blunt
+22634	Morrigan's throwing axe (Deadman Mode)	Thrown
+22636	Morrigan's javelin (Deadman Mode)	Thrown
+22647	Zuriel's staff (Deadman Mode)	Staff
+22684	Eek	Blunt
+22719	Candy cane	Blunt
+22731	Dragon hasta	Spear
+22734	Dragon hasta	Spear
+22737	Dragon hasta	Spear
+22740	Dragon hasta	Spear
+22743	Dragon hasta	Spear
+22804	Dragon knife	Thrown
+22806	Dragon knife	Thrown
+22808	Dragon knife	Thrown
+22810	Dragon knife	Thrown
+22816	Cormorant's glove	Unarmed
+22817	Cormorant's glove	Unarmed
+22840	Golden tench	Blunt
+22842	Pearl barbarian rod	Unarmed
+22844	Pearl fly fishing rod	Unarmed
+22846	Pearl fishing rod	Unarmed
+22978	Dragon hunter lance	Spear
+23108	Birthday cake	Blunt
+23122	Oily pearl fishing rod	Unarmed
+23206	Dual sai	Stab Sword
+23235	Tzhaar-ket-om (t)	Blunt
+23276	Gilded pickaxe	Pickaxe
+23279	Gilded axe	Axe
+23282	Gilded spade	Blunt
+23330	Rune scimitar (guthix)	Slash Sword
+23332	Rune scimitar (saradomin)	Slash Sword
+23334	Rune scimitar (zamorak)	Slash Sword
+23342	3rd Age druidic staff	Staff
+23357	Rain bow	Bow
+23360	Ham joint	Blunt
+23363	Staff of Bob the Cat	Staff
+23446	Giant easter egg	Blunt
+23458	Enchanted lyre(i)	Unarmed
+23528	Sarachnis cudgel	Spiked
+23673	Crystal axe	Axe
+23675	Crystal axe	Axe
+23677	Dragon pickaxe (or)	Pickaxe
+23680	Crystal pickaxe	Pickaxe
+23682	Crystal pickaxe	Pickaxe
+23762	Crystal harpoon	Stab Sword
+23764	Crystal harpoon	Stab Sword
+23820	Corrupted sceptre	Blunt
+23821	Corrupted axe	Axe
+23822	Corrupted pickaxe	Pickaxe
+23823	Corrupted harpoon	Stab Sword
+23849	Corrupted halberd (basic)	Polearm
+23850	Corrupted halberd (attuned)	Polearm
+23851	Corrupted halberd (perfected)	Polearm
+23852	Corrupted staff (basic)	Powered Staff
+23853	Corrupted staff (attuned)	Powered Staff
+23854	Corrupted staff (perfected)	Powered Staff
+23855	Corrupted bow (basic)	Bow
+23856	Corrupted bow (attuned)	Bow
+23857	Corrupted bow (perfected)	Bow
+23861	Crystal sceptre	Blunt
+23862	Crystal axe (The Gauntlet)	Axe
+23863	Crystal pickaxe (The Gauntlet)	Pickaxe
+23864	Crystal harpoon (The Gauntlet)	Stab Sword
+23895	Crystal halberd (basic)	Polearm
+23896	Crystal halberd (attuned)	Polearm
+23897	Crystal halberd (perfected)	Polearm
+23898	Crystal staff (basic)	Powered Staff
+23899	Crystal staff (attuned)	Powered Staff
+23900	Crystal staff (perfected)	Powered Staff
+23901	Crystal bow (basic)	Bow
+23902	Crystal bow (attuned)	Bow
+23903	Crystal bow (perfected)	Bow
+23907	Imbued tephra	Unarmed
+23983	Crystal bow	Bow
+23987	Crystal halberd	Polearm
+23995	Blade of Saeldor	Slash Sword
+23997	Blade of Saeldor	Slash Sword
+24000	Crystal grail	Unarmed
+24144	Staff of Balance	Bladed Staff
+24157	Decorative sword (gold)	Slash Sword
+24181	Void knight mace	Staff
+24219	Swift blade	Stab Sword
+24225	Granite maul (ornate handle)	Blunt
+24227	Granite maul (ornate handle)	Blunt
+24327	Skeleton lantern	Blunt
+24372	Twisted dragon trophy	Blunt
+24374	Twisted rune trophy	Blunt
+24376	Twisted adamant trophy	Blunt
+24395	Twisted cane	Spiked
+24413	Twisted banner	Banner
+24417	Inquisitor's mace	Spiked
+24422	Nightmare staff	Staff
+24423	Harmonised Nightmare staff	Staff
+24424	Volatile Nightmare staff	Staff
+24425	Eldritch Nightmare staff	Staff
+24537	Carrot sword	Blunt
+24539	'24-carat' sword	Blunt
+24551	Blade of Saeldor (c)	Slash Sword
+24617	Vesta's blighted longsword	Slash Sword
+24619	Vesta's blighted longsword	Slash Sword
+24693	Ruby sickle (b)	Slash Sword
+24695	Enchanted ruby sickle (b)	Slash Sword
+24697	Blisterwood sickle	Slash Sword
+24699	Blisterwood flail	Staff
+24727	Hallowed hammer	Blunt
+24792	Severed leg	Blunt
+24880	Amy's saw	Slash Sword
+25013	Trailblazer cane	Spiked
+25042	Trailblazer dragon trophy	Blunt
+25044	Trailblazer rune trophy	Blunt
+25046	Trailblazer adamant trophy	Blunt
+25056	Trailblazer banner	Banner
+25059	Infernal harpoon (or)	Stab Sword
+25063	Infernal pickaxe (or)	Pickaxe
+25066	Infernal axe (or)	Axe
+25110	Echo axe	Axe
+25112	Echo pickaxe	Pickaxe
+25114	Echo harpoon	Stab Sword
+25282	Sled (2020 Christmas event)	Unarmed
+25314	Giant boulder	Blunt
+25367	Infernal harpoon (or)	Stab Sword
+25369	Infernal pickaxe (or)	Pickaxe
+25371	Infernal axe (or)	Axe
+25373	Dragon harpoon (or)	Stab Sword
+25376	Dragon pickaxe (or) (Trailblazer)	Pickaxe
+25378	Dragon axe (or)	Axe
+25500	Cursed banana	Blunt
+25604	Gregg's eastdoor	Blunt
+25641	Barronite mace	Blunt
+25643	Barronite mace	Blunt
+25644	Imcando hammer	Blunt
+25721	Clan vexillum	Banner
+25723	Clan vexillum	Banner
+25724	Clan vexillum	Banner
+25725	Clan vexillum	Banner
+25726	Clan vexillum	Banner
+25727	Clan vexillum	Banner
+25728	Clan vexillum	Banner
+25729	Clan vexillum	Banner
+25731	Holy sanguinesti staff	Powered Staff
+25733	Holy sanguinesti staff	Powered Staff
+25734	Holy ghrazi rapier	Stab Sword
+25736	Holy Scythe of Vitur	Scythe
+25738	Holy Scythe of Vitur	Scythe
+25739	Sanguine Scythe of Vitur	Scythe
+25741	Sanguine Scythe of Vitur	Scythe
+25822	Protest banner	Banner
+25849	Amethyst dart	Thrown
+25851	Amethyst dart	Thrown
+25855	Amethyst dart	Thrown
+25857	Amethyst dart	Thrown
+25862	Bow of Faerdhinen	Bow
+25865	Bow of Faerdhinen	Bow
+25867	Bow of Faerdhinen (c)	Bow
+25870	Blade of Saeldor (c) (Ithell)	Slash Sword
+25872	Blade of Saeldor (c) (Iorwerth)	Slash Sword
+25874	Blade of Saeldor (c) (Trahaearn)	Slash Sword
+25876	Blade of Saeldor (c) (Cadarn)	Slash Sword
+25878	Blade of Saeldor (c) (Crwys)	Slash Sword
+25880	Blade of Saeldor (c) (Meilyr)	Slash Sword
+25882	Blade of Saeldor (c) (Amlodd)	Slash Sword
+25884	Bow of Faerdhinen (c) (Ithell)	Bow
+25886	Bow of Faerdhinen (c) (Iorwerth)	Bow
+25888	Bow of Faerdhinen (c) (Trahaearn)	Bow
+25890	Bow of Faerdhinen (c) (Cadarn)	Bow
+25892	Bow of Faerdhinen (c) (Crwys)	Bow
+25894	Bow of Faerdhinen (c) (Meilyr)	Bow
+25896	Bow of Faerdhinen (c) (Amlodd)	Bow
+25916	Dragon hunter crossbow (t)	Crossbow
+25918	Dragon hunter crossbow (b)	Crossbow
+25979	Keris partisan	Partisan
+25981	Keris partisan of breaching	Partisan
+26219	Osmumten's fang	Stab Sword
+26233	Ancient godsword	2h Sword
+26260	Haunted wine bottle	Blunt
+26374	Zaryte crossbow	Crossbow
+26424	Shattered banner	Banner
+26482	Abyssal whip (or)	Whip
+26484	Abyssal tentacle (or)	Whip
+26486	Rune crossbow (or)	Crossbow
+26511	Shattered relics adamant trophy	Blunt
+26513	Shattered relics rune trophy	Blunt
+26515	Shattered relics dragon trophy	Blunt
+26517	Shattered cane	Spiked
+26649	Skis	Unarmed
+26708	Dragon claws (or)	Claw
+26712	Heavy ballista (or)	Crossbow
+26945	Pharaoh's sceptre	Polestaff
+26948	Pharaoh's sceptre	Polestaff
+27010	Preform	Unarmed
+27021	Colossal blade	2h Sword
+27100	Elder maul (or)	Blunt
+27246	Osmumten's fang (or)	Stab Sword
+27275	Tumeken's shadow	Powered Staff
+27277	Tumeken's shadow	Powered Staff
+27287	Keris partisan of corruption	Partisan
+27291	Keris partisan of the sun	Partisan
+27414	Giant stopwatch	Blunt
+27418	Bronze speedrun trophy	Blunt
+27420	Silver speedrun trophy	Blunt
+27422	Gold speedrun trophy	Blunt
+27424	Platinum speedrun trophy	Blunt
+27580	Nutcracker staff	Blunt
+27586	Nutcracker staff	Blunt
+27610	Venator bow	Bow
+27612	Venator bow	Bow
+27624	Ancient sceptre	Staff
+27626	Ancient sceptre	Staff
+27645	Mystic cards	Blunt
+27652	Webweaver bow	Bow
+27655	Webweaver bow	Bow
+27657	Ursine chainmace	Spiked
+27660	Ursine chainmace	Spiked
+27662	Accursed sceptre	Powered Staff
+27665	Accursed sceptre	Powered Staff
+27676	Accursed sceptre (a)	Staff
+27679	Accursed sceptre (a)	Staff
+27690	Voidwaker	Slash Sword
+27783	Diamond speedrun trophy	Blunt
+27785	Thammaron's sceptre (a)	Staff
+27788	Thammaron's sceptre (a)	Staff
+27810	Dragon candle dagger	Blunt
+27820	10th birthday balloons	Blunt
+27853	Dark bow (bh)	Bow
+27855	Barrelchest anchor (bh)	Spiked
+27857	Dragon mace (bh)	Spiked
+27859	Dragon longsword (bh)	Slash Sword
+27861	Abyssal dagger (bh)	Stab Sword
+27863	Abyssal dagger (bh)	Stab Sword
+27865	Abyssal dagger (bh)	Stab Sword
+27867	Abyssal dagger (bh)	Stab Sword
+27871	Giant bronze dagger	2h Sword
+27900	Vesta's spear (bh)	Spear
+27904	Vesta's longsword (bh)	Slash Sword
+27908	Statius's warhammer (bh)	Blunt
+27912	Morrigan's throwing axe (bh)	Thrown
+27916	Morrigan's javelin (bh)	Thrown
+27920	Zuriel's staff (bh)	Staff
+28019	Dragon dagger (cr)	Stab Sword
+28021	Dragon dagger (cr)	Stab Sword
+28023	Dragon dagger (cr)	Stab Sword
+28025	Dragon dagger (cr)	Stab Sword
+28027	Dragon mace (cr)	Spiked
+28029	Dragon shortsword (cr)	Stab Sword
+28031	Dragon scimitar (cr)	Slash Sword
+28033	Dragon longsword (cr)	Slash Sword
+28035	Dragon warhammer (cr)	Blunt
+28037	Dragon battleaxe (cr)	Axe
+28039	Dragon claws (cr)	Claw
+28041	Dragon spear (cr)	Spear
+28043	Dragon spear (cr)	Spear
+28045	Dragon spear (cr)	Spear
+28047	Dragon spear (cr)	Spear
+28049	Dragon halberd (cr)	Polearm
+28051	Dragon 2h sword (cr)	2h Sword
+28053	Dragon crossbow (cr)	Crossbow
+28128	Love crossbow	Blunt
+28196	Bronze felling axe	Axe
+28199	Iron felling axe	Axe
+28202	Steel felling axe	Axe
+28205	Black felling axe	Axe
+28208	Mithril felling axe	Axe
+28211	Adamant felling axe	Axe
+28214	Rune felling axe	Axe
+28217	Dragon felling axe	Axe
+28220	Crystal felling axe	Axe
+28223	Crystal felling axe	Axe
+28226	3rd Age felling axe	Axe
+28238	Blood ancient sceptre	Staff
+28240	Smoke ancient sceptre	Staff
+28242	Ice ancient sceptre	Staff
+28244	Shadow ancient sceptre	Staff
+28260	Blood ancient sceptre	Staff
+28262	Ice ancient sceptre	Staff
+28264	Smoke ancient sceptre	Staff
+28266	Shadow ancient sceptre	Staff
+28338	Soulreaper axe	Axe
+28473	Blood ancient sceptre	Staff
+28474	Ice ancient sceptre	Staff
+28475	Smoke ancient sceptre	Staff
+28476	Shadow ancient sceptre	Staff
+28583	Warped sceptre	Powered Staff
+28585	Warped sceptre	Powered Staff
+28682	Dinh's blazing bulwark	Bulwark
+28687	Blazing blowpipe	Thrown
+28688	Blazing blowpipe	Thrown
+28702	Trailblazer reloaded banner	Banner
+28748	Trailblazer reloaded torch	Spiked
+28751	Trailblazer reloaded dragon trophy	Blunt
+28753	Trailblazer reloaded rune trophy	Blunt
+28755	Trailblazer reloaded adamant trophy	Blunt
+28773	Sage's axe	Thrown
+28792	Bone mace	Spiked
+28794	Bone shortbow	Bow
+28796	Bone staff	Powered Staff
+28810	Zombie axe	Axe
+28834	Tecu salamander	Salamander
+28869	Hunters' sunlight crossbow	Crossbow
+28919	Tonalztics of Ralos	Thrown
+28922	Tonalztics of Ralos	Thrown
+28988	Blue Moon spear	Bladed Staff
+28997	Dual macuahuitl	Spiked
+29000	Eclipse atlatl	Bow
+29084	Sulphur blades	Slash Sword
+29305	Hunter's spear	Thrown
+29577	Burning claws	Claw
+29589	Emberlight	Slash Sword
+29591	Scorching bow	Bow
+29594	Purging staff	Staff
+29605	Armadyl godsword (Deadman)	2h Sword
+29607	Voidwaker (Deadman)	Slash Sword
+29609	Volatile Nightmare staff (Deadman)	Staff
+29611	Dark bow (Deadman)	Bow
+29796	Noxious halberd	Polearm
+29889	Glacial temotli	Blunt
+29911	Prop sword (Death on the Isle)	Blunt
+29912	Butler's tray	Unarmed
+30070	Dragon hunter wand	Staff
+30305	Arclight	Slash Sword
+30340	Crystal dagger (perfected)	Stab Sword
+30342	Infernal harpoon (or) (Trailblazer Reloaded)	Stab Sword
+30343	Infernal harpoon (or) (Trailblazer Reloaded)	Stab Sword
+30345	Infernal pickaxe (or) (Trailblazer Reloaded)	Pickaxe
+30346	Infernal pickaxe (or) (Trailblazer Reloaded)	Pickaxe
+30347	Infernal axe (or) (Trailblazer Reloaded)	Axe
+30348	Infernal axe (or) (Trailblazer Reloaded)	Axe
+30349	Dragon harpoon (or)	Stab Sword
+30351	Dragon pickaxe (or) (Trailblazer)	Pickaxe
+30352	Dragon axe (or)	Axe
+30373	Drygore blowpipe	Thrown
+30374	Drygore blowpipe	Thrown
+30428	Raging echoes cane	Spiked
+30430	Raging echoes banner	Banner
+30434	Echo venator bow	Bow
+30436	Echo venator bow	Bow
+30465	Raging echoes dragon trophy	Blunt
+30467	Raging echoes rune trophy	Blunt
+30469	Raging echoes adamant trophy	Blunt
+30568	Echo ahrim's staff	Staff
+30570	Echo ahrim's staff	Staff
+30571	Echo ahrim's staff	Staff
+30572	Echo ahrim's staff	Staff
+30573	Echo ahrim's staff	Staff
+30574	Echo ahrim's staff	Staff
+30597	Bronze staff of collection	Blunt
+30599	Iron staff of collection	Blunt
+30601	Steel staff of collection	Blunt
+30603	Black staff of collection	Blunt
+30605	Mithril staff of collection	Blunt
+30607	Adamant staff of collection	Blunt
+30609	Rune staff of collection	Blunt
+30611	Dragon staff of collection	Blunt
+30613	Gilded staff of collection	Blunt
+30634	Twinflame staff	Staff
+30759	Soulflame horn	Spiked
+30891	Keris partisan of amascut	Partisan
+30955	Arkan blade	Slash Sword
+30957	Earthbound tecpatl	Stab Sword
+30970	Humphrey Dumphrey	blunt
+31049	Redwood hiking staff	Blunt
+31113	Eye of Ayak	Powered Staff
+31115	Eye of Ayak	Powered Staff
+31227	Spooky pumpkin lantern	Blunt
+31248	Belle's folly	Stab Sword
+31575	Camphor blowpipe	Thrown
+31577	Camphor blowpipe	Thrown
+31579	Ironwood blowpipe	Thrown
+31581	Ironwood blowpipe	Thrown
+31583	Rosewood blowpipe	Thrown
+31585	Rosewood blowpipe	Thrown
+32934	Christmas dinner	Blunt
+33021	Bow of Faerdhinen (c) (deadman)	Bow
+33035	Toxic staff (Deadman)	Bladed Staff
+33036	Toxic staff (Deadman)	Bladed Staff
+33151	Archibald	Blunt
+33153	Archibald	Blunt
+33155	Archibald	Blunt
+33157	Archibald	Blunt
+33159	Archibald	Blunt
+33161	Archibald	Blunt
+33163	Archibald	Blunt
+33243	Infernal tecpatl	Multi-Melee
+33245	Nature's recurve	Bow
+33249	Fang of the hound	Stab Sword
+33251	King's barrage	Crossbow
+33253	Shadowflame quadrant	Staff
+33255	Lithic sceptre	Powered Staff
+33257	Lithic sceptre	Powered Staff
+33299	Demonic pacts banner	Banner
+33314	Trident of the Swamp (o)	Powered Staff
+33316	Trident of the Swamp (o)	Powered Staff
+33318	Trident of the Swamp (e) (o)	Powered Staff
+33320	Trident of the Swamp (e) (o)	Powered Staff
+33322	Trident of the Seas (o)	Powered Staff
+33323	Trident of the Seas (o)	Powered Staff
+33326	Trident of the Seas (e) (o)	Powered Staff
+33328	Trident of the Seas (e) (o)	Powered Staff
+33330	Iban's staff (o)	Staff
+33332	Iban's staff (u) (o)	Staff
+33333	Iban's staff (o)	Staff
+33335	Soulreaper axe (o)	Axe
+33345	Demonic pacts dragon trophy	Blunt
+33347	Demonic pacts rune trophy	Blunt
+33349	Demonic pacts adamant trophy	Blunt
+33631	Crimson kisten	Spiked
+33644	Dummy stymphike feather	Blunt
+33709	Diamond sickle (b)	Slash Sword
+33711	Enchanted diamond sickle (b)	Slash Sword
+33713	Blisterwood sickle (e)	Slash Sword
+33716	Blisterwood stake	Thrown
+33718	Hallowed flail	Flail
+33722	Sunspear	Spear
+33790	Spine	Thrown
+33800	Silvthrill ballista	Crossbow
+34027	Hallowfell	2h Sword
+34619	Abyssal tentacle (Pete Kayer's Challenges)	Whip
+34681	Ascension crossbows	Crossbow
+34715	Obligator	Extending Chain Mace
+34717	Obligator	Extending Chain Mace
+34725	Zorya's tome	Powered Book
+34727	Zorya's tome	Powered Book
+34766	Painted shortsword	Stab Sword
+34772	Painted shortbow	Bow
