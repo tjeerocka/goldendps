@@ -235,6 +235,29 @@ public class FightTracker
 		}
 	}
 
+	/**
+	 * An NPC disappeared without dying. A boss that changes form (a new NPC for each phase) leaves its old NPC
+	 * behind this way; it should not keep the fight going. If the game already printed the boss's time, the
+	 * boss is dead even when the game did not show its death.
+	 */
+	public void npcGone(long now, String targetKey)
+	{
+		for (Fight f : new Fight[]{bossPart, current})
+		{
+			TargetStats t = f == null ? null : f.targets.get(targetKey);
+			if (t == null || !t.boss || !t.engaged || t.died)
+			{
+				continue;
+			}
+			if (f.gameTimeMs > 0)
+			{
+				npcDied(now, targetKey, true);
+				return;
+			}
+			t.gone = true;
+		}
+	}
+
 	/** Ends the fight after the idle timeout. Call every game tick. */
 	public void tick(long now)
 	{
@@ -457,14 +480,8 @@ public class FightTracker
 		return f.id + "/" + targetKey;
 	}
 
-	/** Raids scale their monsters, so their defence is not known. */
-	public boolean isInRaid()
-	{
-		return raid != null;
-	}
-
-	/** For tests. */
-	String getRaid()
+	/** RaidZone.COX, TOB or TOA while you are in that raid, else null. */
+	public String getRaid()
 	{
 		return raid;
 	}
@@ -556,7 +573,7 @@ public class FightTracker
 		boolean bossDied = false;
 		for (TargetStats t : f.targets.values())
 		{
-			if (!t.boss || !t.engaged || (t.name != null && !Fight.bossName(t.name).equals(t.name)))
+			if (!t.boss || !t.engaged || t.gone || (t.name != null && !Fight.bossName(t.name).equals(t.name)))
 			{
 				continue;
 			}

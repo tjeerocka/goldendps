@@ -152,10 +152,7 @@ class CombatEvents
 			tracker.playerHit(now, Names.localName(client), PlayerKind.LOCAL, key, npc.getId(), name, boss, amount, miss,
 				source);
 			tracker.seenHit(now, key, npc.getId(), name, boss, amount);
-			if (!tracker.isInRaid())
-			{
-				defence.hit(tick, key, npc.getId(), name, Names.localName(client), source, amount, miss);
-			}
+			defence.hit(tick, key, npc.getId(), name, Names.localName(client), source, amount, miss);
 			barrows.hit(now, name);
 			if (boss)
 			{

@@ -14,6 +14,8 @@ public class TargetStats
 	/** Hit by you or a party member; only these count towards unknown damage. */
 	public boolean engaged;
 	public boolean died;
+	/** Despawned without dying (a boss changing form, or out of view): it does not keep a fight going. */
+	public transient boolean gone;
 	public long firstMs;
 	public long lastMs;
 	public long diedMs;
@@ -43,6 +45,7 @@ public class TargetStats
 	public void hitAt(long now)
 	{
 		engaged = true;
+		gone = false;
 		// a party report can come a little after the death; a real respawn takes longer
 		if (died && now - diedMs > FightTracker.LATE_REPORT_MS)
 		{

@@ -18,7 +18,7 @@
 12366	Abyssal leech (The Scar)	1	1	0	0	0	0	0	0	0	0				1
 12391	Abyssal leech (The Scar)	30	1	0	50	50	100	50	10	10	10				0
 12393	Abyssal leech (The Scar)	1	1	0	50	50	10	50	10	10	10				0
-7533	Abyssal portal	176	176	0	0	0	0	60	140	140	110	xerician	fire:50		1
+7533	Abyssal portal	176	176	0	0	0	0	60	140	140	110	xerician	fire:50	cox-magic-defensive	1
 2586	Abyssal walker	95	1	0	75	75	0	75	0	75	0				1
 12392	Abyssal walker (The Scar)	95	1	0	75	75	10	75	75	75	75				1
 12394	Abyssal walker (The Scar)	20	1	0	75	75	10	75	75	75	75				0
@@ -41,8 +41,8 @@
 1672	Ahrim the Blighted	100	100	73	103	85	117	73	0	0	0	spectral	air:50		1
 1369	Air elemental	30	40	0	0	0	0	0	0	0	0		air:30		1
 1559	Air wizard	10	10	0	0	0	0	15	0	0	0				1
-11789	Akkha	80	100	115	60	120	120	10	60	60	60				1
-11797	Akkha's Shadow	30	100	115	60	120	120	10	60	60	60		air:60		1
+11789	Akkha	80	100	115	60	120	120	10	60	60	60			toa,defence-floor:70	1
+11797	Akkha's Shadow	30	100	115	60	120	120	10	60	60	60		air:60	toa	1
 3292	Al Kharid warrior	4	1	0	12	15	10	-1	12	12	12				1
 15224	Albatross	60	1	0	0	0	0	0	20	25	10				1
 1039	Albino bat	30	1	0	0	0	0	0	0	0	0		air:40		1
@@ -99,13 +99,13 @@
 4198	Apparition	40	40	0	15	15	15	70	70	70	70		air:40		0
 15497	Aquanite	70	170	50	60	80	80	140	100	100	100				1
 15498	Aquanite	70	170	50	10	80	80	140	100	100	100				0
-13668	Araxxor	135	190	260	160	75	15	237	218	218	218		fire:50		1
+13668	Araxxor	135	190	260	160	75	15	237	218	218	218		fire:50	defence-floor:90	1
 11175	Araxyte	60	60	0	60	30	20	20	20	20	20		fire:50		1
 11176	Araxyte	70	80	0	60	30	20	20	20	20	20		fire:50		0
-11726	Arcane Scarab	80	100	250	15	250	30	75	50	50	50	kalphite	fire:50		1
+11726	Arcane Scarab	80	100	250	15	250	30	75	50	50	50	kalphite	fire:50	toa,toa-no-defence-scaling	1
 3301	Archer (Ardougne)	20	1	0	18	23	27	10	19	19	19				1
 4096	Archer (Burthorpe)	40	1	0	39	50	49	18	45	45	45				1
-16659	Archive Guardian	260	250	350	120	110	20	130	55	120	50	flying	fire:80		1
+16659	Archive Guardian	260	250	350	120	110	20	130	55	120	50	flying	fire:80	defence-floor-percent:60	1
 8865	Arianwyn	102	102	0	80	80	80	260	180	180	180				1
 9246	Arianwyn (Nightmare Zone)	102	102	0	80	80	80	260	180	180	180				1
 9248	Arianwyn (Nightmare Zone)	102	102	0	80	80	80	260	180	180	180				0
@@ -167,7 +167,7 @@
 3182	Aviansie	115	1	0	0	0	0	0	-20	0	0	flying	air:45		0
 3183	Aviansie	175	1	0	0	0	0	0	-20	0	0	flying	air:45		0
 7288	Awakened Altar	1	1	0	0	0	0	0	0	0	0	demon			1
-11778	Ba-Ba	80	100	0	80	160	240	280	200	200	120				1
+11778	Ba-Ba	80	100	0	80	160	240	280	200	200	120			toa,defence-floor:60	1
 11781	Baboon	50	50	0	10	50	50	50	50	50	50				1
 11709	Baboon Brawler	12	40	20	900	900	900	-60	900	900	900				1
 11712	Baboon Brawler	20	60	25	900	900	900	-60	900	900	900				0
@@ -344,7 +344,7 @@
 10691	Body Golem	45	1	0	5	5	0	2	10	10	10	golem	earth:35		1
 10692	Body Golem	45	1	0	5	5	0	2	10	10	10		earth:35		0
 2613	Boris	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
-16640	Bork	300	90	0	140	130	10	300	80	50	5		earth:40		1
+16640	Bork	300	90	0	140	130	10	300	80	50	5		earth:40	defence-floor-percent:60	1
 3939	Borrokar	40	1	0	0	0	0	0	0	0	0				1
 1224	Bouncer	120	1	0	0	0	0	0	0	0	0	demon			1
 6293	Bouncer (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0	demon			1
@@ -620,7 +620,7 @@
 10	Death spawn	30	1	0	20	20	20	0	20	20	20				1
 509	Death wing	70	1	0	0	0	0	0	0	0	0	spectral	air:20		1
 7560	Deathly mage	155	210	120	0	0	0	0	0	0	0	xerician			1
-7559	Deathly ranger	155	155	0	0	0	0	0	0	0	0	xerician			1
+7559	Deathly ranger	155	155	0	0	0	0	0	0	0	0	xerician		cox-magic-defensive	1
 1724	Defiler	17	0	0	0	0	0	0	0	0	0				1
 1726	Defiler	29	0	0	0	0	0	0	0	0	0				0
 1728	Defiler	41	0	0	0	0	0	0	0	0	0				0
@@ -729,10 +729,10 @@
 5296	Elf Archer	80	1	0	50	50	50	60	70	70	70				0
 5293	Elf Warrior	80	1	0	50	70	70	60	50	50	50				1
 5294	Elf Warrior	80	1	0	50	70	70	60	50	50	50				0
-11753	Elidinis' Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		1
-11755	Elidinis' Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		0
-11761	Elidinis' Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
-11763	Elidinis' Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
+11753	Elidinis' Warden	100	190	225	70	70	70	-30	70	70	70		earth:50	toa,always-hit	1
+11755	Elidinis' Warden	100	190	225	70	70	70	-30	70	70	70		earth:50	toa	0
+11761	Elidinis' Warden	150	150	230	40	40	20	20	20	20	20		earth:50	toa,defence-floor:120	0
+11763	Elidinis' Warden	150	150	230	40	40	20	20	20	20	20		earth:50	toa,defence-floor:120	0
 13463	Elite Black Knight	90	70	0	110	130	40	-5	140	135	60				1
 13464	Elite Black Knight	90	70	0	110	130	40	-5	140	135	60				0
 13469	Elite Dark Mage	80	80	80	5	10	15	50	5	0	10				1
@@ -796,7 +796,7 @@
 1274	Experiment	30	1	0	0	0	0	0	0	0	0				0
 1275	Experiment	30	1	0	0	0	0	0	0	0	0				0
 5126	Experiment No.2	90	1	0	45	70	60	60	55	25	55				1
-16652	Ezekiel	200	200	250	150	90	35	200	445	370	320		earth:25		1
+16652	Ezekiel	200	200	250	150	90	35	200	445	370	320		earth:25	defence-floor-percent:60	1
 3456	Fareed	135	1	0	100	100	100	0	0	0	0				1
 4115	Fareed (Nightmare Zone)	135	1	0	100	100	100	0	0	0	0		water:30		1
 6348	Fareed (Nightmare Zone)	135	1	0	100	100	100	0	0	0	0		water:30		0
@@ -966,7 +966,7 @@
 6297	Glod (Nightmare Zone)	110	1	0	105	110	130	125	100	80	100		earth:50		1
 6358	Glod (Nightmare Zone)	110	1	0	105	110	130	125	100	80	100		earth:50		0
 7101	Glough	248	250	80	0	0	0	0	0	0	0				1
-7568	Glowing crystal	100	100	0	-5	180	180	0	0	0	0	xerician			1
+7568	Glowing crystal	100	100	0	-5	180	180	0	0	0	0	xerician		cox-not-cm	1
 5968	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				1
 5969	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
 5970	Gnome	1	1	0	-42	-42	-42	-42	-42	-42	-42				0
@@ -1013,9 +1013,9 @@
 3141	Gorak	135	1	0	0	0	0	0	0	0	0				0
 1637	Gourmet impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
 5372	Grave scorpion	14	1	0	0	3	3	0	0	0	0		fire:40		1
-7550	Great Olm	175	87	60	200	200	200	50	200	200	200	dragon,xerician	earth:50		1
+7550	Great Olm	175	87	60	200	200	200	50	200	200	200	dragon,xerician	earth:50	cox-magic-defensive,olm-mage-hand	1
 7551	Great Olm	150	250	60	200	200	200	200	50	50	50	dragon,xerician	earth:50		0
-7552	Great Olm	175	175	60	50	50	50	200	200	200	200	dragon,xerician	earth:50		0
+7552	Great Olm	175	175	60	50	50	50	200	200	200	200	dragon,xerician	earth:50	cox-magic-defensive	0
 15200	Great white shark	70	0	0	0	0	0	15	100	20	40				1
 7278	Greater Nechryael	85	1	0	50	50	50	0	50	50	50	demon			1
 11240	Greater Nechryael	85	1	0	50	50	50	0	50	50	50	demon			0
@@ -1219,7 +1219,7 @@
 5822	Ice Troll King	80	1	0	45	45	45	2000	2000	2000	2000		fire:35		1
 6294	Ice Troll King (Nightmare Zone)	80	1	0	45	45	45	2000	2000	2000	2000		fire:35		1
 6356	Ice Troll King (Nightmare Zone)	80	1	0	45	45	45	2000	2000	2000	2000		fire:35		0
-7584	Ice demon	160	390	0	70	70	110	40	140	140	140	demon,xerician	fire:150		1
+7584	Ice demon	160	390	0	70	70	110	40	140	140	140	demon,xerician	fire:150	magic-uses-defence	1
 14151	Ice elemental (Royal Titans)	30	30	0	0	0	0	0	0	0	0		fire:100		1
 2085	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		1
 2086	Ice giant	40	1	0	0	3	2	0	0	0	0		fire:100		0
@@ -1358,8 +1358,8 @@
 12331	Kasonde the Craven	120	120	0	30	30	30	250	50	50	50	spectral			1
 1494	Kebbit (Eagles' Peak)	1	1	0	0	0	0	0	0	0	0				1
 7104	Keef	165	1	0	50	50	50	0	0	0	0				1
-11719	Kephri	80	125	125	60	300	100	200	300	300	300	kalphite	fire:40		1
-11721	Kephri	80	125	125	60	300	100	200	300	300	300	kalphite	fire:35		0
+11719	Kephri	80	125	125	60	300	100	200	300	300	300	kalphite	fire:40	toa,defence-floor:60	1
+11721	Kephri	80	125	125	60	300	100	200	300	300	300	kalphite	fire:35	toa,defence-floor:60	0
 3125	Ket-Zek	240	240	60	0	0	0	0	0	0	0		water:40		1
 12329	Ketla the Unworthy	130	130	0	60	30	80	200	70	70	70	spectral			1
 12330	Ketla the Unworthy	130	130	0	60	30	80	200	70	70	70	spectral			0
@@ -1535,7 +1535,7 @@
 2919	Mithril dragon	268	168	0	0	100	70	30	90	90	20	dragon,fiery	earth:50		1
 2592	Mogre	48	1	0	0	0	0	0	0	0	0		earth:20		1
 15230	Mogre (sea)	40	1	0	0	0	0	0	0	0	0				1
-16667	Moia	195	350	300	20	110	15	30	60	120	140		air:80		1
+16667	Moia	195	350	300	20	110	15	30	60	120	140		air:80	defence-floor-percent:60	1
 1	Molanisk	50	0	0	45	45	35	30	55	55	55		earth:60		1
 2579	Monk	3	1	0	0	0	0	0	0	0	0				1
 4246	Monk	3	1	0	0	0	0	0	0	0	0				0
@@ -1636,7 +1636,7 @@
 1025	Necromancer	18	18	0	0	0	0	0	0	0	0				1
 11088	Necromancer (Great Kourend)	50	60	10	8	8	8	4	0	0	0				1
 3605	Newtroost	17	1	0	0	0	0	0	0	0	0				1
-11278	Nex	260	230	100	40	140	35	300	190	190	150				1
+11278	Nex	260	230	100	40	140	35	300	190	190	150			defence-floor:250	1
 3962	Nezikchened	167	160	0	0	0	0	0	0	0	0	demon	water:10		1
 6318	Nezikchened (Nightmare Zone)	167	320	0	0	0	0	0	0	0	0	demon	water:10		1
 6379	Nezikchened (Nightmare Zone)	167	160	0	0	0	0	0	0	0	0	demon	water:10		0
@@ -1677,9 +1677,9 @@
 10786	Nylocas Vasilias	50	20	380	0	0	0	0	0	0	0		fire:15		0
 10807	Nylocas Vasilias	50	50	600	0	0	0	0	0	0	0		fire:15		0
 15677	Oaky Doak	65	60	13	35	11	40	70	21	33	40				1
-11751	Obelisk (Tombs of Amascut)	100	100	0	70	70	70	50	60	20	60				1
+11751	Obelisk (Tombs of Amascut)	100	100	0	70	70	70	50	60	20	60			toa,defence-floor:60	1
 7416	Obor	60	1	0	35	40	45	20	20	20	20		earth:20		1
-16673	Ocellus	215	350	150	150	95	60	100	50	135	50	demon			1
+16673	Ocellus	215	350	150	150	95	60	100	50	135	50	demon		defence-floor-percent:60	1
 16675	Ocellus	250	220	0	150	120	10	100	100	110	80				0
 16677	Ocellus	250	300	350	150	100	30	200	250	250	250	demon			0
 14545	Ocelot	30	1	0	0	0	0	0	0	0	0		fire:10		1
@@ -1809,7 +1809,7 @@
 374	Pheasant	3	1	0	0	0	0	0	0	0	0				0
 5500	Pheasant	3	1	0	0	0	0	0	0	0	0				0
 5502	Pheasant	3	1	0	0	0	0	0	0	0	0				0
-9416	Phosani's Nightmare	150	150	220	120	180	40	600	600	600	600				1
+9416	Phosani's Nightmare	150	150	220	120	180	40	600	600	600	600			defence-floor:120	1
 1279	Phrin Shade	42	0	0	0	0	0	0	0	0	0	undead,spectral	air:40		1
 1280	Phrin Shade	42	0	0	0	0	0	0	0	0	0	shade,undead,spectral	air:40		0
 521	Pirate	20	1	0	0	1	0	0	0	0	0				1
@@ -2008,7 +2008,7 @@
 12364	Scarred lesser demon	110	110	100	0	0	0	0	0	0	0	demon	water:40		0
 12378	Scarred lesser demon	90	1	0	0	0	0	0	0	0	0	demon	water:40		0
 12390	Scarred lesser demon	71	1	0	0	0	0	-10	0	0	0	demon	water:40		0
-7548	Scavenger beast	45	1	0	0	0	0	0	0	0	0	xerician			1
+7548	Scavenger beast	45	1	0	0	0	0	0	0	0	0	xerician		cox-singles	1
 5918	Scion	50	1	0	0	0	0	-10	0	0	0				1
 6615	Scorpia	180	1	0	246	284	284	44	284	284	284		fire:35		1
 6617	Scorpia's guardian	60	30	0	0	0	0	0	0	0	0		fire:35		1
@@ -2210,13 +2210,13 @@
 6909	Soldier (tier 3)	50	1	0	0	0	0	0	-1	-1	-1				1
 6911	Soldier (tier 4)	60	1	0	1	1	0	0	0	0	0				1
 6913	Soldier (tier 5)	86	1	0	0	0	0	0	0	0	0				1
-11724	Soldier Scarab	80	100	250	15	250	30	-15	250	250	250	kalphite	fire:50		1
+11724	Soldier Scarab	80	100	250	15	250	30	-15	250	250	250	kalphite	fire:50	toa,toa-no-defence-scaling	1
 4930	Solus Dellagar	25	1	0	5	5	5	72	0	0	0				1
 561	Sorebones	50	1	0	0	0	0	0	0	0	0	undead			1
 562	Sorebones	50	1	0	0	0	0	0	0	0	0	undead			0
-8387	Sotetseg	200	250	-10	70	70	70	30	150	150	150				1
+8387	Sotetseg	200	250	-10	70	70	70	30	150	150	150			defence-floor:100	1
 10864	Sotetseg	150	150	-10	30	30	30	10	120	120	120				0
-10867	Sotetseg	200	250	-10	70	70	70	30	150	150	150				0
+10867	Sotetseg	200	250	-10	70	70	70	30	150	150	150			defence-floor:100	0
 508	Soulless	18	1	0	0	0	0	0	0	0	0				1
 10435	Sourhog	25	25	0	0	30	10	30	0	0	0				1
 10436	Sourhog (A Porcine of Interest)	25	25	0	0	30	10	30	0	0	0				1
@@ -2268,7 +2268,7 @@
 3159	Spiritual warrior	100	1	0	0	0	0	0	0	0	0	spectral	air:30		0
 3166	Spiritual warrior	120	1	0	23	25	13	35	35	35	35	spectral	air:30		0
 11290	Spiritual warrior	100	50	0	100	100	80	0	250	250	250	spectral	fire:200		0
-11725	Spitting Scarab	80	100	250	15	250	30	250	125	125	125	kalphite	fire:50		1
+11725	Spitting Scarab	80	100	250	15	250	30	250	125	125	125	kalphite	fire:50	toa,toa-no-defence-scaling	1
 7794	Spitting Wyvern	90	125	0	50	70	70	140	120	70	120	dragon	air:25		1
 1689	Splatter	33	17	0	0	0	0	0	0	0	0				1
 1690	Splatter	53	22	0	0	0	0	0	0	0	0				0
@@ -2332,8 +2332,8 @@
 4757	Tarik (Nardah)	14	1	0	18	25	19	-4	20	20	20				1
 6476	Tarn	40	1	0	50	50	50	50	50	50	50	undead			1
 6477	Tarn	40	1	0	50	50	50	50	50	50	50				0
-7540	Tekton	205	205	0	155	165	105	0	0	0	0	xerician	water:20		1
-7543	Tekton	205	205	0	280	290	180	0	0	0	0	xerician	water:20		0
+7540	Tekton	205	205	0	155	165	105	0	0	0	0	xerician	water:20	cox-magic-defensive,tekton	1
+7543	Tekton	205	205	0	280	290	180	0	0	0	0	xerician	water:20	cox-magic-defensive,tekton	0
 7620	Temple Guardian	20	1	0	0	0	0	0	0	0	0				1
 8703	Temple Spider	10	1	0	20	30	10	25	20	20	20		fire:40		1
 5912	Tentacle (Abyssal Sire)	1	1	0	0	0	0	0	0	0	0	demon			1
@@ -2350,11 +2350,11 @@
 6120	The Everlasting (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0				1
 6351	The Everlasting (Nightmare Zone)	120	1	0	0	0	0	0	0	0	0				0
 12328	The Forsaken Assassin	140	140	0	60	30	80	200	50	50	50	spectral	air:15		1
-14009	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		1
+14009	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60	defence-floor:120	1
 14011	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
-14014	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
+14014	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60	defence-floor:120	0
 14015	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
-14017	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60		0
+14017	The Hueycoatl	125	50	200	100	100	0	200	350	350	350	dragon	earth:60	defence-floor:120	0
 3476	The Illusive	105	1	0	0	0	0	0	0	0	0				1
 3473	The Inadequacy	240	1	0	0	0	0	0	0	0	0				1
 6119	The Inadequacy (Nightmare Zone)	240	1	0	0	0	0	0	0	0	0				1
@@ -2372,7 +2372,7 @@
 10814	The Maiden of Sugadinti	80	140	150	0	0	0	0	0	0	0				0
 10822	The Maiden of Sugadinti	200	350	300	0	0	0	0	0	0	0				0
 8633	The Mimic	120	60	180	160	165	150	30	145	145	145				1
-9425	The Nightmare	150	150	140	120	180	40	600	600	600	600				1
+9425	The Nightmare	150	150	140	120	180	40	600	600	600	600			defence-floor:120	1
 4708	The Shaikahan	25	1	0	0	0	0	10000	10000	10000	10000				1
 16641	The Smorks	220	185	185	220	170	160	400	80	150	80		earth:85		1
 3475	The Untouchable	434	1	0	0	0	0	0	0	0	0				1
@@ -2467,10 +2467,10 @@
 4122	Troll general	40	0	0	35	60	35	200	200	120	200		earth:20		0
 4123	Troll spectator	25	0	0	0	0	10	200	200	200	200		earth:20		1
 3130	Tstanon Karlak	125	50	0	0	0	0	-5	0	0	0	demon	water:40		1
-11756	Tumeken's Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		1
-11758	Tumeken's Warden	100	190	225	70	70	70	-30	70	70	70		earth:50		0
-11762	Tumeken's Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
-11764	Tumeken's Warden	150	150	230	40	40	20	20	20	20	20		earth:50		0
+11756	Tumeken's Warden	100	190	225	70	70	70	-30	70	70	70		earth:50	toa,always-hit	1
+11758	Tumeken's Warden	100	190	225	70	70	70	-30	70	70	70		earth:50	toa	0
+11762	Tumeken's Warden	150	150	230	40	40	20	20	20	20	20		earth:50	toa,defence-floor:120	0
+11764	Tumeken's Warden	150	150	230	40	40	20	20	20	20	20		earth:50	toa,defence-floor:120	0
 427	Turoth	88	1	0	0	20	20	0	0	0	0	leafy			1
 428	Turoth	86	1	0	0	20	20	0	0	0	0	leafy			0
 429	Turoth	84	1	0	0	20	20	0	0	0	0	leafy			0
@@ -2545,8 +2545,8 @@
 7529	Vanguard	160	150	40	315	340	400	110	50	50	50	xerician			0
 3734	Vanstrom Klause	150	150	0	0	0	0	0	0	0	0	vampyre3			1
 9567	Vanstrom Klause	180	180	16	34	34	34	34	34	34	34	vampyre3			0
-12223	Vardorvis	0	215	0	215	65	85	580	580	580	580		fire:35		1
-12224	Vardorvis	0	180	0	150	25	50	560	560	560	560		fire:35		0
+12223	Vardorvis	0	215	0	215	65	85	580	580	580	580		fire:35	no-defence-drain	1
+12224	Vardorvis	0	180	0	150	25	50	560	560	560	560		fire:35	no-defence-drain	0
 7566	Vasa Nistirio	175	230	0	170	190	40	400	40	40	30	xerician			1
 15576	Veiled kraken	115	100	0	0	0	0	325	325	325	0				1
 15765	Venator	120	100	0	-5	20	90	100	100	100	100	vampyre3			1
@@ -2563,17 +2563,17 @@
 12000	Venenatis' Spiderling (monster)	1	10	0	0	0	0	0	0	0	0				1
 2630	Vera	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
 1677	Verac the Defiled	100	1	-42	227	230	221	0	225	225	225	spectral	air:50		1
-8369	Verzik Vitur	20	400	80	20	20	20	20	20	20	20				1
-8372	Verzik Vitur	200	400	80	100	60	100	70	250	250	250				0
-8374	Verzik Vitur	150	300	80	70	30	70	100	230	230	230		fire:50		0
-10830	Verzik Vitur	10	180	32	10	10	10	10	10	10	10				0
-10833	Verzik Vitur	120	180	32	40	20	40	40	180	180	180				0
-10835	Verzik Vitur	120	180	20	30	10	30	60	100	100	100		fire:50		0
-10847	Verzik Vitur	20	400	80	20	20	20	20	20	20	20				0
-10850	Verzik Vitur	200	400	80	100	60	100	70	250	250	250				0
-10852	Verzik Vitur	150	300	80	70	30	70	100	230	230	230		fire:50		0
-7538	Vespine soldier	40	40	0	0	0	0	30	0	0	0	xerician,flying			1
-7530	Vespula	88	88	0	0	0	0	70	20	60	60	xerician,flying	fire:50		1
+8369	Verzik Vitur	20	400	80	20	20	20	20	20	20	20			magic-uses-defence,no-defence-drain	1
+8372	Verzik Vitur	200	400	80	100	60	100	70	250	250	250			magic-uses-defence,no-defence-drain	0
+8374	Verzik Vitur	150	300	80	70	30	70	100	230	230	230		fire:50	magic-uses-defence,no-defence-drain	0
+10830	Verzik Vitur	10	180	32	10	10	10	10	10	10	10			magic-uses-defence,no-defence-drain	0
+10833	Verzik Vitur	120	180	32	40	20	40	40	180	180	180			magic-uses-defence,no-defence-drain	0
+10835	Verzik Vitur	120	180	20	30	10	30	60	100	100	100		fire:50	magic-uses-defence,no-defence-drain	0
+10847	Verzik Vitur	20	400	80	20	20	20	20	20	20	20			magic-uses-defence,no-defence-drain	0
+10850	Verzik Vitur	200	400	80	100	60	100	70	250	250	250			magic-uses-defence,no-defence-drain	0
+10852	Verzik Vitur	150	300	80	70	30	70	100	230	230	230		fire:50	magic-uses-defence,no-defence-drain	0
+7538	Vespine soldier	40	40	0	0	0	0	30	0	0	0	xerician,flying		cox-singles,cox-magic-defensive	1
+7530	Vespula	88	88	0	0	0	0	70	20	60	60	xerician,flying	fire:50	cox-magic-defensive	1
 6611	Vet'ion	395	300	0	201	200	-10	250	270	270	270	undead			1
 6612	Vet'ion	395	300	0	201	200	-10	250	270	270	270	undead			0
 15501	Vitreous Chilled Jelly	250	180	0	0	0	0	0	0	0	0		earth:30		1
@@ -2719,10 +2719,10 @@
 8340	Xarpus	250	220	0	0	0	0	0	160	160	160		air:50		1
 10768	Xarpus	100	80	0	0	0	0	0	100	100	100		air:50		0
 10772	Xarpus	200	220	0	0	0	0	0	160	160	160		air:50		0
-16684	Xarth	170	350	250	60	105	20	205	125	230	155	demon	water:85		1
+16684	Xarth	170	350	250	60	105	20	205	125	230	155	demon	water:85	defence-floor-percent:60	1
 2628	Yadviga	10	1	0	-21	-21	-21	-21	-21	-21	-21				1
 5816	Yak	1	1	0	0	0	0	0	0	0	0				1
-14176	Yama	225	250	100	100	80	333	0	333	220	333	demon	water:50		1
+14176	Yama	225	250	100	100	80	333	0	333	220	333	demon	water:50	defence-floor:145	1
 100001	Yama	247	275	100	666	666	80	666	666	666	666	demon	water:50		0
 2847	Yeti	39	1	0	0	0	0	0	0	0	0				1
 1636	Young impling	0	1	0	-10	-10	-10	10	-10	-10	-10				1
@@ -2741,8 +2741,8 @@
 7418	Zamorak warrior	90	1	0	0	0	0	0	0	0	0				1
 7419	Zamorak warrior	90	1	0	0	0	0	0	0	0	0				0
 2954	Zamorak wizard	24	80	0	0	0	0	3	0	0	0				1
-11730	Zebak	70	100	215	160	160	260	200	110	110	110				1
-11732	Zebak	70	100	215	160	160	260	200	110	110	110				0
+11730	Zebak	70	100	215	160	160	260	200	110	110	110			toa,defence-floor:50	1
+11732	Zebak	70	100	215	160	160	260	200	110	110	110			toa,defence-floor:50	0
 15558	Zemouregal Summon	150	1	0	0	0	0	0	0	0	0		fire:50		1
 15559	Zemouregal Summon	10	50	0	0	0	0	0	0	0	0	spectral	air:40		0
 15560	Zemouregal Summon	100	1	0	0	0	0	0	0	0	0		fire:50		0

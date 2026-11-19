@@ -1,7 +1,6 @@
 package com.goldendps.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -74,11 +73,11 @@ public class RaidFightTest
 	public void knowsWhenARaidIsGoingOn()
 	{
 		FightTracker t = tracker();
-		assertFalse(t.isInRaid());
+		assertNull(t.getRaid());
 		t.startRaid(0, TOB);
-		assertTrue(t.isInRaid());
+		assertEquals(TOB, t.getRaid());
 		t.endRaid(1000, "test");
-		assertFalse(t.isInRaid());
+		assertNull(t.getRaid());
 	}
 
 	@Test

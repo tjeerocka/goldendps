@@ -37,7 +37,10 @@ A DPS, damage and healing meter for groups and individuals.
   magic level (Seercull, Accursed sceptre), the monster or boss shows it above its head
   ("Def 120 / 246") with the specs that lowered it. Party members' specs count too when they run GoldenDPS.
   The panel lists every spec under "Defence". Drained stats come back 1 level a minute, like in the game.
-  Not yet in raids. Setting **Defence**.
+  Some bosses cannot go below a set defence (Nex 250, Nightmare 120, Verzik and Vardorvis not at all...).
+  Raids too: the Chambers of Xeric scale defence by party size and Challenge Mode (with your own Hitpoints
+  level, as the game does not show the party's highest), the Tombs of Amascut by raid level. Setting
+  **Defence**.
 - **Hit chance**: above the monster you attack, your chance to hit it ("Hit chance 78%"), with the game's
   formula: your levels and boosts, prayers, gear bonuses, attack style (stab, slash, crush, ranged or magic)
   and the monster's defence after specs. With your special attack turned on it shows "Spec hit chance"
@@ -51,7 +54,9 @@ A DPS, damage and healing meter for groups and individuals.
   the scorching bow and demonbane spells (with Mark of Darkness and the purging staff) on demons, the
   granite hammer on golems, the amulet of avarice on revenants, vampyre weapons and Efaritay's aid, the
   tome of water, the Soulreaper axe's soul stacks for its spec, monsters that are always hit, and
-  elemental weakness for strike, bolt, blast, wave and surge spells. Not counted: raids. The panel shows it under "Defence" with the chance before
+  elemental weakness for strike, bolt, blast, wave and surge spells, also in raids (Tumeken's shadow and
+  Osmumten's fang have their Tombs of Amascut rules). Not counted: Keris partisan of the sun. The panel
+  shows it under "Defence" with the chance before
   any spec. Setting **Hit chance**.
 - **Report to party**: sends the top five of the overall damage, the boss damage or the healing to the
   RuneLite party chat. After every boss kill the party leader sends the boss report by itself (setting

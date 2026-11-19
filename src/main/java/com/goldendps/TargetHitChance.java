@@ -1,10 +1,11 @@
 package com.goldendps;
 
 import com.goldendps.model.DefenceDrains;
-import com.goldendps.model.FightTracker;
 import com.goldendps.model.HitChance;
 import com.goldendps.model.NpcStats;
 import com.goldendps.model.PlayerState;
+import com.goldendps.model.RaidScaling;
+import com.goldendps.model.RecentTarget;
 import com.goldendps.model.TargetMatcher;
 import com.goldendps.model.WeaponStyles;
 import net.runelite.api.Actor;
@@ -16,6 +17,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Skill;
+import net.runelite.api.WorldView;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
@@ -55,11 +57,13 @@ class TargetHitChance
 	private final NpcStats npcStats;
 	private final WeaponStyles weaponStyles;
 	private final DefenceDrains defence;
-	private final FightTracker tracker;
+	private final RaidScaling raid;
 	private final CombatEvents combat;
+	private final Bosses bosses;
+	private final RecentTarget<NPC> recentTarget = new RecentTarget<>();
 
 	TargetHitChance(Client client, ItemManager itemManager, SlayerPluginService slayer, NpcStats npcStats,
-		WeaponStyles weaponStyles, DefenceDrains defence, FightTracker tracker, CombatEvents combat)
+		WeaponStyles weaponStyles, DefenceDrains defence, RaidScaling raid, CombatEvents combat, Bosses bosses)
 	{
 		this.client = client;
 		this.itemManager = itemManager;
@@ -67,22 +71,21 @@ class TargetHitChance
 		this.npcStats = npcStats;
 		this.weaponStyles = weaponStyles;
 		this.defence = defence;
-		this.tracker = tracker;
+		this.raid = raid;
 		this.combat = combat;
+		this.bosses = bosses;
 	}
 
-	/** The hit chance on the monster you attack now, or null (no target, unknown monster or weapon, raid). */
+	/** The hit chance on the monster you attack now, or null (no target, unknown monster or weapon). */
 	Result now()
 	{
-		Player me = client.getLocalPlayer();
-		Actor target = me == null ? null : me.getInteracting();
-		if (!(target instanceof NPC) || tracker.isInRaid())
+		NPC npc = target();
+		if (npc == null)
 		{
 			return null;
 		}
-		NPC npc = (NPC) target;
 		String name = Names.clean(npc.getName());
-		NpcStats.Npc stats = npcStats.get(npc.getId(), name);
+		NpcStats.Npc stats = raid.apply(npcStats.get(npc.getId(), name));
 		PlayerState state = readPlayer();
 		// RuneLite's Slayer plugin knows the monsters of your task (none when that plugin is off)
 		state.onTask = slayer.getTargets().contains(npc);
@@ -105,6 +108,34 @@ class TargetHitChance
 		int magicNow = lowered == null ? stats.magicLevel : lowered.getMagicCurrent();
 		return new Result(key, name, state.specialAttack, HitChance.of(state, style, stats, defenceNow, magicNow),
 			HitChance.of(state, style, stats, stats.defence, stats.magicLevel));
+	}
+
+	/** The monster you attack, or the one you attacked shortly before while it is still there. */
+	private NPC target()
+	{
+		Player me = client.getLocalPlayer();
+		Actor interacting = me == null ? null : me.getInteracting();
+		NPC now = interacting instanceof NPC ? (NPC) interacting : null;
+		boolean boss = now != null && bosses.isBoss(now.getId(), Names.clean(now.getName()));
+		NPC kept = recentTarget.kept();
+		return recentTarget.get(client.getTickCount(), now, boss, kept != null && !kept.isDead() && isNearby(kept));
+	}
+
+	private boolean isNearby(NPC npc)
+	{
+		WorldView wv = client.getTopLevelWorldView();
+		if (wv == null)
+		{
+			return false;
+		}
+		for (NPC near : wv.npcs())
+		{
+			if (near == npc)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private PlayerState readPlayer()

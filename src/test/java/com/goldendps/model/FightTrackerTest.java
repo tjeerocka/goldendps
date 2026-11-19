@@ -693,4 +693,34 @@ public class FightTrackerTest
 		assertNull(tracker.gameTime(2000, GameTimes.parse("Fight duration: 0:42.60")));
 		assertEquals(0, tracker.getCurrent().gameTimeMs);
 	}
+
+	@Test
+	public void aBossFormThatDisappearsDoesNotKeepTheFightGoing()
+	{
+		// the boss shows as a new NPC for each phase; the old one disappears without dying
+		myHit(1000, "1:20", true, 10);
+		tracker.npcGone(5000, "1:20");
+		myHit(6000, "1:21", true, 10);
+		tracker.npcDied(20_000, "1:21", true);
+		assertNull("the fight ended with the kill", tracker.getCurrent());
+		assertEquals(1, tracker.getHistory().size());
+	}
+
+	@Test
+	public void aBossWhoseTimeTheGameShowedIsDeadWhenItDisappears()
+	{
+		myHit(1000, BOSS, true, 10);
+		tracker.gameTime(20_000, GameTimes.parse("Fight duration: 0:18.60"));
+		tracker.npcGone(21_000, BOSS);
+		assertNull(tracker.getCurrent());
+		assertEquals(18_600, BossRecords.kill(tracker.getHistory().get(0)).timeMs);
+	}
+
+	@Test
+	public void aBossOutOfViewIsNoKill()
+	{
+		myHit(1000, BOSS, true, 10);
+		tracker.npcGone(5000, BOSS);
+		assertNotNull("still fighting it", tracker.getCurrent());
+	}
 }

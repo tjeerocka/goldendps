@@ -48,7 +48,8 @@ public final class HitChance
 		String weapon = p.weaponName == null ? "" : p.weaponName.toLowerCase(Locale.ROOT);
 		if (defendedWith == WeaponStyles.Type.STAB && weapon.startsWith("osmumten's fang"))
 		{
-			return fangChance(roll, defence);
+			// in the Tombs of Amascut the fang rolls twice in full
+			return npc.hasRule("toa") ? 1 - Math.pow(1 - chance(roll, defence), 2) : fangChance(roll, defence);
 		}
 		if (defendedWith == WeaponStyles.Type.MAGIC && wears(p, "brimstone ring"))
 		{
@@ -202,7 +203,9 @@ public final class HitChance
 		// magic is blocked with the magic level (a few monsters use defence), so lowered defence does not help magic
 		boolean magicLevelBlocks = type == WeaponStyles.Type.MAGIC && !npc.hasRule("magic-uses-defence");
 		int level = magicLevelBlocks ? magicLevel : defenceLevel;
-		return (long) (level + 9) * (defenceBonus(type, npc) + 64);
+		long roll = (long) (level + 9) * (defenceBonus(type, npc) + 64);
+		// the Tombs of Amascut make the defence roll bigger with the raid level
+		return npc.toaLevel > 0 ? roll * (250 + npc.toaLevel) / 250 : roll;
 	}
 
 	private static int defenceBonus(WeaponStyles.Type type, NpcStats.Npc npc)
@@ -239,7 +242,7 @@ public final class HitChance
 			{
 				level = level * 29 / 20;
 			}
-			long baseRoll = level * (magicBonus(p) + 64);
+			long baseRoll = level * (magicBonus(p, npc) + 64);
 			return magicBoosts(p, npc, weapon, baseRoll) + elementalWeakness(p, npc, baseRoll);
 		}
 		boolean ranged = type.isRanged();
@@ -251,7 +254,13 @@ public final class HitChance
 		{
 			level = level * 11 / 10;
 		}
-		long baseRoll = level * (attackBonus(p, type) + 64);
+		int bonus = attackBonus(p, type);
+		if (type == WeaponStyles.Type.STAB && weapon.startsWith("keris partisan of amascut") && !npc.hasRule("toa"))
+		{
+			// its stab bonus is only full inside the Tombs of Amascut
+			bonus -= 50;
+		}
+		long baseRoll = level * (bonus + 64);
 		return ranged ? rangedBoosts(p, npc, weapon, baseRoll) : meleeBoosts(p, type, npc, weapon, baseRoll);
 	}
 
@@ -482,11 +491,15 @@ public final class HitChance
 		return false;
 	}
 
-	/** Tumeken's shadow triples the magic attack bonus of your gear (not for a spell you click). */
-	private static int magicBonus(PlayerState p)
+	/** Tumeken's shadow triples the magic attack bonus of your gear, four times in ToA (not for a clicked spell). */
+	private static int magicBonus(PlayerState p, NpcStats.Npc npc)
 	{
 		boolean shadow = p.weaponName != null && p.weaponName.toLowerCase(Locale.ROOT).startsWith("tumeken's shadow");
-		return shadow && p.clickedSpell == null ? p.magicBonus * 3 : p.magicBonus;
+		if (!shadow || p.clickedSpell != null)
+		{
+			return p.magicBonus;
+		}
+		return p.magicBonus * (npc.hasRule("toa") ? 4 : 3);
 	}
 
 	/**
@@ -607,7 +620,8 @@ public final class HitChance
 	/** The Twisted bow hits monsters with high magic better, up to 140%. */
 	static int twistedBowPercent(NpcStats.Npc npc)
 	{
-		int magic = Math.min(250, Math.max(npc.magicLevel, npc.magicAttack));
+		// up to 350 magic in the Chambers of Xeric
+		int magic = Math.min(npc.is("xerician") ? 350 : 250, Math.max(npc.magicLevel, npc.magicAttack));
 		int bonus = (3 * magic - 10) / 100;
 		int penalty = (3 * magic / 10 - 100) * (3 * magic / 10 - 100) / 100;
 		return Math.min(140, 140 + bonus - penalty);

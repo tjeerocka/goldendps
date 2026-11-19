@@ -13,6 +13,7 @@ import com.goldendps.model.MeterMode;
 import com.goldendps.model.NpcStats;
 import com.goldendps.model.PlayerKind;
 import com.goldendps.model.RaidPoints;
+import com.goldendps.model.RaidScaling;
 import com.goldendps.model.TargetMatcher;
 import com.goldendps.model.WeaponStyles;
 import com.google.gson.Gson;
@@ -48,6 +49,7 @@ import net.runelite.api.events.OverheadTextChanged;
 import net.runelite.api.events.ProjectileMoved;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -162,6 +164,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 	private PartyReports reports;
 	private MeterViews views;
 	private DefenceDrains defence;
+	private final RaidScaling raidScaling = new RaidScaling();
 	private TargetHitChance hitChance;
 	/** Your hit chance on the monster you attack, null when unknown; read by the panel. */
 	private volatile TargetHitChance.Result hitChanceCache;
@@ -222,12 +225,12 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			updatePanel();
 		});
 		NpcStats npcStats = NpcStats.load();
-		defence = new DefenceDrains(npcStats);
+		defence = new DefenceDrains(npcStats, raidScaling);
 		partyUpdates = new PartyUpdates(client, partyService, party, config, tracker, bosses, matcher, defence);
 		combat = new CombatEvents(client, partyService, config, tracker, bosses, matcher, healing, barrows, party,
 			partyUpdates, defence);
-		hitChance = new TargetHitChance(client, itemManager, slayer, npcStats, WeaponStyles.load(), defence, tracker,
-			combat);
+		hitChance = new TargetHitChance(client, itemManager, slayer, npcStats, WeaponStyles.load(), defence,
+			raidScaling, combat, bosses);
 		raids = new RaidFights(client, chat, tracker);
 		reports = new PartyReports(config, partyService, party, chat, storage, killCounts, raidPoints);
 		views = new MeterViews(config, tracker, storage, new BossHealth(client), barrows, party, fun, defence);
@@ -404,6 +407,10 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 			}
 			barrows.died(System.currentTimeMillis(), Names.clean(npc.getName()));
 		}
+		else
+		{
+			tracker.npcGone(System.currentTimeMillis(), key);
+		}
 	}
 
 	@Subscribe
@@ -437,6 +444,7 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		long now = System.currentTimeMillis();
 		int tick = client.getTickCount();
 
+		updateRaidScaling();
 		combat.tick(tick);
 
 		List<HealthWatcher.Heal> heals = healing.endTick(tick);
@@ -602,6 +610,17 @@ public class GoldenDpsPlugin extends Plugin implements FightTracker.Listener
 		bossCache = views.bossMeter(now);
 		hitChanceCache = config.showHitChance() ? hitChance.now() : null;
 		defenceCache = views.defenceLabels(config.showDefence(), hitChanceCache);
+	}
+
+	/**
+	 * What the raid scales its monsters by. The highest Hitpoints level in the party is not shown by the game,
+	 * so your own is used.
+	 */
+	private void updateRaidScaling()
+	{
+		raidScaling.update(tracker.getRaid(), client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE),
+			client.getVarbitValue(VarbitID.RAIDS_CHALLENGE_MODE) == 1, client.getRealSkillLevel(Skill.HITPOINTS),
+			client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL));
 	}
 
 	/** Target key to the lines above that NPC; read by the defence overlay. */

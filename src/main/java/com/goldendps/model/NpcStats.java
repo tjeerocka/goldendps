@@ -42,8 +42,10 @@ public class NpcStats
 		public final String weakElement;
 		/** How much better, in percent. */
 		public final int weaknessPercent;
-		/** Own accuracy rules: "always-hit", "always-hit-melee", "magic-uses-defence"... */
+		/** Own rules: "always-hit", "magic-uses-defence", "defence-floor:120", raid scaling... */
 		private final Set<String> rules;
+		/** The Tombs of Amascut raid level: it makes the defence roll bigger. 0 outside ToA. */
+		public final int toaLevel;
 
 		Npc(String[] cells)
 		{
@@ -63,6 +65,28 @@ public class NpcStats
 			weakElement = weakness.length == 2 ? weakness[0] : null;
 			weaknessPercent = weakness.length == 2 ? Integer.parseInt(weakness[1]) : 0;
 			rules = new HashSet<>(Arrays.asList(cells[14].split(",")));
+			toaLevel = 0;
+		}
+
+		/** A copy with the stats a raid gives it. */
+		Npc(Npc from, int defence, int magicLevel, int toaLevel)
+		{
+			name = from.name;
+			this.defence = defence;
+			this.magicLevel = magicLevel;
+			magicAttack = from.magicAttack;
+			stab = from.stab;
+			slash = from.slash;
+			crush = from.crush;
+			magic = from.magic;
+			light = from.light;
+			standard = from.standard;
+			heavy = from.heavy;
+			attributes = from.attributes;
+			weakElement = from.weakElement;
+			weaknessPercent = from.weaknessPercent;
+			rules = from.rules;
+			this.toaLevel = toaLevel;
 		}
 
 		public boolean is(String attribute)
@@ -73,6 +97,27 @@ public class NpcStats
 		public boolean hasRule(String rule)
 		{
 			return rules.contains(rule);
+		}
+
+		/** The lowest defence that special attacks can lower it to; most monsters go down to 0. */
+		public int defenceFloor()
+		{
+			if (hasRule("no-defence-drain"))
+			{
+				return defence;
+			}
+			for (String rule : rules)
+			{
+				if (rule.startsWith("defence-floor:"))
+				{
+					return Integer.parseInt(rule.substring("defence-floor:".length()));
+				}
+				if (rule.startsWith("defence-floor-percent:"))
+				{
+					return defence * Integer.parseInt(rule.substring("defence-floor-percent:".length())) / 100;
+				}
+			}
+			return 0;
 		}
 	}
 

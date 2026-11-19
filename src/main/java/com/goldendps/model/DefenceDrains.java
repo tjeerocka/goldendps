@@ -12,8 +12,8 @@ import java.util.StringJoiner;
 
 /**
  * The defence (and magic level) of monsters after special attacks that lower it (yours and your party's),
- * with the rules of the OSRS Wiki. Drained stats come back 1 level a minute. Not yet: raids, Tekton's misses,
- * and monsters that restore faster or limit drains.
+ * with the rules of the OSRS Wiki. Drained stats come back 1 level a minute; some bosses have a lowest defence;
+ * raids scale the stats first. Not yet: Tekton's misses, and monsters that restore faster.
  */
 public class DefenceDrains
 {
@@ -42,6 +42,8 @@ public class DefenceDrains
 		public final int base;
 		public final int magicBase;
 		private final boolean demon;
+		/** Some bosses cannot go lower than this. */
+		private final int floor;
 		private int current;
 		private int magicCurrent;
 		/** The tick the next level comes back is counted from; -1 while the stat is not lowered. */
@@ -55,6 +57,7 @@ public class DefenceDrains
 			base = npc.defence;
 			magicBase = npc.magicLevel;
 			demon = npc.is("demon");
+			floor = npc.defenceFloor();
 			current = npc.defence;
 			magicCurrent = npc.magicLevel;
 		}
@@ -104,11 +107,13 @@ public class DefenceDrains
 	static final int RESTORE_TICKS = 100;
 
 	private final NpcStats stats;
+	private final RaidScaling raid;
 	private final Map<String, Target> byKey = new HashMap<>();
 
-	public DefenceDrains(NpcStats stats)
+	public DefenceDrains(NpcStats stats, RaidScaling raid)
 	{
 		this.stats = stats;
+		this.raid = raid;
 	}
 
 	/**
@@ -125,7 +130,7 @@ public class DefenceDrains
 		Target t = byKey.get(targetKey);
 		if (t == null)
 		{
-			NpcStats.Npc npc = stats.get(npcId, npcName);
+			NpcStats.Npc npc = raid.apply(stats.get(npcId, npcName));
 			if (npc == null)
 			{
 				return;
@@ -133,7 +138,7 @@ public class DefenceDrains
 			t = new Target(npc);
 		}
 		String weapon = source.substring(0, source.length() - SPEC.length());
-		int drain = Math.min(t.current, drain(weapon, t, miss ? 0 : damage, miss));
+		int drain = Math.min(t.current - t.floor, drain(weapon, t, miss ? 0 : damage, miss));
 		int magicDrain = Math.min(t.magicCurrent, magicDrain(weapon, t, miss ? 0 : damage));
 		if (drain > 0)
 		{

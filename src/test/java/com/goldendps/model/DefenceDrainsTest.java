@@ -23,7 +23,7 @@ public class DefenceDrainsTest
 			"8058\tVorkath\t164\t150\t150\t66\t126\t126\t204\t80\t80\t80\tdragon,undead\t\t\t0",
 			VORKATH + "\tVorkath\t214\t150\t150\t26\t108\t108\t240\t26\t26\t26\tdragon,undead\t\t\t1",
 			SIRE + "\tAbyssal Sire\t250\t200\t0\t40\t60\t50\t20\t60\t60\t60\tdemon\t\t\t1"));
-		drains = new DefenceDrains(stats);
+		drains = new DefenceDrains(stats, new RaidScaling());
 	}
 
 	private void spec(int npcId, String player, String weapon, int damage)
@@ -191,5 +191,27 @@ public class DefenceDrainsTest
 		assertEquals(249, defence());
 		drains.restore(2 * DefenceDrains.RESTORE_TICKS);
 		assertNull(drains.get(KEY));
+	}
+
+	@Test
+	public void nexCannotGoBelow250Defence() throws Exception
+	{
+		DefenceDrains real = new DefenceDrains(NpcStats.load(), new RaidScaling());
+		for (int i = 0; i < 3; i++)
+		{
+			real.hit(0, KEY, 11278, "Nex", "Me", "Dragon warhammer (spec)", 40, false);
+		}
+		assertEquals("260, then the lowest is 250", 250, real.get(KEY).getCurrent());
+	}
+
+	@Test
+	public void raidStatsAreLoweredFromTheScaledDefence() throws Exception
+	{
+		RaidScaling raid = new RaidScaling();
+		raid.update(RaidZone.COX, 5, true, 99, 0);
+		DefenceDrains real = new DefenceDrains(NpcStats.load(), raid);
+		real.hit(0, KEY, 7540, "Tekton", "Me", "Dragon warhammer (spec)", 40, false);
+		assertEquals("Challenge Mode, 5 players: 287", 287, real.get(KEY).base);
+		assertEquals(287 - 287 * 30 / 100, real.get(KEY).getCurrent());
 	}
 }

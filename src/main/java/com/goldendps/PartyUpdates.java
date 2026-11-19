@@ -137,10 +137,7 @@ class PartyUpdates
 				String targetKey = partyTargetKey(update.world, hit, name);
 				tracker.playerHit(now, name, PlayerKind.PARTY, targetKey, hit.npcId, npcName, boss, hit.amount, hit.miss,
 					source);
-				if (!tracker.isInRaid())
-				{
-					defence.hit(client.getTickCount(), targetKey, hit.npcId, npcName, name, source, hit.amount, hit.miss);
-				}
+				defence.hit(client.getTickCount(), targetKey, hit.npcId, npcName, name, source, hit.amount, hit.miss);
 			}
 		}
 		Fight current = tracker.getCurrent();
